@@ -2,6 +2,17 @@
 
 Multi-sided agricultural marketplace — **Phase 1 web dashboard** + **NestJS API**.
 
+## Share links
+
+| What | Link |
+|------|------|
+| **Live design demo** | https://nasasrisaivb-afk.github.io/-cropvibe/ |
+| **Source code** | https://github.com/nasasrisaivb-afk/-cropvibe |
+
+Demo path: Login → OTP (any 6 digits) → role switcher in the header.
+
+> First-time setup: in GitHub → **Settings → Pages → Source** choose **GitHub Actions**, then re-run the **Deploy demo to GitHub Pages** workflow if needed.
+
 ## Design system (60 / 30 / 10)
 
 - **60%** Base `#F7F8F5`
@@ -22,7 +33,7 @@ npm install
 npm run dev
 ```
 
-Demo: `/login` → OTP (any 6 digits) → pick role.
+Local demo: `/login` → OTP (any 6 digits) → pick role.
 
 ## API (backend)
 

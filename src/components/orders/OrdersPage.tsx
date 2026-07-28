@@ -427,7 +427,7 @@ function GenericOrders({ role }: { role: Role }) {
               </div>
               <Badge status={r.status} />
             </div>
-          </Card>
+    </Card>
         ))}
       </div>
     </div>
