@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ORDERS_LABEL, PRIMARY_CTA } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
@@ -137,9 +137,9 @@ function SellerOrders() {
     return (
       <Card>
         <div className="py-12 text-center">
-          <p className="text-4xl">📭</p>
+          <p className="text-4xl">ðŸ“­</p>
           <h2 className="mt-3 text-lg font-semibold">No Orders Yet</h2>
-          <p className="mt-1 text-sm text-slate-600">Orders from buyers will appear here.</p>
+          <p className="mt-1 text-sm text-[var(--cv-muted)]">Orders from buyers will appear here.</p>
         </div>
       </Card>
     )
@@ -154,13 +154,13 @@ function SellerOrders() {
               <button
                 type="button"
                 onClick={() => setSelected(o.id)}
-                className={`w-full rounded-md border px-3 py-2 text-left text-sm ${selected === o.id ? 'border-green-800 bg-green-50' : 'border-slate-200'}`}
+                className={`w-full rounded-md border px-3 py-2 text-left text-sm ${selected === o.id ? 'border-[var(--cv-primary)] bg-[var(--cv-primary-soft)]' : 'border-[var(--cv-border)]'}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium">{o.id}</span>
                   <Badge status={sellerBadge(o.status)} />
                 </div>
-                <p className="mt-1 text-xs text-slate-500">{o.buyer} · {o.product}</p>
+                <p className="mt-1 text-xs text-[var(--cv-muted)]">{o.buyer} Â· {o.product}</p>
               </button>
             </li>
           ))}
@@ -171,21 +171,21 @@ function SellerOrders() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="text-xl font-bold">{order.id}</h2>
-            <p className="text-sm text-slate-500">Ordered {order.orderedAgo}</p>
+            <p className="text-sm text-[var(--cv-muted)]">Ordered {order.orderedAgo}</p>
           </div>
           <Badge status={sellerBadge(order.status)} />
         </div>
 
         <div className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
-          <p><strong>Buyer:</strong> {order.buyer} ({order.buyerRating}⭐)</p>
+          <p><strong>Buyer:</strong> {order.buyer} ({order.buyerRating}â­)</p>
           <p><strong>Product:</strong> {order.product}, {order.qty}</p>
           <p><strong>Price:</strong> {formatCurrency(order.price)}</p>
           {order.tracking ? <p><strong>Tracking:</strong> {order.tracking}</p> : null}
         </div>
-        {order.note ? <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">Note: {order.note}</p> : null}
+        {order.note ? <p className="mt-3 rounded-md bg-[var(--cv-accent-soft)] px-3 py-2 text-sm text-[var(--cv-warning)]">Note: {order.note}</p> : null}
 
         {order.status === 'packed' && (
-          <div className="mt-4 space-y-3 rounded-lg border border-slate-200 p-4">
+          <div className="mt-4 space-y-3 rounded-lg border border-[var(--cv-border)] p-4">
             <p className="font-medium">Shipping Details</p>
             <Select
               label="Logistics Partner"
@@ -230,7 +230,7 @@ function SellerOrders() {
             <Button roleColor="seller" onClick={() => update(order.id, 'completed')}>Request Rating</Button>
           )}
           {order.status === 'completed' && (
-            <p className="text-sm text-slate-600">Payment released in 1–2 business days. Buyer rated ⭐⭐⭐⭐⭐</p>
+            <p className="text-sm text-[var(--cv-muted)]">Payment released in 1â€“2 business days. Buyer rated â­â­â­â­â­</p>
           )}
         </div>
       </Card>
@@ -270,13 +270,13 @@ function RentalBookings() {
               <button
                 type="button"
                 onClick={() => setSelected(b.id)}
-                className={`w-full rounded-md border px-3 py-2 text-left text-sm ${selected === b.id ? 'border-amber-900 bg-amber-50' : 'border-slate-200'}`}
+                className={`w-full rounded-md border px-3 py-2 text-left text-sm ${selected === b.id ? 'border-[var(--cv-primary)] bg-[var(--cv-primary-soft)]' : 'border-[var(--cv-border)]'}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium">{b.id}</span>
                   <Badge status={badgeFor(b.status)} children={b.status} />
                 </div>
-                <p className="mt-1 text-xs text-slate-500">{b.equipment} · {b.renter}</p>
+                <p className="mt-1 text-xs text-[var(--cv-muted)]">{b.equipment} Â· {b.renter}</p>
               </button>
             </li>
           ))}
@@ -287,22 +287,22 @@ function RentalBookings() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="text-xl font-bold">{booking.id}</h2>
-            <p className="text-sm text-slate-500">{booking.period} ({booking.days} days)</p>
+            <p className="text-sm text-[var(--cv-muted)]">{booking.period} ({booking.days} days)</p>
           </div>
           <Badge status={badgeFor(booking.status)} children={booking.status} />
         </div>
 
         <div className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
-          <p><strong>Renter:</strong> {booking.renter} ({booking.renterRating}⭐)</p>
+          <p><strong>Renter:</strong> {booking.renter} ({booking.renterRating}â­)</p>
           <p><strong>Equipment:</strong> {booking.equipment}</p>
           <p><strong>Location:</strong> {booking.location}</p>
-          <p><strong>Rate:</strong> {formatCurrency(booking.rate)}/day × {booking.days} = {formatCurrency(rentalTotal)}</p>
+          <p><strong>Rate:</strong> {formatCurrency(booking.rate)}/day Ã— {booking.days} = {formatCurrency(rentalTotal)}</p>
           <p><strong>Security Deposit:</strong> {formatCurrency(booking.deposit)}</p>
           <p><strong>Total:</strong> {formatCurrency(rentalTotal + booking.deposit)}</p>
         </div>
 
         {booking.status === 'return' && (
-          <div className="mt-4 space-y-3 rounded-lg border border-slate-200 p-4">
+          <div className="mt-4 space-y-3 rounded-lg border border-[var(--cv-border)] p-4">
             <p className="font-medium">Verify Equipment Condition</p>
             {['Engine starts smoothly', 'No visible damage', 'Tires intact', 'Lights working', 'Fuel/fluids normal'].map((c) => (
               <label key={c} className="flex items-center gap-2 text-sm"><input type="checkbox" defaultChecked /> {c}</label>
@@ -327,7 +327,7 @@ function RentalBookings() {
         )}
 
         {(booking.status === 'completed' || booking.status === 'damage' || booking.status === 'closed') && (
-          <div className="mt-4 rounded-lg bg-slate-50 p-4 text-sm">
+          <div className="mt-4 rounded-lg bg-[var(--cv-elevated)] p-4 text-sm">
             <p>Rental: {formatCurrency(rentalTotal)}</p>
             <p>Platform Fee: {formatCurrency(fee)} (15%)</p>
             <p className="font-semibold text-amber-900">Your Earnings: {formatCurrency(earnings)}</p>
@@ -376,7 +376,7 @@ function RentalBookings() {
             <Button roleColor="rental" onClick={() => update(booking.id, 'closed')}>Request Renter Rating</Button>
           )}
           {booking.status === 'closed' && (
-            <p className="text-sm text-slate-600">Booking closed & rated. All payments settled.</p>
+            <p className="text-sm text-[var(--cv-muted)]">Booking closed & rated. All payments settled.</p>
           )}
         </div>
       </Card>
@@ -392,22 +392,22 @@ function GenericOrders({ role }: { role: Role }) {
   const rows = useMemo(() => {
     if (role === 'buyer') {
       return [
-        { id: 'PO-8801', party: 'Green Valley', item: 'Tomatoes 100kg', amount: '₹8,450', status: 'delivered' as BadgeStatus },
-        { id: 'PO-8800', party: 'Fresh Farm', item: 'Potatoes 200kg', amount: '₹14,200', status: 'shipped' as BadgeStatus },
-        { id: 'PO-8795', party: 'Organic Roots', item: 'Lettuce 40kg', amount: '₹3,200', status: 'pending' as BadgeStatus },
+        { id: 'PO-8801', party: 'Green Valley', item: 'Tomatoes 100kg', amount: 'â‚¹8,450', status: 'delivered' as BadgeStatus },
+        { id: 'PO-8800', party: 'Fresh Farm', item: 'Potatoes 200kg', amount: 'â‚¹14,200', status: 'shipped' as BadgeStatus },
+        { id: 'PO-8795', party: 'Organic Roots', item: 'Lettuce 40kg', amount: 'â‚¹3,200', status: 'pending' as BadgeStatus },
       ]
     }
     if (role === 'service') {
       return [
-        { id: 'AP-220', party: 'Farmer ABC', item: 'Farm Consultancy', amount: '₹1,500', status: 'accepted' as BadgeStatus },
-        { id: 'AP-219', party: 'Village A', item: 'Soil Testing', amount: '₹800', status: 'pending' as BadgeStatus },
-        { id: 'AP-218', party: 'Workshop DEF', item: 'Equipment Repair', amount: '₹2,400', status: 'completed' as BadgeStatus },
+        { id: 'AP-220', party: 'Farmer ABC', item: 'Farm Consultancy', amount: 'â‚¹1,500', status: 'accepted' as BadgeStatus },
+        { id: 'AP-219', party: 'Village A', item: 'Soil Testing', amount: 'â‚¹800', status: 'pending' as BadgeStatus },
+        { id: 'AP-218', party: 'Workshop DEF', item: 'Equipment Repair', amount: 'â‚¹2,400', status: 'completed' as BadgeStatus },
       ]
     }
     return [
-      { id: 'EN-101', party: 'Student A', item: 'Organic Farming 101', amount: '₹999', status: 'active' as BadgeStatus },
-      { id: 'EN-100', party: 'Student B', item: 'IPM Techniques', amount: '₹799', status: 'completed' as BadgeStatus },
-      { id: 'EN-099', party: 'Student C', item: 'Soil Health Mastery', amount: '₹1,299', status: 'pending' as BadgeStatus },
+      { id: 'EN-101', party: 'Student A', item: 'Organic Farming 101', amount: 'â‚¹999', status: 'active' as BadgeStatus },
+      { id: 'EN-100', party: 'Student B', item: 'IPM Techniques', amount: 'â‚¹799', status: 'completed' as BadgeStatus },
+      { id: 'EN-099', party: 'Student C', item: 'Soil Health Mastery', amount: 'â‚¹1,299', status: 'pending' as BadgeStatus },
     ]
   }, [role])
 
@@ -422,8 +422,8 @@ function GenericOrders({ role }: { role: Role }) {
           <Card key={r.id}>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <p className="font-semibold">{r.id} · {r.party}</p>
-                <p className="text-sm text-slate-600">{r.item} · {r.amount}</p>
+                <p className="font-semibold">{r.id} Â· {r.party}</p>
+                <p className="text-sm text-[var(--cv-muted)]">{r.item} Â· {r.amount}</p>
               </div>
               <Badge status={r.status} />
             </div>
@@ -440,3 +440,4 @@ export function OrdersPage() {
   if (role === 'rental') return <RentalBookings />
   return <GenericOrders role={role} />
 }
+

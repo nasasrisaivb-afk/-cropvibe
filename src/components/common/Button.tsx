@@ -4,8 +4,8 @@ import { cn } from '../../utils/format'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
-  /** Kept for API compat; primary CTA uses brand lime on dark */
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'accent'
+  /** Kept for API compat; primary uses brand green */
   roleColor?: Role
   size?: 'sm' | 'md' | 'lg'
   loading?: boolean
@@ -26,13 +26,13 @@ export function Button({
 }: ButtonProps) {
   void _roleColor
   const sizes = {
-    sm: 'min-h-9 px-3 py-1.5 text-sm',
-    md: 'min-h-11 px-4 py-2 text-sm',
-    lg: 'min-h-12 px-5 py-3 text-base',
+    sm: 'min-h-9 px-3 py-1.5 text-sm rounded-[10px]',
+    md: 'min-h-11 px-4 py-2 text-sm rounded-[12px]',
+    lg: 'min-h-12 px-5 py-3 text-base rounded-[12px]',
   }
 
   const base = cn(
-    'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition focus-ring disabled:cursor-not-allowed disabled:opacity-50',
+    'inline-flex items-center justify-center gap-2 font-semibold transition focus-ring disabled:cursor-not-allowed disabled:opacity-50',
     sizes[size],
     fullWidth && 'w-full',
     className,
@@ -41,12 +41,28 @@ export function Button({
   if (variant === 'primary') {
     return (
       <button
-        className={cn(base, 'hover:brightness-110')}
+        className={cn(base, 'hover:brightness-105 active:brightness-95')}
         disabled={disabled || loading}
         style={{
           backgroundColor: 'var(--cv-btn-bg)',
           color: 'var(--cv-btn-text)',
-          border: '1px solid rgba(201,255,53,0.25)',
+          ...style,
+        }}
+        {...props}
+      >
+        {loading ? 'Please wait...' : children}
+      </button>
+    )
+  }
+
+  if (variant === 'accent') {
+    return (
+      <button
+        className={cn(base, 'hover:brightness-105 active:brightness-95')}
+        disabled={disabled || loading}
+        style={{
+          backgroundColor: 'var(--cv-accent)',
+          color: 'var(--cv-btn-text)',
           ...style,
         }}
         {...props}
@@ -59,7 +75,7 @@ export function Button({
   if (variant === 'danger') {
     return (
       <button
-        className={cn(base, 'bg-[var(--cv-danger)] text-[var(--cv-btn-bg)] hover:brightness-110')}
+        className={cn(base, 'bg-[var(--cv-danger)] text-white hover:brightness-110')}
         disabled={disabled || loading}
         style={style}
         {...props}
@@ -72,9 +88,12 @@ export function Button({
   if (variant === 'secondary') {
     return (
       <button
-        className={cn(base, 'border border-[var(--cv-accent)]/40 bg-transparent hover:bg-[var(--cv-accent-soft)]')}
+        className={cn(
+          base,
+          'border border-[var(--cv-primary)]/30 bg-[var(--cv-surface)] text-[var(--cv-primary)] hover:bg-[var(--cv-primary-soft)]',
+        )}
         disabled={disabled || loading}
-        style={{ color: 'var(--cv-accent)', ...style }}
+        style={style}
         {...props}
       >
         {children}
@@ -84,7 +103,10 @@ export function Button({
 
   return (
     <button
-      className={cn(base, 'bg-transparent text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)]')}
+      className={cn(
+        base,
+        'bg-transparent text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)]',
+      )}
       disabled={disabled || loading}
       style={style}
       {...props}

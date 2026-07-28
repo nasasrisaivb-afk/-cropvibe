@@ -65,7 +65,7 @@ function StatCard({
             <p
               className={cn(
                 'mt-1.5 text-xs font-medium',
-                positive === true && 'text-[var(--cv-accent)]',
+                positive === true && 'text-[var(--cv-primary)]',
                 positive === false && 'text-[var(--cv-danger)]',
                 positive === undefined && 'text-[var(--cv-muted)]',
               )}
@@ -104,7 +104,7 @@ export function SellerDashboard() {
 
       <div className="flex flex-col gap-4 rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-surface)] p-5 sm:flex-row sm:items-end sm:justify-between sm:p-6">
         <div>
-          <p className="text-sm font-medium text-[var(--cv-accent)]">Seller workspace</p>
+          <p className="text-sm font-medium text-[var(--cv-primary)]">Seller workspace</p>
           <h2 className="mt-1 text-2xl font-bold tracking-tight text-[var(--cv-text)] sm:text-3xl">
             {greeting}, {name}
           </h2>
@@ -207,10 +207,10 @@ export function SellerDashboard() {
                 <div key={p.name}>
                   <div className="mb-1.5 flex justify-between text-sm">
                     <span className="font-medium text-[var(--cv-muted)]">{p.name}</span>
-                    <span className="font-semibold text-[var(--cv-accent)]">{formatCurrency(p.revenue)}</span>
+                    <span className="font-semibold text-[var(--cv-primary)]">{formatCurrency(p.revenue)}</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-[var(--cv-elevated)]">
-                    <div className="h-full rounded-full bg-[var(--cv-accent)]" style={{ width: `${p.pct}%` }} />
+                    <div className="h-full rounded-full bg-[var(--cv-primary)]" style={{ width: `${p.pct}%` }} />
                   </div>
                 </div>
               ))}

@@ -1,22 +1,26 @@
+import { useNavigate } from 'react-router-dom'
+import { Button } from '../common/Button'
 import { Card } from '../common/Card'
-import { MetricCard } from '../common/MetricCard'
 
 interface ModulePageProps {
   title: string
   description: string
+  ctaLabel?: string
+  ctaPath?: string
 }
 
-export function ModulePage({ title, description }: ModulePageProps) {
+export function ModulePage({ title, description, ctaLabel, ctaPath }: ModulePageProps) {
+  const navigate = useNavigate()
   return (
     <section className="space-y-4">
-      <Card title={title}>
-        <p className="text-sm text-slate-600">{description}</p>
+      <Card className="!rounded-2xl" title={title}>
+        <p className="text-sm text-[var(--cv-muted)]">{description}</p>
+        {ctaLabel && ctaPath ? (
+          <Button className="mt-4" onClick={() => navigate(ctaPath)}>
+            {ctaLabel}
+          </Button>
+        ) : null}
       </Card>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <MetricCard delta="+7.2%" title="Active items" value="124" />
-        <MetricCard delta="+3.1%" title="This week" value="58" />
-        <MetricCard delta="+12.9%" title="Pending actions" value="16" />
-      </div>
     </section>
   )
 }

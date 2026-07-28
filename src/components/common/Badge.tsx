@@ -17,19 +17,19 @@ export type BadgeStatus =
   | 'low'
 
 const CONFIG: Record<BadgeStatus, { bg: string; text: string; icon: string; label: string }> = {
-  approved: { bg: 'bg-[var(--cv-accent-soft)]', text: 'text-[var(--cv-accent)]', icon: '✓', label: 'Approved' },
-  pending: { bg: 'bg-[rgba(245,185,66,0.15)]', text: 'text-[var(--cv-warning)]', icon: '⏱', label: 'Pending' },
-  rejected: { bg: 'bg-[rgba(255,107,107,0.15)]', text: 'text-[var(--cv-danger)]', icon: '✗', label: 'Rejected' },
-  active: { bg: 'bg-[var(--cv-accent-soft)]', text: 'text-[var(--cv-accent)]', icon: '●', label: 'Active' },
+  approved: { bg: 'bg-[var(--cv-primary-soft)]', text: 'text-[var(--cv-primary)]', icon: '✓', label: 'Approved' },
+  pending: { bg: 'bg-[var(--cv-accent-soft)]', text: 'text-[var(--cv-warning)]', icon: '⏱', label: 'Pending' },
+  rejected: { bg: 'bg-[rgba(239,68,68,0.14)]', text: 'text-[var(--cv-danger)]', icon: '✗', label: 'Rejected' },
+  active: { bg: 'bg-[var(--cv-primary-soft)]', text: 'text-[var(--cv-primary)]', icon: '●', label: 'Active' },
   inactive: { bg: 'bg-[var(--cv-elevated)]', text: 'text-[var(--cv-muted)]', icon: '○', label: 'Inactive' },
-  verified: { bg: 'bg-[var(--cv-accent-soft)]', text: 'text-[var(--cv-accent)]', icon: '✓', label: 'Verified' },
-  packed: { bg: 'bg-[var(--cv-accent-soft)]', text: 'text-[var(--cv-accent)]', icon: '✓', label: 'Packed' },
-  shipped: { bg: 'bg-[rgba(110,200,255,0.15)]', text: 'text-[var(--cv-info)]', icon: '🚚', label: 'Shipped' },
-  delivered: { bg: 'bg-[var(--cv-accent-soft)]', text: 'text-[var(--cv-accent)]', icon: '✓', label: 'Delivered' },
+  verified: { bg: 'bg-[var(--cv-primary-soft)]', text: 'text-[var(--cv-primary)]', icon: '✓', label: 'Verified' },
+  packed: { bg: 'bg-[var(--cv-primary-soft)]', text: 'text-[var(--cv-primary)]', icon: '✓', label: 'Packed' },
+  shipped: { bg: 'bg-[rgba(56,189,248,0.14)]', text: 'text-[var(--cv-info)]', icon: '🚚', label: 'Shipped' },
+  delivered: { bg: 'bg-[var(--cv-primary-soft)]', text: 'text-[var(--cv-primary)]', icon: '✓', label: 'Delivered' },
   completed: { bg: 'bg-[var(--cv-elevated)]', text: 'text-[var(--cv-muted)]', icon: '✓', label: 'Completed' },
-  accepted: { bg: 'bg-[rgba(110,200,255,0.15)]', text: 'text-[var(--cv-info)]', icon: '●', label: 'Accepted' },
-  high: { bg: 'bg-[rgba(255,107,107,0.15)]', text: 'text-[var(--cv-danger)]', icon: '!', label: 'High' },
-  medium: { bg: 'bg-[rgba(245,185,66,0.15)]', text: 'text-[var(--cv-warning)]', icon: '!', label: 'Medium' },
+  accepted: { bg: 'bg-[rgba(56,189,248,0.14)]', text: 'text-[var(--cv-info)]', icon: '●', label: 'Accepted' },
+  high: { bg: 'bg-[rgba(239,68,68,0.14)]', text: 'text-[var(--cv-danger)]', icon: '!', label: 'High' },
+  medium: { bg: 'bg-[var(--cv-accent-soft)]', text: 'text-[var(--cv-warning)]', icon: '!', label: 'Medium' },
   low: { bg: 'bg-[var(--cv-elevated)]', text: 'text-[var(--cv-muted)]', icon: '•', label: 'Low' },
 }
 

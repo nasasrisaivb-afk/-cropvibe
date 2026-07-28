@@ -1,65 +1,66 @@
 import type { Role } from '../types/roles'
 
 /**
- * 60 / 30 / 10 dark system
- * 60% #303132  page canvas
- * 30% #262626  surfaces (sidebar, cards, header)
- * 10% #2D2D2D  elevated / inset panels
- * Text #FFFFFF for primary text
- * CTA: bg #121212 · text #C9FF35
+ * CropVibe 60 / 30 / 10 — Black · Grey · Green
+ * 60% Base:     #0B0B0B black canvas
+ * 30% Secondary:#161616 / #222222 grey surfaces
+ * 10% Accent:   #22C55E green actions & highlights
  */
 export const BRAND = {
-  bg60: '#303132',
-  surface30: '#262626',
-  elevated10: '#2D2D2D',
-  text: '#FFFFFF',
-  textMuted: 'rgba(255,255,255,0.62)',
-  border: 'rgba(255,255,255,0.08)',
-  btnBg: '#121212',
-  btnText: '#C9FF35',
-  accent: '#C9FF35',
-  accentMuted: '#A8D42A',
-  accentSoft: 'rgba(201,255,53,0.12)',
-  success: '#C9FF35',
-  warning: '#F5B942',
-  danger: '#FF6B6B',
-  info: '#6EC8FF',
+  bg60: '#0B0B0B',
+  surface30: '#161616',
+  elevated10: '#222222',
+  text: '#F3F4F6',
+  textMuted: '#9CA3AF',
+  border: 'rgba(255, 255, 255, 0.08)',
+  btnBg: '#22C55E',
+  btnText: '#0B0B0B',
+  accent: '#22C55E',
+  accentMuted: '#16A34A',
+  accentSoft: 'rgba(34, 197, 94, 0.14)',
+  primary: '#22C55E',
+  primaryMuted: '#16A34A',
+  primarySoft: 'rgba(34, 197, 94, 0.14)',
+  success: '#22C55E',
+  warning: '#EAB308',
+  danger: '#EF4444',
+  info: '#38BDF8',
 } as const
 
-/** Role accents stay on-brand (lime) with slight hue shifts for identity */
+/** Role identity stays on brand green */
 export const ROLE_PALETTE: Record<
   Role,
   { solid: string; soft: string; muted: string; label: string }
 > = {
   seller: {
-    solid: '#C9FF35',
-    soft: 'rgba(201,255,53,0.12)',
-    muted: '#A8D42A',
-    label: 'Seller lime',
+    solid: '#22C55E',
+    soft: 'rgba(34, 197, 94, 0.14)',
+    muted: '#16A34A',
+    label: 'Seller green',
   },
   buyer: {
-    solid: '#C9FF35',
-    soft: 'rgba(201,255,53,0.12)',
-    muted: '#A8D42A',
-    label: 'Buyer lime',
+    solid: '#22C55E',
+    soft: 'rgba(34, 197, 94, 0.14)',
+    muted: '#16A34A',
+    label: 'Buyer green',
   },
   rental: {
-    solid: '#C9FF35',
-    soft: 'rgba(201,255,53,0.12)',
-    muted: '#A8D42A',
-    label: 'Rental lime',
+    solid: '#22C55E',
+    soft: 'rgba(34, 197, 94, 0.14)',
+    muted: '#16A34A',
+    label: 'Rental green',
   },
   service: {
-    solid: '#C9FF35',
-    soft: 'rgba(201,255,53,0.12)',
-    muted: '#A8D42A',
-    label: 'Service lime',
+    solid: '#22C55E',
+    soft: 'rgba(34, 197, 94, 0.14)',
+    muted: '#16A34A',
+    label: 'Service green',
   },
   educator: {
-    solid: '#C9FF35',
-    soft: 'rgba(201,255,53,0.12)',
-    muted: '#A8D42A',
-    label: 'Educator lime',
+    solid: '#22C55E',
+    soft: 'rgba(34, 197, 94, 0.14)',
+    muted: '#16A34A',
+    label: 'Educator green',
   },
 }
 

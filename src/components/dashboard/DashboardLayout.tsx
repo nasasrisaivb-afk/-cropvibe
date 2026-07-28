@@ -1,6 +1,10 @@
 import { useEffect } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { BREADCRUMB_TITLES, NAV_ITEMS, SEARCH_PLACEHOLDERS } from '../../config/navigation'
+import {
+  BREADCRUMB_TITLES,
+  getAllNavPaths,
+  SEARCH_PLACEHOLDERS,
+} from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
 import { ROLE_PALETTE } from '../../theme/colors'
 import type { PageId } from '../../types/roles'
@@ -11,30 +15,11 @@ import { RentalDashboard } from './RentalDashboard'
 import { SellerDashboard } from './SellerDashboard'
 import { ServiceDashboard } from './ServiceDashboard'
 
-const routeToPage: Record<string, PageId> = {
-  '/dashboard': 'dashboard',
-  '/dashboard/listings': 'listings',
-  '/dashboard/create': 'create',
-  '/dashboard/orders': 'orders',
-  '/dashboard/wallet': 'wallet',
-  '/dashboard/messages': 'messages',
-  '/dashboard/notifications': 'notifications',
-  '/dashboard/reviews': 'reviews',
-  '/dashboard/analytics': 'analytics',
-  '/dashboard/profile': 'profile',
-  '/dashboard/settings': 'settings',
-}
+const pageToPath = getAllNavPaths()
 
-const pageToPath: Record<PageId, string> = {
-  ...NAV_ITEMS.reduce(
-    (acc, item) => {
-      acc[item.id] = item.path
-      return acc
-    },
-    {} as Record<PageId, string>,
-  ),
-  create: '/dashboard/create',
-}
+const routeToPage = Object.fromEntries(
+  Object.entries(pageToPath).map(([page, path]) => [path, page]),
+) as Record<string, PageId>
 
 function DashboardHome() {
   const role = useAppStore((state) => state.user?.activeRole ?? 'seller')
@@ -59,9 +44,10 @@ export function DashboardLayout() {
   useEffect(() => {
     const palette = ROLE_PALETTE[role]
     const root = document.documentElement
-    root.style.setProperty('--cv-accent', palette.solid)
-    root.style.setProperty('--cv-accent-muted', palette.muted)
-    root.style.setProperty('--cv-accent-soft', palette.soft)
+    root.style.setProperty('--cv-primary', palette.solid)
+    root.style.setProperty('--cv-primary-strong', palette.muted)
+    root.style.setProperty('--cv-primary-soft', palette.soft)
+    root.style.setProperty('--cv-btn-bg', palette.solid)
   }, [role])
 
   useEffect(() => {
@@ -76,7 +62,7 @@ export function DashboardLayout() {
     if (expectedPath && location.pathname !== expectedPath) {
       navigate(expectedPath, { replace: true })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only on role change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.activeRole])
 
   useEffect(() => {
@@ -89,10 +75,10 @@ export function DashboardLayout() {
     return <Navigate replace to="/login" />
   }
 
-  const breadcrumbs = BREADCRUMB_TITLES[currentPage]
+  const breadcrumbs = BREADCRUMB_TITLES[currentPage] ?? ['Dashboard']
   const go = (page: PageId) => {
     setCurrentPage(page)
-    navigate(pageToPath[page])
+    navigate(pageToPath[page] ?? '/dashboard')
   }
 
   return (
@@ -106,7 +92,7 @@ export function DashboardLayout() {
       <div className="flex min-w-0 flex-1 flex-col">
         <DashboardHeader
           breadcrumbs={breadcrumbs}
-          searchPlaceholder={SEARCH_PLACEHOLDERS[currentPage]}
+          searchPlaceholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'}
           onNavigate={go}
         />
 

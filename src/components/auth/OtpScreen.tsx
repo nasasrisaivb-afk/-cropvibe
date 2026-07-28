@@ -7,13 +7,13 @@ import { FormInput } from '../common/FormInput'
 const demoUser: User = {
   id: 'u-demo',
   profile: {
-    name: 'Raj Patel',
-    email: 'raj@cropvibe.app',
+    name: 'Rakesh Sharma',
+    email: 'rakesh@cropvibe.app',
     phone: '9876543210',
-    location: 'Hyderabad, India',
+    location: 'Nagpur, MH',
   },
   roles: ['seller', 'buyer', 'rental', 'service', 'educator'],
-  activeRole: 'seller',
+  activeRole: 'rental',
   kycStatus: 'approved',
 }
 
@@ -33,7 +33,10 @@ export function OtpScreen() {
             navigate('/dashboard')
           }}
         >
-          <p className="text-sm text-[var(--cv-muted)]">Enter the 6-digit OTP sent to your phone.</p>
+          <p className="text-sm text-[var(--cv-muted)]">
+            Enter the 6-digit OTP. Demo opens as{' '}
+            <strong className="text-[var(--cv-primary)]">Rental Provider</strong> — switch roles from the header to preview all workspaces.
+          </p>
           <FormInput label="OTP code" maxLength={6} minLength={6} required placeholder="123456" />
           <Button className="w-full" type="submit" size="lg">
             Verify and continue

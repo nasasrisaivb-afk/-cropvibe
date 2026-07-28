@@ -1,32 +1,44 @@
-# React + TypeScript + Vite
+# CropVibe
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Multi-sided agricultural marketplace — **Phase 1 web dashboard** + **NestJS API**.
 
-Currently, two official plugins are available:
+## Design system (60 / 30 / 10)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **60%** Base `#F7F8F5`
+- **30%** Brand green `#2E7D32`
+- **10%** Accent amber `#F59E0B`
 
-## React Compiler
+## Apps
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| App | Path | Command |
+|-----|------|---------|
+| Web dashboard | repo root (Vite) | `npm run dev` |
+| API | `backend/` | see `backend/README.md` |
 
-## Expanding the Oxlint configuration
+## Web (frontend)
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Demo: `/login` → OTP (any 6 digits) → pick role.
+
+## API (backend)
+
+```bash
+cd backend
+docker compose up -d
+npm install
+npx prisma generate
+npx prisma migrate dev --name init
+npm run prisma:seed
+npm run start:dev
+```
+
+Swagger: http://localhost:3001/docs
+
+## Stack
+
+- Web: Vite · React 19 · TypeScript · Tailwind · Zustand
+- API: NestJS · Prisma · PostgreSQL · Redis · JWT OTP auth

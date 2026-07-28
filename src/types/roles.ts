@@ -1,4 +1,4 @@
-export type Role = 'seller' | 'buyer' | 'rental' | 'service' | 'educator'
+﻿export type Role = 'seller' | 'buyer' | 'rental' | 'service' | 'educator'
 
 export type PageId =
   | 'dashboard'
@@ -12,6 +12,19 @@ export type PageId =
   | 'profile'
   | 'settings'
   | 'create'
+  | 'equipment'
+  | 'machinery'
+  | 'labours'
+  | 'drivers'
+  | 'land'
+  | 'warehouses'
+  | 'bookings'
+  | 'calendar'
+  | 'agreements'
+  | 'damage'
+  | 'overdue'
+  | 'settlements'
+  | 'help'
 
 export type KycStatus = 'none' | 'pending' | 'approved' | 'rejected' | 'resubmit'
 
@@ -31,19 +44,19 @@ export interface User {
 }
 
 export const ROLE_COLORS: Record<Role, string> = {
-  seller: '#C9FF35',
-  buyer: '#C9FF35',
-  rental: '#C9FF35',
-  service: '#C9FF35',
-  educator: '#C9FF35',
+  seller: '#22C55E',
+  buyer: '#22C55E',
+  rental: '#22C55E',
+  service: '#22C55E',
+  educator: '#22C55E',
 }
 
 export const ROLE_SOFT: Record<Role, string> = {
-  seller: 'rgba(201,255,53,0.12)',
-  buyer: 'rgba(201,255,53,0.12)',
-  rental: 'rgba(201,255,53,0.12)',
-  service: 'rgba(201,255,53,0.12)',
-  educator: 'rgba(201,255,53,0.12)',
+  seller: 'rgba(34,197,94,0.14)',
+  buyer: 'rgba(34,197,94,0.14)',
+  rental: 'rgba(34,197,94,0.14)',
+  service: 'rgba(34,197,94,0.14)',
+  educator: 'rgba(34,197,94,0.14)',
 }
 
 export const ROLE_ICONS: Record<Role, string> = {
@@ -52,6 +65,14 @@ export const ROLE_ICONS: Record<Role, string> = {
   rental: '🚜',
   service: '👨‍🔧',
   educator: '📚',
+}
+
+export const ROLE_LABELS: Record<Role, string> = {
+  seller: 'Seller',
+  buyer: 'Buyer',
+  rental: 'Rental Provider',
+  service: 'Service Provider',
+  educator: 'Educator',
 }
 
 export const ROLE_DESCRIPTIONS: Record<Role, string> = {
@@ -68,6 +89,14 @@ export const ROLE_TITLES: Record<Role, string> = {
   rental: 'Rent Equipment',
   service: 'Provide Services',
   educator: 'Teach Courses',
+}
+
+export const ROLE_CTA: Record<Role, string> = {
+  seller: 'Add Product',
+  buyer: 'Browse Marketplace',
+  rental: 'Rent Equipment',
+  service: 'Add Service',
+  educator: 'Create Course',
 }
 
 export const ALL_ROLES: Role[] = ['seller', 'buyer', 'rental', 'service', 'educator']
