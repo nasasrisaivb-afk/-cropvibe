@@ -11,7 +11,8 @@ Multi-sided agricultural marketplace — **Phase 1 web dashboard** + **NestJS AP
 
 Demo path: Login → OTP (any 6 digits) → role switcher in the header.
 
-> First-time setup: in GitHub → **Settings → Pages → Source** choose **GitHub Actions**, then re-run the **Deploy demo to GitHub Pages** workflow if needed.
+> **One-time enable (repo owner):** GitHub → **Settings → Pages** → Source **Deploy from a branch** → Branch **`gh-pages`** / **`/` (root)** → Save.  
+> After that, every push to `main` refreshes the live demo automatically.
 
 ## Design system (60 / 30 / 10)
 
