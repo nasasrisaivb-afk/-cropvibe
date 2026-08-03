@@ -720,7 +720,7 @@ export function RentalCreateFlow({ onDone }: { onDone: () => void }) {
         </div>
       )}
 
-      <div className="mt-8 flex justify-between gap-3">
+      <div className="sticky bottom-0 z-10 -mx-5 mt-8 flex justify-between gap-3 border-t border-[var(--cv-border)] bg-[var(--cv-surface)] px-5 py-3 sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:pt-8">
         <Button variant="secondary" roleColor="rental" disabled={step === 1} onClick={goBack}>
           Previous
         </Button>

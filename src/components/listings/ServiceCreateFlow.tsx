@@ -26,16 +26,6 @@ import {
   type ServiceCategory,
   type ServiceCategoryId,
 } from './serviceCategoryContent'
-import {
-  FARMER_SEGMENTS,
-  REGION_TIERS,
-  SEASON_OPTIONS,
-  computeSuggestedPrice,
-  getPricingGuide,
-  type FarmerSegmentId,
-  type RegionTierId,
-  type SeasonId,
-} from './servicePricingStrategy'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
@@ -64,11 +54,6 @@ interface ServiceFormState {
   area: string
   availability: string
   photoCount: number
-  regionTier: RegionTierId
-  packageId: string
-  season: SeasonId
-  farmerSegment: FarmerSegmentId
-  addons: string
 }
 
 const INITIAL_FORM: ServiceFormState = {
@@ -83,11 +68,6 @@ const INITIAL_FORM: ServiceFormState = {
   area: '25',
   availability: 'weekdays',
   photoCount: 0,
-  regionTier: 'tier-2',
-  packageId: '',
-  season: 'normal',
-  farmerSegment: 'medium',
-  addons: '',
 }
 
 function StepProgress({ step, color }: { step: number; color: string }) {
@@ -256,13 +236,48 @@ function AdaptiveFieldInput({
   )
 }
 
-function unitOptionsFromGuide(categoryId: ServiceCategoryId, packageUnit?: string) {
-  const units = new Set(getPricingGuide(categoryId).packages.map((p) => p.unit))
-  if (packageUnit) units.add(packageUnit)
-  return [...units].map((u) => ({
-    value: u,
-    label: u === 'hectare' ? 'Per hectare' : `Per ${u}`,
-  }))
+function simpleSuggest(
+  category: ServiceCategory,
+  includes: ChecklistState,
+): { min: number; max: number; mid: number; label: string } {
+  const defaults: Record<ServiceCategoryId, [number, number, number]> = {
+    'soil-testing': [300, 500, 650],
+    'farm-consultancy': [2000, 4000, 6000],
+    mechanic: [750, 1500, 3000],
+    irrigation: [3000, 10000, 40000],
+    'equipment-repair': [1500, 3000, 8000],
+    'drone-spraying': [300, 400, 600],
+    'crop-inspection': [500, 750, 1500],
+  }
+  const [budget, avg, premium] = defaults[category.id]
+  const total = category.includes.length || 1
+  const score = Object.values(includes).filter(Boolean).length / total
+  if (score > 0.7) return { min: Math.round(premium * 0.9), max: Math.round(premium * 1.1), mid: premium, label: 'full package' }
+  if (score > 0.35) return { min: Math.round(avg * 0.9), max: Math.round(avg * 1.1), mid: avg, label: 'typical' }
+  return { min: Math.round(budget * 0.9), max: Math.round(budget * 1.1), mid: budget, label: 'starter' }
+}
+
+function unitOptions(category: ServiceCategory) {
+  const u = category.pricing.unit
+  if (u === 'acre') {
+    return [
+      { value: 'acre', label: 'Per acre' },
+      { value: 'hectare', label: 'Per hectare' },
+      { value: 'day', label: 'Per day' },
+    ]
+  }
+  if (u === 'sample') {
+    return [
+      { value: 'sample', label: 'Per sample' },
+      { value: 'visit', label: 'Per visit' },
+    ]
+  }
+  return [
+    { value: 'session', label: 'Per session' },
+    { value: 'visit', label: 'Per visit' },
+    { value: 'hour', label: 'Per hour' },
+    { value: 'day', label: 'Per day' },
+  ]
 }
 
 export function ServiceCreateFlow({ onDone }: { onDone: () => void }) {
@@ -274,31 +289,10 @@ export function ServiceCreateFlow({ onDone }: { onDone: () => void }) {
   const category = getServiceCategoryById(form.categoryId)
   const accent = category?.color ?? '#2F6F4E'
   const price = Number(form.price) || 0
-  const includesScore = useMemo(() => {
-    if (!category) return 0.5
-    const total = category.includes.length || 1
-    return Object.values(form.includes).filter(Boolean).length / total
-  }, [category, form.includes])
-  const suggestion = useMemo(() => {
-    if (!category || !form.packageId) return null
-    return computeSuggestedPrice({
-      categoryId: category.id,
-      packageId: form.packageId,
-      regionId: form.regionTier,
-      seasonId: form.season,
-      segmentId: form.farmerSegment,
-      addonIds: parseMultiValue(form.addons),
-      includesScore,
-    })
-  }, [
-    category,
-    form.packageId,
-    form.regionTier,
-    form.season,
-    form.farmerSegment,
-    form.addons,
-    includesScore,
-  ])
+  const suggestion = useMemo(
+    () => (category ? simpleSuggest(category, form.includes) : null),
+    [category, form.includes],
+  )
 
   const update = <K extends keyof ServiceFormState>(key: K, value: ServiceFormState[K]) => {
     setForm((p) => ({ ...p, [key]: value }))
@@ -327,20 +321,16 @@ export function ServiceCreateFlow({ onDone }: { onDone: () => void }) {
 
   const selectCategory = (id: ServiceCategoryId) => {
     const cat = getServiceCategoryById(id)
-    const guide = getPricingGuide(id)
-    const defaultPkg = guide.packages[0]
     setForm((p) => ({
       ...p,
       categoryId: id,
       fields: {},
       includes: {},
-      unit: defaultPkg?.unit ?? cat?.pricing.unit ?? 'session',
-      packageId: defaultPkg?.id ?? '',
+      unit: cat?.pricing.unit ?? 'session',
       duration: cat?.durationOptions[1]?.value ?? cat?.durationOptions[0]?.value ?? '',
       name: '',
       description: '',
       photoCount: 0,
-      addons: '',
       price: '',
     }))
     setErrors({})
@@ -387,8 +377,7 @@ export function ServiceCreateFlow({ onDone }: { onDone: () => void }) {
 
   const applySuggestion = () => {
     if (!suggestion) return
-    update('price', String(suggestion.price))
-    update('unit', suggestion.unit)
+    update('price', String(suggestion.mid))
   }
 
   const includesDone = category ? category.includes.filter((i) => form.includes[i]).length : 0
@@ -469,7 +458,7 @@ export function ServiceCreateFlow({ onDone }: { onDone: () => void }) {
           <p className="mt-1 text-sm text-[var(--cv-muted)]">
             {step === 1 && 'What kind of help do you offer farmers?'}
             {step === 2 && category && `Describe your ${category.title.toLowerCase()} clearly`}
-            {step === 3 && 'Set a fair price farmers will understand'}
+            {step === 3 && 'Set your price and how far you travel'}
             {step === 4 && 'Preview how farmers will see your offer'}
           </p>
         </div>
@@ -658,36 +647,11 @@ export function ServiceCreateFlow({ onDone }: { onDone: () => void }) {
             </div>
             <div className="space-y-2 text-sm">
               <p>
-                <span className="text-[var(--cv-muted)]">Region:</span>{' '}
-                {REGION_TIERS.find((t) => t.id === form.regionTier)?.label ?? form.regionTier}
-              </p>
-              <p>
-                <span className="text-[var(--cv-muted)]">Package:</span>{' '}
-                {getPricingGuide(category.id).packages.find((p) => p.id === form.packageId)?.label ??
-                  form.packageId}
-              </p>
-              <p>
                 <span className="text-[var(--cv-muted)]">Price:</span>{' '}
                 <strong>
                   {formatCurrency(price)}/{form.unit}
                 </strong>
               </p>
-              <p>
-                <span className="text-[var(--cv-muted)]">Season / segment:</span>{' '}
-                {SEASON_OPTIONS.find((s) => s.id === form.season)?.label} ·{' '}
-                {FARMER_SEGMENTS.find((s) => s.id === form.farmerSegment)?.label}
-              </p>
-              {form.addons ? (
-                <p>
-                  <span className="text-[var(--cv-muted)]">Add-ons:</span>{' '}
-                  {parseMultiValue(form.addons)
-                    .map(
-                      (id) =>
-                        getPricingGuide(category.id).addons.find((a) => a.id === id)?.label ?? id,
-                    )
-                    .join(', ')}
-                </p>
-              ) : null}
               <p>
                 <span className="text-[var(--cv-muted)]">Duration:</span>{' '}
                 {category.durationOptions.find((d) => d.value === form.duration)?.label ?? form.duration}
@@ -722,7 +686,7 @@ export function ServiceCreateFlow({ onDone }: { onDone: () => void }) {
         </div>
       )}
 
-      <div className="mt-8 flex justify-between gap-3">
+      <div className="sticky bottom-0 z-10 -mx-5 mt-8 flex justify-between gap-3 border-t border-[var(--cv-border)] bg-[var(--cv-surface)] px-5 py-3 sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:pt-8">
         <Button variant="secondary" roleColor="service" disabled={step === 1} onClick={goBack}>
           Previous
         </Button>
@@ -946,185 +910,37 @@ function PricingStep({
   form: ServiceFormState
   category: ServiceCategory
   errors: Record<string, string>
-  suggestion: ReturnType<typeof computeSuggestedPrice> | null
+  suggestion: { min: number; max: number; mid: number; label: string } | null
   update: <K extends keyof ServiceFormState>(key: K, value: ServiceFormState[K]) => void
   applySuggestion: () => void
 }) {
   const price = Number(form.price) || 0
-  const guide = getPricingGuide(category.id)
-  const selectedAddons = new Set(parseMultiValue(form.addons))
-  const region = REGION_TIERS.find((t) => t.id === form.regionTier) ?? REGION_TIERS[1]
-
-  const toggleAddon = (id: string) => {
-    const next = new Set(selectedAddons)
-    if (next.has(id)) next.delete(id)
-    else next.add(id)
-    update('addons', [...next].join(','))
-  }
-
-  const selectPackage = (packageId: string) => {
-    const pkg = guide.packages.find((p) => p.id === packageId)
-    update('packageId', packageId)
-    if (pkg) update('unit', pkg.unit)
-  }
+  const { pricing } = category
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div
-        className="rounded-xl border px-4 py-3 text-sm"
+        className="rounded-xl border p-4"
         style={{ borderColor: `${category.color}44`, backgroundColor: category.softBg }}
       >
-        <p className="font-medium text-[var(--cv-text)]">Pricing tip</p>
-        <p className="mt-0.5 text-xs leading-relaxed text-[var(--cv-muted)]">{guide.tip}</p>
-        <p className="mt-1 text-xs text-[var(--cv-muted)]">{guide.seasonalNote}</p>
+        <p className="text-sm font-semibold text-[var(--cv-text)]">Typical rates nearby</p>
+        <p className="mt-0.5 text-xs text-[var(--cv-muted)]">Per {pricing.unit} · use as a guide</p>
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {[
+            { label: 'Budget', value: pricing.budget },
+            { label: 'Average', value: pricing.average },
+            { label: 'Premium', value: pricing.premium },
+          ].map((tier) => (
+            <div key={tier.label} className="rounded-lg bg-[var(--cv-surface)] px-2 py-2.5 text-center">
+              <p className="text-[10px] font-medium uppercase tracking-wide text-[var(--cv-muted)]">{tier.label}</p>
+              <p className="mt-1 text-xs font-semibold leading-snug text-[var(--cv-text)] sm:text-sm">
+                {tier.value}
+              </p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-[var(--cv-muted)]">{pricing.note}</p>
       </div>
-
-      <DetailSection
-        step={1}
-        title="Your service region"
-        subtitle="Prices shift with labour cost and farmer income"
-        color={category.color}
-      >
-        <div className="grid gap-2 sm:grid-cols-2">
-          {REGION_TIERS.map((tier) => {
-            const active = form.regionTier === tier.id
-            return (
-              <button
-                key={tier.id}
-                type="button"
-                onClick={() => update('regionTier', tier.id)}
-                className={cn(
-                  'rounded-xl border-2 p-3 text-left transition focus-ring',
-                  active ? 'shadow-sm' : 'border-[var(--cv-border)] hover:border-[var(--cv-muted)]/40',
-                )}
-                style={active ? { borderColor: category.color, backgroundColor: category.softBg } : undefined}
-              >
-                <p className="text-sm font-semibold text-[var(--cv-text)]">{tier.label}</p>
-                <p className="mt-0.5 text-[11px] text-[var(--cv-muted)]">{tier.examples}</p>
-                <p className="mt-1 text-[11px] font-medium" style={{ color: category.color }}>
-                  {tier.adjustment}
-                </p>
-              </button>
-            )
-          })}
-        </div>
-      </DetailSection>
-
-      <DetailSection
-        step={2}
-        title="Package & market rates"
-        subtitle={`Reference for ${region.label.split('—')[0].trim()}`}
-        color={category.color}
-      >
-        <div className="mb-4 overflow-x-auto rounded-lg border border-[var(--cv-border)]">
-          <table className="w-full min-w-[420px] text-left text-xs">
-            <thead className="bg-[var(--cv-elevated)] text-[var(--cv-muted)]">
-              <tr>
-                <th className="px-3 py-2 font-medium">Package</th>
-                <th className="px-3 py-2 font-medium">T1</th>
-                <th className="px-3 py-2 font-medium">T2</th>
-                <th className="px-3 py-2 font-medium">T3</th>
-                <th className="px-3 py-2 font-medium">T4</th>
-              </tr>
-            </thead>
-            <tbody>
-              {guide.regionalTable.map((row) => (
-                <tr key={row.packageLabel} className="border-t border-[var(--cv-border)]">
-                  <td className="px-3 py-2 font-medium text-[var(--cv-text)]">{row.packageLabel}</td>
-                  <td className={cn('px-3 py-2', form.regionTier === 'tier-1' && 'font-semibold')}>{row.t1}</td>
-                  <td className={cn('px-3 py-2', form.regionTier === 'tier-2' && 'font-semibold')}>{row.t2}</td>
-                  <td className={cn('px-3 py-2', form.regionTier === 'tier-3' && 'font-semibold')}>{row.t3}</td>
-                  <td className={cn('px-3 py-2', form.regionTier === 'tier-4' && 'font-semibold')}>{row.t4}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <p className="mb-2 text-xs text-[var(--cv-muted)]">Select the package you are listing</p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {guide.packages.map((pkg) => {
-            const active = form.packageId === pkg.id
-            return (
-              <button
-                key={pkg.id}
-                type="button"
-                onClick={() => selectPackage(pkg.id)}
-                className={cn(
-                  'rounded-xl border-2 p-3 text-left transition focus-ring',
-                  active ? 'shadow-sm' : 'border-[var(--cv-border)]',
-                )}
-                style={active ? { borderColor: category.color, backgroundColor: category.softBg } : undefined}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm font-semibold text-[var(--cv-text)]">{pkg.label}</p>
-                  <p className="shrink-0 text-xs font-bold" style={{ color: category.color }}>
-                    ~{formatCurrency(Math.round(pkg.basePrice * region.factor))}
-                  </p>
-                </div>
-                <p className="mt-0.5 text-[11px] text-[var(--cv-muted)]">{pkg.description}</p>
-                <p className="mt-1 text-[10px] uppercase tracking-wide text-[var(--cv-muted)]">
-                  per {pkg.unit}
-                </p>
-              </button>
-            )
-          })}
-        </div>
-      </DetailSection>
-
-      <DetailSection
-        step={3}
-        title="Season & farmer segment"
-        subtitle="Adjust for demand and who you serve most"
-        color={category.color}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Select
-            label="Season"
-            value={form.season}
-            onChange={(e) => update('season', e.target.value as SeasonId)}
-            options={SEASON_OPTIONS.map((s) => ({ value: s.id, label: s.label }))}
-            helperText={SEASON_OPTIONS.find((s) => s.id === form.season)?.hint}
-          />
-          <Select
-            label="Primary farmer segment"
-            value={form.farmerSegment}
-            onChange={(e) => update('farmerSegment', e.target.value as FarmerSegmentId)}
-            options={FARMER_SEGMENTS.map((s) => ({ value: s.id, label: s.label }))}
-            helperText={FARMER_SEGMENTS.find((s) => s.id === form.farmerSegment)?.hint}
-          />
-        </div>
-      </DetailSection>
-
-      <DetailSection
-        step={4}
-        title="Optional add-ons"
-        subtitle="Extra fees farmers can book with this offer"
-        color={category.color}
-      >
-        <div className="flex flex-wrap gap-2">
-          {guide.addons.map((addon) => {
-            const active = selectedAddons.has(addon.id)
-            return (
-              <button
-                key={addon.id}
-                type="button"
-                onClick={() => toggleAddon(addon.id)}
-                className={cn(
-                  'rounded-lg border px-2.5 py-1.5 text-xs font-medium transition focus-ring',
-                  active
-                    ? 'border-[var(--cv-primary)] bg-[var(--cv-primary-soft)] text-[var(--cv-primary)]'
-                    : 'border-[var(--cv-border)] text-[var(--cv-text)]',
-                )}
-              >
-                {active ? '✓ ' : ''}
-                {addon.label}
-                {addon.price > 0 ? ` (+${formatCurrency(addon.price)})` : ''}
-              </button>
-            )
-          })}
-        </div>
-      </DetailSection>
 
       {suggestion ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--cv-border)] px-4 py-3">
@@ -1132,80 +948,72 @@ function PricingStep({
             <p className="text-sm font-semibold text-[var(--cv-text)]">
               Suggested {formatCurrency(suggestion.min)}–{formatCurrency(suggestion.max)}
             </p>
-            <p className="text-xs text-[var(--cv-muted)]">{suggestion.breakdown}</p>
+            <p className="text-xs text-[var(--cv-muted)]">Based on your {suggestion.label} inclusions</p>
           </div>
           <Button type="button" size="sm" variant="secondary" roleColor="service" onClick={applySuggestion}>
-            Use {formatCurrency(suggestion.price)}
+            Use {formatCurrency(suggestion.mid)}
           </Button>
         </div>
       ) : null}
 
-      <DetailSection
-        step={5}
-        title="Your listed price & reach"
-        subtitle="This is what farmers see when booking"
-        color={category.color}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FormInput
-            label="Your price"
-            type="number"
-            value={form.price}
-            onChange={(e) => update('price', e.target.value)}
-            required
-            error={errors.price}
-            placeholder="e.g., 2500"
-          />
-          <Select
-            label="Price unit"
-            value={form.unit}
-            onChange={(e) => update('unit', e.target.value)}
-            options={unitOptionsFromGuide(category.id, form.unit)}
-          />
-          <Select
-            label="Typical duration"
-            value={form.duration}
-            onChange={(e) => update('duration', e.target.value)}
-            options={category.durationOptions}
-            required
-            error={errors.duration}
-          />
-          <Select
-            label="Availability"
-            value={form.availability}
-            onChange={(e) => update('availability', e.target.value)}
-            options={[
-              { value: 'weekdays', label: 'Weekdays' },
-              { value: 'weekends', label: 'Weekends' },
-              { value: 'all-week', label: 'All week' },
-              { value: 'flexible', label: 'Flexible / on demand' },
-            ]}
-          />
-        </div>
-        <div className="mt-4">
-          <FormInput
-            label="Service area (km)"
-            type="number"
-            value={form.area}
-            onChange={(e) => update('area', e.target.value)}
-            required
-            error={errors.area}
-            helperText="How far will you travel for this service?"
-          />
-        </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <FormInput
+          label="Your price"
+          type="number"
+          value={form.price}
+          onChange={(e) => update('price', e.target.value)}
+          required
+          error={errors.price}
+          placeholder="e.g., 2500"
+        />
+        <Select
+          label="Price unit"
+          value={form.unit}
+          onChange={(e) => update('unit', e.target.value)}
+          options={unitOptions(category)}
+        />
+        <Select
+          label="Typical duration"
+          value={form.duration}
+          onChange={(e) => update('duration', e.target.value)}
+          options={category.durationOptions}
+          required
+          error={errors.duration}
+        />
+        <Select
+          label="Availability"
+          value={form.availability}
+          onChange={(e) => update('availability', e.target.value)}
+          options={[
+            { value: 'weekdays', label: 'Weekdays' },
+            { value: 'weekends', label: 'Weekends' },
+            { value: 'all-week', label: 'All week' },
+            { value: 'flexible', label: 'Flexible / on demand' },
+          ]}
+        />
+      </div>
 
-        {price > 0 ? (
-          <div className="mt-4 rounded-xl bg-[var(--cv-elevated)] p-4 text-sm">
-            <p>
-              Listed: {formatCurrency(price)}/{form.unit}
-            </p>
-            <p className="text-[var(--cv-muted)]">Platform fee: {formatCurrency(price * 0.15)} (15%)</p>
-            <p className="mt-1 font-semibold" style={{ color: category.color }}>
-              Your earnings: {formatCurrency(price * 0.85)} (85%)
-            </p>
-          </div>
-        ) : null}
-      </DetailSection>
+      <FormInput
+        label="Service area (km)"
+        type="number"
+        value={form.area}
+        onChange={(e) => update('area', e.target.value)}
+        required
+        error={errors.area}
+        helperText="How far will you travel?"
+      />
+
+      {price > 0 ? (
+        <div className="rounded-xl bg-[var(--cv-elevated)] p-4 text-sm">
+          <p>
+            Price: {formatCurrency(price)}/{form.unit}
+          </p>
+          <p className="text-[var(--cv-muted)]">Platform fee: {formatCurrency(price * 0.15)} (15%)</p>
+          <p className="mt-1 font-semibold" style={{ color: category.color }}>
+            Your earnings: {formatCurrency(price * 0.85)} (85%)
+          </p>
+        </div>
+      ) : null}
     </div>
   )
 }

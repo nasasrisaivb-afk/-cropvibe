@@ -40,7 +40,7 @@ import {
   ROLE_LABELS,
 } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
-import type { PageId, Role } from '../../types/roles'
+import type { PageId } from '../../types/roles'
 import { ROLE_ICONS } from '../../types/roles'
 import { Badge } from './Badge'
 import { Button } from './Button'
@@ -93,8 +93,10 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
   const sidebarCollapsed = useAppStore((state) => state.sidebarCollapsed)
   const setSidebarOpen = useAppStore((state) => state.setSidebarOpen)
   const toggleSidebarCollapsed = useAppStore((state) => state.toggleSidebarCollapsed)
+  const switchRole = useAppStore((state) => state.switchRole)
 
   const role = user?.activeRole ?? 'seller'
+  const roles = user?.roles ?? []
   const sections = getNavSections(role)
   const kycPending = user?.kycStatus === 'pending'
   const firstName = user?.profile.name?.split(' ')[0] ?? 'User'
@@ -107,7 +109,7 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
       <li key={`${id}-${label}`}>
         <button
           aria-current={active ? 'page' : undefined}
-          className={`focus-ring group flex w-full items-center gap-3 rounded-lg px-2 py-2 text-sm transition ${
+          className={`focus-ring group flex min-h-11 w-full items-center gap-3 rounded-xl px-2 py-2.5 text-sm transition active:scale-[0.99] ${
             active
               ? 'bg-[var(--cv-primary-soft)] font-semibold text-[var(--cv-primary)]'
               : 'text-[var(--cv-text)]/90 hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)]'
@@ -120,7 +122,7 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
           }}
         >
           <span
-            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition ${
+            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition ${
               active
                 ? 'bg-[var(--cv-primary)] text-[var(--cv-btn-text)]'
                 : 'bg-[var(--cv-elevated)] text-[var(--cv-muted)] group-hover:text-[var(--cv-text)]'
@@ -128,7 +130,7 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
           >
             <Icon className="h-4 w-4" />
           </span>
-          <span className={sidebarCollapsed ? 'lg:hidden' : ''}>{label}</span>
+          <span className={`truncate ${sidebarCollapsed ? 'lg:hidden' : ''}`}>{label}</span>
         </button>
       </li>
     )
@@ -146,10 +148,14 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
       ) : null}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-[min(20rem,88vw)] flex-col border-r border-[var(--cv-border)] bg-[#111111] transition-all duration-200 lg:static lg:z-0 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-[min(20rem,92vw)] max-w-sm flex-col border-r border-[var(--cv-border)] bg-[#111111] transition-all duration-200 lg:static lg:z-0 lg:max-w-none lg:translate-x-0 ${
           sidebarCollapsed ? 'lg:w-[72px]' : 'lg:w-64'
         } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
-        style={{ paddingTop: 'var(--cv-safe-top)', paddingBottom: 'var(--cv-safe-bottom)' }}
+        style={{
+          paddingTop: 'var(--cv-safe-top)',
+          paddingBottom: 'var(--cv-safe-bottom)',
+          paddingLeft: 'var(--cv-safe-left)',
+        }}
       >
         <div
           className={`flex shrink-0 flex-col justify-center border-b border-[var(--cv-border)] ${
@@ -180,7 +186,8 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
               <span className="sr-only">CropVibe {ROLE_LABELS[role]}</span>
             </Link>
             <button
-              className="rounded-md p-1.5 text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] lg:hidden"
+              aria-label="Close menu"
+              className="cv-touch flex items-center justify-center rounded-xl text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] lg:hidden"
               type="button"
               onClick={closeDrawer}
             >
@@ -189,7 +196,7 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-3 py-4">
+        <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-4 [-webkit-overflow-scrolling:touch]">
           {!sidebarCollapsed && kycPending ? (
             <div className="mb-4 rounded-lg border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] px-3 py-2 text-xs text-[var(--cv-warning)]">
               KYC Pending — create/offer locked
@@ -201,7 +208,9 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
               {sections.map((section, index) => (
                 <div key={section.title}>
                   {index > 0 ? (
-                    <div className={`mb-4 border-t border-[var(--cv-border)] ${sidebarCollapsed ? 'lg:mx-1' : ''}`} />
+                    <div
+                      className={`mb-4 border-t border-[var(--cv-border)] ${sidebarCollapsed ? 'lg:mx-1' : ''}`}
+                    />
                   ) : null}
                   <p
                     className={`mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--cv-muted)] ${
@@ -219,7 +228,59 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
           </nav>
         </div>
 
-        <div className="shrink-0 border-t border-[var(--cv-border)] p-3">
+        <div className="shrink-0 border-t border-[var(--cv-border)] p-3 pb-[max(0.75rem,var(--cv-safe-bottom))]">
+          {roles.length > 1 ? (
+            <div className={sidebarCollapsed ? 'lg:hidden' : ''}>
+              <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--cv-muted)]">
+                Switch role
+              </p>
+              <div className="mb-3 grid grid-cols-1 gap-1.5">
+                {roles.map((r) => {
+                  const active = r === role
+                  return (
+                    <button
+                      key={r}
+                      type="button"
+                      aria-current={active ? 'true' : undefined}
+                      className={`focus-ring flex min-h-11 w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm transition ${
+                        active
+                          ? 'bg-[var(--cv-primary-soft)] font-semibold text-[var(--cv-primary)] ring-1 ring-[var(--cv-primary)]/30'
+                          : 'bg-[var(--cv-elevated)] text-[var(--cv-text)] hover:brightness-110'
+                      }`}
+                      onClick={() => switchRole(r)}
+                    >
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#111111] text-base">
+                        {ROLE_ICONS[r]}
+                      </span>
+                      <span className="truncate">{ROLE_LABELS[r]}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ) : null}
+
+          {roles.length > 1 && sidebarCollapsed ? (
+            <div className="mb-2 hidden flex-col gap-1.5 lg:flex">
+              {roles.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  title={ROLE_LABELS[r]}
+                  aria-label={`Switch to ${ROLE_LABELS[r]}`}
+                  className={`focus-ring mx-auto flex h-10 w-10 items-center justify-center rounded-full text-base transition ${
+                    r === role
+                      ? 'bg-[var(--cv-primary-soft)] ring-1 ring-[var(--cv-primary)]/40'
+                      : 'bg-[var(--cv-elevated)]'
+                  }`}
+                  onClick={() => switchRole(r)}
+                >
+                  {ROLE_ICONS[r]}
+                </button>
+              ))}
+            </div>
+          ) : null}
+
           <button
             className={`focus-ring hidden w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] lg:flex ${
               sidebarCollapsed ? 'justify-center' : ''
@@ -238,8 +299,8 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
           </button>
 
           {!sidebarCollapsed ? (
-            <div className="mt-2 flex items-center gap-3 rounded-lg bg-[var(--cv-elevated)] px-3 py-2.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--cv-btn-bg)] text-sm font-bold text-[var(--cv-btn-text)]">
+            <div className="mt-2 flex items-center gap-3 rounded-xl bg-[var(--cv-elevated)] px-3 py-2.5">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--cv-btn-bg)] text-sm font-bold text-[var(--cv-btn-text)]">
                 {firstName.slice(0, 1)}
               </div>
               <div className="min-w-0 flex-1">
@@ -257,12 +318,10 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
 export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: ShellNavProps) {
   const user = useAppStore((state) => state.user)
   const setSidebarOpen = useAppStore((state) => state.setSidebarOpen)
-  const switchRole = useAppStore((state) => state.switchRole)
   const role = user?.activeRole ?? 'seller'
   const cta = PRIMARY_CTA[role]
   const kycPending = user?.kycStatus === 'pending'
   const createLocked = kycPending && role !== 'buyer'
-  const roles = user?.roles ?? []
 
   return (
     <header className="sticky top-0 z-30 border-b border-[var(--cv-border)] bg-[var(--cv-surface)]/95 backdrop-blur-md cv-mobile-header supports-[backdrop-filter]:bg-[var(--cv-surface)]/85">
@@ -285,6 +344,7 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
           <h1 className="truncate text-[15px] font-semibold tracking-tight text-[var(--cv-text)] sm:text-base">
             {breadcrumbs[breadcrumbs.length - 1]}
           </h1>
+          <p className="truncate text-[11px] text-[var(--cv-muted)] sm:hidden">{ROLE_LABELS[role]}</p>
         </div>
 
         <div className="relative mx-2 hidden max-w-lg flex-1 md:block">
@@ -302,21 +362,6 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
             <span className="hidden md:inline-flex">
               <Badge status="pending">KYC Pending</Badge>
             </span>
-          ) : null}
-
-          {roles.length > 1 ? (
-            <select
-              aria-label="Switch role"
-              className="focus-ring max-w-[118px] appearance-none rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] py-2 pl-2.5 pr-6 text-[11px] font-medium text-[var(--cv-text)] sm:max-w-[180px] sm:py-2 sm:pl-3 sm:pr-8 sm:text-sm"
-              value={role}
-              onChange={(e) => switchRole(e.target.value as Role)}
-            >
-              {roles.map((r) => (
-                <option key={r} value={r}>
-                  {ROLE_ICONS[r]} {ROLE_LABELS[r]}
-                </option>
-              ))}
-            </select>
           ) : null}
 
           <button
