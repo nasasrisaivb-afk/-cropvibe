@@ -16,11 +16,13 @@ import { ReviewsPage } from './components/modules/ReviewsPage'
 import { SettingsPage } from './components/modules/SettingsPage'
 import { WalletPage } from './components/modules/WalletPage'
 import { OrdersPage } from './components/orders/OrdersPage'
+import { CourseCatalogPage } from './components/educators/CourseCatalogPage'
 import { AgreementsPage } from './components/rentals/AgreementsPage'
 import { DamageReportsPage } from './components/rentals/DamageReportsPage'
 import { HelpDeskPage } from './components/rentals/HelpDeskPage'
 import { OverdueRentalsPage } from './components/rentals/OverdueRentalsPage'
 import { RentalInventoryPage } from './components/rentals/RentalInventoryPage'
+import { ServiceCatalogPage } from './components/services/ServiceCatalogPage'
 
 function App() {
   return (
@@ -42,6 +44,14 @@ function App() {
         <Route element={<CreateWorkflowPage />} path="create" />
         <Route element={<OrdersPage />} path="orders" />
         <Route element={<OrdersPage />} path="bookings" />
+        <Route element={<ServiceCatalogPage category="consultancy" />} path="consultancy" />
+        <Route element={<ServiceCatalogPage category="testing" />} path="testing" />
+        <Route element={<ServiceCatalogPage category="repair" />} path="repair" />
+        <Route element={<ServiceCatalogPage category="aerial" />} path="aerial" />
+        <Route element={<ServiceCatalogPage category="irrigation" />} path="irrigation" />
+        <Route element={<CourseCatalogPage category="selfpaced" />} path="selfpaced" />
+        <Route element={<CourseCatalogPage category="live" />} path="live" />
+        <Route element={<CourseCatalogPage category="certifications" />} path="certifications" />
         <Route element={<CalendarPage />} path="calendar" />
         <Route element={<AgreementsPage />} path="agreements" />
         <Route element={<DamageReportsPage />} path="damage" />

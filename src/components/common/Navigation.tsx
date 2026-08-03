@@ -1,15 +1,19 @@
 import {
+  AcademicCapIcon,
   ArchiveBoxIcon,
   Bars3Icon,
   BellIcon,
+  BeakerIcon,
   BuildingOffice2Icon,
   CalendarDaysIcon,
+  ChartBarIcon,
   ChatBubbleLeftRightIcon,
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
   ClipboardDocumentCheckIcon,
   ClipboardDocumentListIcon,
   ClockIcon,
+  CloudIcon,
   Cog6ToothIcon,
   CreditCardIcon,
   DocumentTextIcon,
@@ -17,6 +21,8 @@ import {
   HomeIcon,
   MagnifyingGlassIcon,
   MapIcon,
+  PaperAirplaneIcon,
+  PlusIcon,
   QuestionMarkCircleIcon,
   Squares2X2Icon,
   TruckIcon,
@@ -27,11 +33,10 @@ import {
 } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
 import {
+  getMobileTabs,
   getNavItems,
   getNavSections,
-  MOBILE_TABS,
   PRIMARY_CTA,
-  RENTAL_MOBILE_TABS,
   ROLE_LABELS,
 } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
@@ -50,7 +55,7 @@ const NAV_ICONS: Partial<Record<PageId, typeof HomeIcon>> = {
   reviews: ClipboardDocumentCheckIcon,
   profile: UserCircleIcon,
   settings: Cog6ToothIcon,
-  create: Squares2X2Icon,
+  create: PlusIcon,
   equipment: WrenchScrewdriverIcon,
   machinery: TruckIcon,
   labours: UserGroupIcon,
@@ -64,7 +69,15 @@ const NAV_ICONS: Partial<Record<PageId, typeof HomeIcon>> = {
   overdue: ClockIcon,
   settlements: CreditCardIcon,
   help: QuestionMarkCircleIcon,
-  analytics: Squares2X2Icon,
+  analytics: ChartBarIcon,
+  consultancy: ChatBubbleLeftRightIcon,
+  testing: BeakerIcon,
+  repair: WrenchScrewdriverIcon,
+  aerial: PaperAirplaneIcon,
+  irrigation: CloudIcon,
+  selfpaced: AcademicCapIcon,
+  live: CalendarDaysIcon,
+  certifications: AcademicCapIcon,
 }
 
 interface ShellNavProps {
@@ -83,24 +96,22 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
 
   const role = user?.activeRole ?? 'seller'
   const sections = getNavSections(role)
-  const navItems = getNavItems(role)
   const kycPending = user?.kycStatus === 'pending'
   const firstName = user?.profile.name?.split(' ')[0] ?? 'User'
   const closeDrawer = () => setSidebarOpen(false)
-  const isRental = role === 'rental'
 
   const renderItem = (id: PageId, label: string) => {
     const Icon = NAV_ICONS[id] ?? ArchiveBoxIcon
     const active = currentPage === id
     return (
-      <li key={id}>
+      <li key={`${id}-${label}`}>
         <button
           aria-current={active ? 'page' : undefined}
-          className={`focus-ring flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${
+          className={`focus-ring group flex w-full items-center gap-3 rounded-lg px-2 py-2 text-sm transition ${
             active
-              ? 'border-l-4 border-[var(--cv-primary)] bg-[var(--cv-primary-soft)] font-semibold text-[var(--cv-primary)]'
-              : 'border-l-4 border-transparent text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)]'
-          } ${sidebarCollapsed ? 'lg:justify-center lg:px-2 lg:border-l-0' : ''}`}
+              ? 'bg-[var(--cv-primary-soft)] font-semibold text-[var(--cv-primary)]'
+              : 'text-[var(--cv-text)]/90 hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)]'
+          } ${sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
           title={label}
           type="button"
           onClick={() => {
@@ -108,7 +119,15 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
             closeDrawer()
           }}
         >
-          <Icon className="h-5 w-5 shrink-0" />
+          <span
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition ${
+              active
+                ? 'bg-[var(--cv-primary)] text-[var(--cv-btn-text)]'
+                : 'bg-[var(--cv-elevated)] text-[var(--cv-muted)] group-hover:text-[var(--cv-text)]'
+            }`}
+          >
+            <Icon className="h-4 w-4" />
+          </span>
           <span className={sidebarCollapsed ? 'lg:hidden' : ''}>{label}</span>
         </button>
       </li>
@@ -127,93 +146,82 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
       ) : null}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-[var(--cv-border)] bg-[var(--cv-surface)] transition-all duration-200 lg:static lg:z-0 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-[min(20rem,88vw)] flex-col border-r border-[var(--cv-border)] bg-[#111111] transition-all duration-200 lg:static lg:z-0 lg:translate-x-0 ${
           sidebarCollapsed ? 'lg:w-[72px]' : 'lg:w-64'
         } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{ paddingTop: 'var(--cv-safe-top)', paddingBottom: 'var(--cv-safe-bottom)' }}
       >
         <div
-          className={`flex h-16 shrink-0 items-center gap-2 border-b border-[var(--cv-border)] ${
-            sidebarCollapsed ? 'px-3 lg:justify-center' : 'px-4'
+          className={`flex shrink-0 flex-col justify-center border-b border-[var(--cv-border)] ${
+            sidebarCollapsed ? 'h-16 px-3 lg:items-center' : 'min-h-16 px-4 py-3'
           }`}
         >
-          <Link
-            className="flex min-w-0 items-center gap-2.5"
-            to="/dashboard"
-            onClick={() => {
-              onNavigate('dashboard')
-              closeDrawer()
-            }}
-          >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--cv-btn-bg)] text-[var(--cv-accent)] ring-1 ring-[var(--cv-accent)]/30">
-              🌱
-            </span>
-            {!sidebarCollapsed ? (
-              <span className="cv-logo truncate text-lg">
-                Crop<span className="cv-logo-accent">Vibe</span>
-                {isRental ? (
-                  <span className="ml-1 align-middle text-[10px] font-normal tracking-normal text-[var(--cv-muted)]">
-                    Provider
-                  </span>
-                ) : null}
-              </span>
-            ) : (
-              <span className="sr-only">CropVibe</span>
-            )}
-          </Link>
-          <button
-            className="ml-auto rounded-md p-1.5 text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] lg:hidden"
-            type="button"
-            onClick={closeDrawer}
-          >
-            <XMarkIcon className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              className="min-w-0 flex-1"
+              to="/dashboard"
+              onClick={() => {
+                onNavigate('dashboard')
+                closeDrawer()
+              }}
+            >
+              {!sidebarCollapsed ? (
+                <>
+                  <p className="cv-logo truncate text-lg leading-none tracking-wide text-[var(--cv-accent)]">
+                    CROPVIBE
+                  </p>
+                  <p className="mt-1 text-xs font-medium text-[var(--cv-text)]/80">{ROLE_LABELS[role]}</p>
+                </>
+              ) : (
+                <span className="cv-logo text-sm text-[var(--cv-accent)]" title="CropVibe">
+                  CV
+                </span>
+              )}
+              <span className="sr-only">CropVibe {ROLE_LABELS[role]}</span>
+            </Link>
+            <button
+              className="rounded-md p-1.5 text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] lg:hidden"
+              type="button"
+              onClick={closeDrawer}
+            >
+              <XMarkIcon className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto px-3 py-4">
           {!sidebarCollapsed && kycPending ? (
-            <div className="mb-3 rounded-lg border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] px-3 py-2 text-xs text-[var(--cv-warning)]">
+            <div className="mb-4 rounded-lg border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] px-3 py-2 text-xs text-[var(--cv-warning)]">
               KYC Pending — create/offer locked
             </div>
           ) : null}
 
           <nav aria-label="Sidebar navigation">
-            {sections ? (
-              <div className="space-y-5">
-                {sections.map((section) => (
-                  <div key={section.title}>
-                    <p
-                      className={`mb-2 px-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--cv-accent)] ${
-                        sidebarCollapsed ? 'lg:text-center lg:px-0' : ''
-                      }`}
-                    >
-                      {sidebarCollapsed ? '·' : section.title}
-                    </p>
-                    <ul className="space-y-0.5">
-                      {section.items.map((item) => renderItem(item.id, item.label))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <>
-                <p
-                  className={`mb-2 px-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--cv-muted)] ${
-                    sidebarCollapsed ? 'lg:text-center lg:px-0' : ''
-                  }`}
-                >
-                  {sidebarCollapsed ? '···' : 'Menu'}
-                </p>
-                <ul className="space-y-0.5">
-                  {navItems.map((item) => renderItem(item.id, item.label))}
-                </ul>
-              </>
-            )}
+            <div className="space-y-5">
+              {sections.map((section, index) => (
+                <div key={section.title}>
+                  {index > 0 ? (
+                    <div className={`mb-4 border-t border-[var(--cv-border)] ${sidebarCollapsed ? 'lg:mx-1' : ''}`} />
+                  ) : null}
+                  <p
+                    className={`mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--cv-muted)] ${
+                      sidebarCollapsed ? 'lg:text-center lg:px-0' : ''
+                    }`}
+                  >
+                    {sidebarCollapsed ? '·' : section.title}
+                  </p>
+                  <ul className="space-y-0.5">
+                    {section.items.map((item) => renderItem(item.id, item.label))}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </nav>
         </div>
 
         <div className="shrink-0 border-t border-[var(--cv-border)] p-3">
           <button
-            className={`focus-ring hidden w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] lg:flex ${
+            className={`focus-ring hidden w-full items-center gap-2 rounded-lg px-2 py-2 text-sm text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] lg:flex ${
               sidebarCollapsed ? 'justify-center' : ''
             }`}
             type="button"
@@ -231,7 +239,7 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
 
           {!sidebarCollapsed ? (
             <div className="mt-2 flex items-center gap-3 rounded-lg bg-[var(--cv-elevated)] px-3 py-2.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--cv-btn-bg)] text-sm font-bold text-white">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--cv-btn-bg)] text-sm font-bold text-[var(--cv-btn-text)]">
                 {firstName.slice(0, 1)}
               </div>
               <div className="min-w-0 flex-1">
@@ -257,29 +265,29 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
   const roles = user?.roles ?? []
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[var(--cv-border)] bg-[var(--cv-surface)]/95 backdrop-blur-md">
-      <div className="flex h-16 items-center gap-3 px-4 lg:px-8">
+    <header className="sticky top-0 z-30 border-b border-[var(--cv-border)] bg-[var(--cv-surface)]/95 backdrop-blur-md cv-mobile-header supports-[backdrop-filter]:bg-[var(--cv-surface)]/85">
+      <div className="flex h-14 items-center gap-2 px-3 sm:h-16 sm:gap-3 sm:px-4 lg:px-8">
         <button
           aria-label="Open menu"
-          className="rounded-lg p-2 text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] lg:hidden"
+          className="cv-touch flex items-center justify-center rounded-xl text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] lg:hidden"
           type="button"
           onClick={() => setSidebarOpen(true)}
         >
           <Bars3Icon className="h-6 w-6" />
         </button>
 
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           {breadcrumbs.length > 1 ? (
             <p className="hidden truncate text-xs text-[var(--cv-muted)] sm:block">
               {breadcrumbs.slice(0, -1).join(' / ')}
             </p>
           ) : null}
-          <h1 className="truncate text-base font-semibold text-[var(--cv-text)]">
+          <h1 className="truncate text-[15px] font-semibold tracking-tight text-[var(--cv-text)] sm:text-base">
             {breadcrumbs[breadcrumbs.length - 1]}
           </h1>
         </div>
 
-        <div className="relative mx-4 hidden max-w-lg flex-1 md:block">
+        <div className="relative mx-2 hidden max-w-lg flex-1 md:block">
           <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--cv-muted)]" />
           <input
             aria-label="Search"
@@ -289,7 +297,7 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
           />
         </div>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
           {kycPending ? (
             <span className="hidden md:inline-flex">
               <Badge status="pending">KYC Pending</Badge>
@@ -299,7 +307,7 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
           {roles.length > 1 ? (
             <select
               aria-label="Switch role"
-              className="focus-ring hidden max-w-[180px] appearance-none rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] py-2 pl-3 pr-8 text-sm font-medium text-[var(--cv-text)] sm:block"
+              className="focus-ring max-w-[118px] appearance-none rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] py-2 pl-2.5 pr-6 text-[11px] font-medium text-[var(--cv-text)] sm:max-w-[180px] sm:py-2 sm:pl-3 sm:pr-8 sm:text-sm"
               value={role}
               onChange={(e) => switchRole(e.target.value as Role)}
             >
@@ -313,17 +321,17 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
 
           <button
             aria-label="Notifications"
-            className="relative rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] p-2.5 text-[var(--cv-muted)] hover:text-[var(--cv-text)]"
+            className="cv-touch relative flex items-center justify-center rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] text-[var(--cv-muted)] hover:text-[var(--cv-text)]"
             type="button"
             onClick={() => onNavigate('notifications')}
           >
             <BellIcon className="h-5 w-5" />
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[var(--cv-accent)]" />
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[var(--cv-accent)]" />
           </button>
 
           <button
             aria-label="Messages"
-            className="hidden rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] p-2.5 text-[var(--cv-muted)] hover:text-[var(--cv-text)] sm:inline-flex"
+            className="cv-touch hidden items-center justify-center rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] text-[var(--cv-muted)] hover:text-[var(--cv-text)] sm:inline-flex"
             type="button"
             onClick={() => onNavigate('messages')}
           >
@@ -341,7 +349,7 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
           </Button>
 
           <button
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--cv-btn-bg)] text-sm font-bold text-white md:hidden"
+            className="cv-touch flex items-center justify-center rounded-full bg-[var(--cv-btn-bg)] text-sm font-bold text-[var(--cv-btn-text)] md:hidden"
             type="button"
             onClick={() => onNavigate('profile')}
           >
@@ -357,38 +365,71 @@ export function MobileBottomNav({ onNavigate }: { onNavigate: (page: PageId) => 
   const user = useAppStore((state) => state.user)
   const currentPage = useAppStore((state) => state.currentPage)
   const role = user?.activeRole ?? 'seller'
-  const tabs = role === 'rental' ? RENTAL_MOBILE_TABS : MOBILE_TABS
+  const tabs = getMobileTabs(role)
   const navItems = getNavItems(role)
 
   return (
     <nav
       aria-label="Bottom navigation"
-      className="fixed bottom-0 left-0 right-0 z-30 border-t border-[var(--cv-border)] bg-[var(--cv-surface)]/95 px-1 py-1 backdrop-blur sm:hidden"
+      className="cv-mobile-tabbar fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--cv-border)] bg-[var(--cv-surface)]/95 px-1 pt-1.5 backdrop-blur-xl supports-[backdrop-filter]:bg-[var(--cv-surface)]/80 lg:hidden"
     >
-      <ul className="grid grid-cols-5 gap-0.5">
+      <ul className="mx-auto grid max-w-lg grid-cols-5 gap-0.5">
         {tabs.map((tab) => {
           const item = navItems.find((nav) => nav.id === tab)
           const label =
             item?.label ??
             (tab === 'dashboard' ? 'Home' : tab.charAt(0).toUpperCase() + tab.slice(1))
+          const shortLabel =
+            label.length > 10
+              ? tab === 'dashboard'
+                ? 'Home'
+                : label.split(' ')[0]
+              : label
           const Icon = NAV_ICONS[tab] ?? HomeIcon
           const active = currentPage === tab
           return (
             <li key={tab}>
               <button
                 aria-current={active ? 'page' : undefined}
-                className="focus-ring flex w-full flex-col items-center gap-0.5 rounded-lg px-1 py-2 text-[10px] font-medium"
+                className="focus-ring flex w-full flex-col items-center gap-0.5 rounded-2xl px-1 py-1.5 text-[10px] font-semibold tracking-wide"
                 style={{ color: active ? 'var(--cv-primary)' : 'var(--cv-muted)' }}
                 type="button"
                 onClick={() => onNavigate(tab)}
               >
-                <Icon className="h-5 w-5" />
-                <span className="truncate">{label}</span>
+                <span
+                  className={`flex h-8 w-12 items-center justify-center rounded-full transition ${
+                    active ? 'bg-[var(--cv-primary-soft)]' : ''
+                  }`}
+                >
+                  <Icon className="h-5 w-5" strokeWidth={active ? 2.2 : 1.8} />
+                </span>
+                <span className="max-w-full truncate">{shortLabel}</span>
               </button>
             </li>
           )
         })}
       </ul>
     </nav>
+  )
+}
+
+export function MobileCreateFab({ onNavigate }: { onNavigate: (page: PageId) => void }) {
+  const user = useAppStore((state) => state.user)
+  const role = user?.activeRole ?? 'seller'
+  const kycPending = user?.kycStatus === 'pending'
+  const locked = kycPending && role !== 'buyer'
+  const cta = PRIMARY_CTA[role]
+
+  if (locked) return null
+
+  return (
+    <button
+      aria-label={cta.label}
+      className="cv-mobile-fab focus-ring fixed z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--cv-btn-bg)] text-[var(--cv-btn-text)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] ring-1 ring-white/10 transition active:scale-95 lg:hidden"
+      type="button"
+      onClick={() => onNavigate('create')}
+    >
+      <PlusIcon className="h-7 w-7" />
+    </button>
   )
 }

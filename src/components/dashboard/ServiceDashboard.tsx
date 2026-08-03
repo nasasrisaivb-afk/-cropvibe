@@ -1,14 +1,18 @@
 import { useNavigate } from 'react-router-dom'
 import {
-  ArrowPathIcon,
   ArrowTrendingUpIcon,
+  BeakerIcon,
   CalendarDaysIcon,
+  CheckCircleIcon,
+  ClipboardDocumentCheckIcon,
   ClockIcon,
+  Cog6ToothIcon,
   CurrencyRupeeIcon,
   ExclamationTriangleIcon,
-  MapPinIcon,
+  PaperAirplaneIcon,
   StarIcon,
   UserGroupIcon,
+  WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline'
 import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
@@ -16,41 +20,88 @@ import { Card } from '../common/Card'
 import { useAppStore } from '../../store/appStore'
 import { formatCurrency, cn } from '../../utils/format'
 
+const OFFERINGS = [
+  { name: 'Soil Health Pack', category: 'Soil Testing', status: 'open' as const, next: '3 slots this week' },
+  { name: 'Season Crop Plan', category: 'Consultancy', status: 'booked' as const, next: 'Visit tomorrow 10 AM' },
+  { name: 'Pump & Engine Fix', category: 'Mechanic', status: 'open' as const, next: 'Ready for callouts' },
+  { name: 'Drip Layout Install', category: 'Irrigation', status: 'booked' as const, next: 'Site survey Fri' },
+  { name: 'Sprayer Overhaul', category: 'Equipment Repair', status: 'paused' as const, next: 'Paused — parts wait' },
+  { name: 'Drone Spray Slot', category: 'Drone Spraying', status: 'open' as const, next: '5 acre min' },
+  { name: 'Pest Scout Visit', category: 'Crop Inspection', status: 'booked' as const, next: 'Plot 12 today 3 PM' },
+  { name: 'Video Advisory', category: 'Consultancy', status: 'open' as const, next: 'Ready now' },
+]
+
 const APPOINTMENTS = [
   {
+    id: 'AP-2210',
     day: 'Today',
-    items: [
-      { time: '14:00', service: 'Farm Consultancy', client: 'Farmer ABC', location: 'XYZ Farm', status: 'accepted' as const },
-      { time: '16:30', service: 'Soil Testing', client: 'Farmer XYZ', location: 'Village A', status: 'accepted' as const },
-    ],
+    time: '2:00 PM',
+    service: 'Farm Consultancy',
+    client: 'Farmer ABC',
+    location: 'XYZ Farm',
+    action: 'Visit',
+    status: 'accepted' as const,
   },
   {
+    id: 'AP-2211',
+    day: 'Today',
+    time: '4:30 PM',
+    service: 'Soil Testing',
+    client: 'Farmer XYZ',
+    location: 'Village A',
+    action: 'Collect',
+    status: 'accepted' as const,
+  },
+  {
+    id: 'AP-2214',
     day: 'Tomorrow',
-    items: [
-      { time: '10:00', service: 'Equipment Repair', client: 'Workshop DEF', location: 'Workshop', status: 'pending' as const },
-      { time: '15:00', service: 'Crop Inspection', client: 'Green Fields', location: 'Plot 12', status: 'accepted' as const },
-    ],
+    time: '10:00 AM',
+    service: 'Equipment Repair',
+    client: 'Workshop DEF',
+    location: 'Workshop',
+    action: 'Service',
+    status: 'pending' as const,
+  },
+  {
+    id: 'AP-2218',
+    day: 'Thu',
+    time: '3:00 PM',
+    service: 'Crop Inspection',
+    client: 'Green Fields',
+    location: 'Plot 12',
+    action: 'Scout',
+    status: 'accepted' as const,
   },
 ]
 
-const PERFORMANCE = [
-  { name: 'Farm Consultancy', bookings: 34, revenue: 123600, pct: 100 },
-  { name: 'Soil Testing', bookings: 18, revenue: 78300, pct: 63 },
-  { name: 'Equipment Repair', bookings: 12, revenue: 45200, pct: 37 },
-  { name: 'Crop Inspection', bookings: 8, revenue: 32450, pct: 26 },
+const REVENUE = [
+  { name: 'Farm Consultancy', amount: 123600, pct: 100 },
+  { name: 'Soil Testing', amount: 78300, pct: 63 },
+  { name: 'Equipment Repair', amount: 45200, pct: 37 },
+  { name: 'Crop Inspection', amount: 32450, pct: 26 },
 ]
 
-const REVIEWS = [
-  { stars: 5, text: 'Excellent consultation!', author: 'Farmer ABC' },
-  { stars: 5, text: 'Professional and on time.', author: 'Workshop XYZ' },
-  { stars: 4, text: 'Clear soil report, actionable advice.', author: 'Village Co-op' },
+const ALERTS = [
+  { type: 'warn' as const, text: '2 clients waiting for invoices — settle this week' },
+  { type: 'ok' as const, text: 'Soil Health Pack — 3 new inquiries yesterday' },
+  { type: 'warn' as const, text: 'Drone Spray Slot — weather may delay Thu bookings' },
 ]
 
-const ACTIONS = [
-  { time: 'Tomorrow 10 AM', text: 'Equipment Repair — Workshop DEF' },
-  { time: 'Invoices', text: '2 clients waiting for invoice' },
-  { time: 'This week', text: '3 clients rated you 5 stars' },
-]
+const statusMeta = {
+  open: { label: 'Open', className: 'bg-[var(--cv-primary-soft)] text-[var(--cv-primary)]' },
+  booked: { label: 'Booked', className: 'bg-[rgba(56,189,248,0.14)] text-[var(--cv-info)]' },
+  paused: { label: 'Paused', className: 'bg-[var(--cv-elevated)] text-[var(--cv-muted)]' },
+}
+
+const categoryIcon = {
+  'Soil Testing': BeakerIcon,
+  Consultancy: UserGroupIcon,
+  Mechanic: WrenchScrewdriverIcon,
+  Irrigation: Cog6ToothIcon,
+  'Equipment Repair': WrenchScrewdriverIcon,
+  'Drone Spraying': PaperAirplaneIcon,
+  'Crop Inspection': ClipboardDocumentCheckIcon,
+} as const
 
 function StatCard({
   title,
@@ -107,6 +158,8 @@ export function ServiceDashboard() {
   const name = user?.profile.name?.split(' ')[0] ?? 'Dr. Sharma'
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening'
+  const open = OFFERINGS.filter((o) => o.status === 'open').length
+  const booked = OFFERINGS.filter((o) => o.status === 'booked').length
 
   return (
     <div className="space-y-6">
@@ -131,72 +184,106 @@ export function ServiceDashboard() {
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button disabled={kycPending} onClick={() => navigate('/dashboard/create')}>
-            + New Appointment
+            + Create Service Offering
           </Button>
-          <Button variant="secondary" onClick={() => navigate('/dashboard/orders')}>
-            View Calendar
+          <Button variant="secondary" onClick={() => navigate('/dashboard/consultancy')}>
+            View Service Types
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        <StatCard title="Total Revenue" value={formatCurrency(345600)} hint="42 services" icon={CurrencyRupeeIcon} emphasize />
-        <StatCard title="This Month" value={formatCurrency(78450)} hint="₹ 15,300" positive icon={ArrowTrendingUpIcon} />
-        <StatCard title="Appointments" value="18 / 2" hint="Completed / Pending" icon={CalendarDaysIcon} />
-        <StatCard title="Client Base" value="34" hint="Active clients" icon={UserGroupIcon} emphasize />
-        <StatCard title="Repeat Clients" value="18" hint="53% loyalty" positive icon={ArrowPathIcon} />
+      <div className="grid grid-cols-2 gap-2.5 xl:grid-cols-3">
+        <StatCard
+          title="Total Revenue"
+          value={formatCurrency(345600)}
+          hint="18% YoY"
+          positive
+          icon={CurrencyRupeeIcon}
+          emphasize
+        />
+        <StatCard
+          title="This Month"
+          value={formatCurrency(78450)}
+          hint="₹ 15,300"
+          positive
+          icon={ArrowTrendingUpIcon}
+        />
+        <StatCard
+          title="Offer Utilization"
+          value={`${booked} of ${OFFERINGS.length}`}
+          hint={`${Math.round((booked / OFFERINGS.length) * 100)}% booked`}
+          icon={ClipboardDocumentCheckIcon}
+        />
+        <StatCard title="Open Now" value={String(open)} hint="Ready to book" positive icon={CheckCircleIcon} />
+        <StatCard title="Active Appointments" value="8" hint="Next visit in 2h" icon={CalendarDaysIcon} emphasize />
         <StatCard title="Avg Rating" value="4.9 / 5.0" hint="42 reviews" icon={StarIcon} />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.55fr_1fr]">
-        <div>
-          <div className="mb-3 flex items-center justify-between gap-3">
+        <Card className="!rounded-2xl !p-0 overflow-hidden">
+          <div className="flex items-center justify-between border-b border-[var(--cv-border)] px-5 py-4">
             <div>
-              <h3 className="text-base font-semibold text-[var(--cv-text)]">Appointment Schedule</h3>
-              <p className="text-xs text-[var(--cv-muted)]">Next 7 days</p>
+              <h3 className="font-semibold text-[var(--cv-text)]">Upcoming Appointments</h3>
+              <p className="text-xs text-[var(--cv-muted)]">Visits and callouts this week</p>
             </div>
             <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/orders')}>
               View all
             </Button>
           </div>
-          <div className="space-y-4">
-            {APPOINTMENTS.map((group) => (
-              <div key={group.day}>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--cv-muted)]">
-                  {group.day}
-                </p>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {group.items.map((a) => (
-                    <div
-                      key={`${a.time}-${a.service}`}
-                      className="rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-surface)] p-4 transition hover:border-[var(--cv-primary)]/25"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">
-                            {a.service}
-                          </p>
-                          <p className="mt-2 text-2xl font-bold tracking-tight text-[var(--cv-text)]">{a.time}</p>
-                          <p className="mt-1.5 truncate text-xs font-medium text-[var(--cv-primary)]">{a.client}</p>
-                        </div>
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--cv-primary-soft)] text-[var(--cv-primary)]">
-                          <ClockIcon className="h-5 w-5" />
-                        </span>
-                      </div>
-                      <div className="mt-4 flex items-center justify-between gap-2 border-t border-[var(--cv-border)] pt-3">
-                        <p className="flex min-w-0 items-center gap-1.5 truncate text-xs text-[var(--cv-muted)]">
-                          <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
-                          {a.location}
-                        </p>
-                        <Badge status={a.status}>{a.status === 'pending' ? 'Pending' : 'Confirmed'}</Badge>
-                      </div>
-                    </div>
-                  ))}
+          <div className="hidden overflow-x-auto md:block">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-[var(--cv-border)] text-xs uppercase tracking-wide text-[var(--cv-muted)]">
+                  <th className="px-5 py-3 font-medium">Appointment</th>
+                  <th className="px-5 py-3 font-medium">When</th>
+                  <th className="px-5 py-3 font-medium">Service</th>
+                  <th className="px-5 py-3 font-medium">Client</th>
+                  <th className="px-5 py-3 font-medium">Action</th>
+                  <th className="px-5 py-3 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {APPOINTMENTS.map((a) => (
+                  <tr
+                    key={a.id}
+                    className="border-b border-[var(--cv-border)] last:border-0 hover:bg-[var(--cv-elevated)]"
+                  >
+                    <td className="px-5 py-3.5 font-semibold text-[var(--cv-text)]">{a.id}</td>
+                    <td className="px-5 py-3.5 text-[var(--cv-muted)]">
+                      {a.day}
+                      <span className="block text-xs">{a.time}</span>
+                    </td>
+                    <td className="px-5 py-3.5 text-[var(--cv-muted)]">{a.service}</td>
+                    <td className="px-5 py-3.5 text-[var(--cv-muted)]">
+                      {a.client}
+                      <span className="block text-xs">{a.location}</span>
+                    </td>
+                    <td className="px-5 py-3.5 font-medium text-[var(--cv-text)]">{a.action}</td>
+                    <td className="px-5 py-3.5">
+                      <Badge status={a.status} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="space-y-2 p-4 md:hidden">
+            {APPOINTMENTS.map((a) => (
+              <div key={a.id} className="rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-[var(--cv-text)]">{a.id}</span>
+                  <Badge status={a.status} />
                 </div>
+                <p className="mt-1 text-sm text-[var(--cv-muted)]">
+                  {a.service} · {a.client}
+                </p>
+                <p className="text-sm font-medium text-[var(--cv-text)]">
+                  {a.action} · {a.day} {a.time}
+                </p>
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
         <div className="space-y-6">
           <Card className="!rounded-2xl border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.08)]">
@@ -205,74 +292,107 @@ export function ServiceDashboard() {
                 <ClockIcon className="h-5 w-5" />
               </span>
               <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-[var(--cv-text)]">Invoices pending</h3>
+                <h3 className="font-semibold text-[var(--cv-text)]">Pending confirmations</h3>
                 <p className="mt-1 text-sm text-[var(--cv-muted)]">
-                  <strong className="text-[var(--cv-text)]">2 clients</strong> are waiting for invoices.
+                  <strong className="text-[var(--cv-text)]">2 appointments</strong> need your response before
+                  farmers cancel.
                 </p>
-                <div className="mt-3">
-                  <Button size="sm" onClick={() => navigate('/dashboard/wallet')}>
-                    Open settlements
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button size="sm" onClick={() => navigate('/dashboard/orders')}>
+                    Review requests
+                  </Button>
+                  <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/calendar')}>
+                    Calendar
                   </Button>
                 </div>
               </div>
             </div>
           </Card>
 
-          <Card className="!rounded-2xl" title="Service Performance">
+          <Card className="!rounded-2xl" title="Revenue by Service">
             <div className="space-y-4">
-              {PERFORMANCE.map((s) => (
-                <div key={s.name}>
-                  <div className="mb-1.5 flex flex-wrap justify-between gap-2 text-sm">
-                    <span className="font-medium text-[var(--cv-muted)]">{s.name}</span>
-                    <span className="font-semibold text-[var(--cv-primary)]">{formatCurrency(s.revenue)}</span>
+              {REVENUE.map((r) => (
+                <div key={r.name}>
+                  <div className="mb-1.5 flex justify-between text-sm">
+                    <span className="font-medium text-[var(--cv-muted)]">{r.name}</span>
+                    <span className="font-semibold text-[var(--cv-primary)]">{formatCurrency(r.amount)}</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-[var(--cv-elevated)]">
-                    <div className="h-full rounded-full bg-[var(--cv-primary)]" style={{ width: `${s.pct}%` }} />
+                    <div className="h-full rounded-full bg-[var(--cv-primary)]" style={{ width: `${r.pct}%` }} />
                   </div>
-                  <p className="mt-1 text-xs text-[var(--cv-muted)]">{s.bookings} bookings</p>
                 </div>
               ))}
             </div>
           </Card>
+
+          <Card className="!rounded-2xl" title="Ops alerts">
+            <ul className="space-y-3">
+              {ALERTS.map((a) => (
+                <li key={a.text} className="flex gap-2 text-sm text-[var(--cv-muted)]">
+                  {a.type === 'warn' ? (
+                    <ExclamationTriangleIcon className="mt-0.5 h-4 w-4 shrink-0 text-[var(--cv-warning)]" />
+                  ) : (
+                    <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-[var(--cv-primary)]" />
+                  )}
+                  <span>{a.text}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="!rounded-2xl" title="Recent Reviews">
-          <ul className="space-y-3">
-            {REVIEWS.map((r) => (
-              <li key={r.author + r.text} className="rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] p-3">
-                <p className="text-sm font-medium text-[var(--cv-primary)]">
-                  {'★'.repeat(r.stars)}
-                  <span className="text-[var(--cv-muted)]">{'★'.repeat(5 - r.stars)}</span>
-                  <span className="ml-2 text-xs text-[var(--cv-muted)]">({r.stars}/5)</span>
-                </p>
-                <p className="mt-1 text-sm text-[var(--cv-muted)]">
-                  &quot;{r.text}&quot; — {r.author}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </Card>
-
-        <Card className="!rounded-2xl" title="Upcoming Actions">
-          <ul className="space-y-3">
-            {ACTIONS.map((a) => (
-              <li key={a.time + a.text} className="flex gap-3 text-sm">
-                <span className="w-28 shrink-0 text-xs font-medium text-[var(--cv-muted)]">{a.time}</span>
-                <span className="text-[var(--cv-muted)]">{a.text}</span>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
+      <Card className="!rounded-2xl !p-0 overflow-hidden">
+        <div className="flex items-center justify-between border-b border-[var(--cv-border)] px-5 py-4">
+          <div>
+            <h3 className="font-semibold text-[var(--cv-text)]">Service Offerings</h3>
+            <p className="text-xs text-[var(--cv-muted)]">Live availability across your catalog</p>
+          </div>
+          <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/consultancy')}>
+            Manage offerings
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 xl:grid-cols-4">
+          {OFFERINGS.map((offer) => {
+            const Icon = categoryIcon[offer.category as keyof typeof categoryIcon] ?? ClipboardDocumentCheckIcon
+            return (
+              <button
+                key={offer.name}
+                type="button"
+                className="rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] p-4 text-left transition hover:border-[var(--cv-primary)]/30 hover:bg-[var(--cv-surface)]"
+                onClick={() => navigate('/dashboard/consultancy')}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-semibold text-[var(--cv-text)]">{offer.name}</p>
+                    <p className="mt-0.5 text-xs text-[var(--cv-muted)]">{offer.category}</p>
+                  </div>
+                  <Icon className="h-4 w-4 shrink-0 text-[var(--cv-muted)]" />
+                </div>
+                <span
+                  className={cn(
+                    'mt-3 inline-flex rounded-full px-2.5 py-1 text-xs font-medium',
+                    statusMeta[offer.status].className,
+                  )}
+                >
+                  {statusMeta[offer.status].label}
+                </span>
+                <p className="mt-2 text-xs text-[var(--cv-muted)]">{offer.next}</p>
+              </button>
+            )
+          })}
+        </div>
+      </Card>
 
       <div className="flex flex-wrap gap-2">
-        <Button variant="secondary" onClick={() => navigate('/dashboard/listings')}>
-          Manage Services
+        <Button variant="secondary" onClick={() => navigate('/dashboard/calendar')}>
+          Availability Calendar
+        </Button>
+        <Button variant="secondary" onClick={() => navigate('/dashboard/create')}>
+          + New Offering
         </Button>
         <Button variant="ghost" onClick={() => navigate('/dashboard/reviews')}>
-          All Reviews
+          Reviews
         </Button>
       </div>
     </div>

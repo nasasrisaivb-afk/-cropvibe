@@ -132,16 +132,16 @@ export function EducatorDashboard() {
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Button disabled={kycPending} onClick={() => navigate('/dashboard/create')}>
+          <Button disabled={kycPending} onClick={() => navigate('/dashboard/selfpaced')}>
             + Create Course
           </Button>
-          <Button variant="secondary" onClick={() => navigate('/dashboard/listings')}>
+          <Button variant="secondary" onClick={() => navigate('/dashboard/selfpaced')}>
             View Courses
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2.5 xl:grid-cols-3">
         <StatCard title="Total Revenue" value={formatCurrency(215400)} hint="5 courses" icon={CurrencyRupeeIcon} emphasize />
         <StatCard title="This Month" value={formatCurrency(45600)} hint="₹ 12,300" positive icon={ArrowTrendingUpIcon} />
         <StatCard title="Total Students" value="127" hint="98 active" icon={UserGroupIcon} />
@@ -157,7 +157,7 @@ export function EducatorDashboard() {
               <h3 className="font-semibold text-[var(--cv-text)]">Active Courses</h3>
               <p className="text-xs text-[var(--cv-muted)]">Enrollment and completion snapshot</p>
             </div>
-            <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/listings')}>
+            <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/live')}>
               Manage all
             </Button>
           </div>

@@ -25,6 +25,14 @@ export type PageId =
   | 'overdue'
   | 'settlements'
   | 'help'
+  | 'consultancy'
+  | 'testing'
+  | 'repair'
+  | 'aerial'
+  | 'irrigation'
+  | 'selfpaced'
+  | 'live'
+  | 'certifications'
 
 export type KycStatus = 'none' | 'pending' | 'approved' | 'rejected' | 'resubmit'
 

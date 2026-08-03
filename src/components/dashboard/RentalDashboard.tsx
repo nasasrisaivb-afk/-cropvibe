@@ -136,13 +136,13 @@ export function RentalDashboard() {
           <Button disabled={kycPending} onClick={() => navigate('/dashboard/create')}>
             + Add Equipment
           </Button>
-          <Button variant="secondary" onClick={() => navigate('/dashboard/bookings')}>
-            View Bookings
+          <Button variant="secondary" onClick={() => navigate('/dashboard/machinery')}>
+            View Listing Types
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2.5 xl:grid-cols-3">
         <StatCard title="Total Revenue" value={formatCurrency(582300)} hint="18% YoY" positive icon={CurrencyRupeeIcon} emphasize />
         <StatCard title="This Month" value={formatCurrency(123450)} hint="₹ 34,200" positive icon={ArrowTrendingUpIcon} />
         <StatCard title="Fleet Utilization" value={`${booked} of ${EQUIPMENT.length}`} hint={`${Math.round((booked / EQUIPMENT.length) * 100)}% booked`} icon={TruckIcon} />
@@ -273,7 +273,7 @@ export function RentalDashboard() {
             <h3 className="font-semibold text-[var(--cv-text)]">Fleet Status</h3>
             <p className="text-xs text-[var(--cv-muted)]">Live availability across equipment</p>
           </div>
-          <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/equipment')}>
+          <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/machinery')}>
             Manage fleet
           </Button>
         </div>

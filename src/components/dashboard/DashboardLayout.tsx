@@ -8,7 +8,7 @@ import {
 import { useAppStore } from '../../store/appStore'
 import { ROLE_PALETTE } from '../../theme/colors'
 import type { PageId } from '../../types/roles'
-import { DashboardHeader, DashboardSidebar, MobileBottomNav } from '../common/Navigation'
+import { DashboardHeader, DashboardSidebar, MobileBottomNav, MobileCreateFab } from '../common/Navigation'
 import { BuyerDashboard } from './BuyerDashboard'
 import { EducatorDashboard } from './EducatorDashboard'
 import { RentalDashboard } from './RentalDashboard'
@@ -82,7 +82,7 @@ export function DashboardLayout() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[var(--cv-bg)] text-[var(--cv-text)]">
+    <div className="flex min-h-[100dvh] bg-[var(--cv-bg)] text-[var(--cv-text)]">
       <a className="skip-link focus-ring" href="#main-content">
         Skip to content
       </a>
@@ -96,17 +96,21 @@ export function DashboardLayout() {
           onNavigate={go}
         />
 
-        <main className="flex-1 overflow-x-hidden p-4 pb-24 sm:p-6 sm:pb-6 lg:px-8 lg:py-6" id="main-content">
+        <main
+          className="cv-mobile-main flex-1 overflow-x-hidden px-3 py-3 sm:p-6 sm:pb-6 lg:px-8 lg:py-6"
+          id="main-content"
+        >
           <div className="mx-auto max-w-7xl">
             {currentPage === 'dashboard' ? <DashboardHome /> : <Outlet />}
           </div>
         </main>
       </div>
 
+      <MobileCreateFab onNavigate={go} />
       <MobileBottomNav onNavigate={go} />
 
       {roleSwitchMessage && user ? (
-        <div className="fixed bottom-20 right-4 z-50 rounded-xl bg-[var(--cv-text)] px-4 py-2.5 text-sm text-white shadow-lg sm:bottom-4">
+        <div className="fixed right-4 z-50 rounded-xl bg-[var(--cv-text)] px-4 py-2.5 text-sm text-[var(--cv-bg)] shadow-lg bottom-[calc(var(--cv-mobile-tabbar)+var(--cv-safe-bottom)+4.5rem)] lg:bottom-4">
           {roleSwitchMessage}
         </div>
       ) : null}

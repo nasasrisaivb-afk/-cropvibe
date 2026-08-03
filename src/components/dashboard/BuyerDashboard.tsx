@@ -133,7 +133,7 @@ export function BuyerDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2.5 xl:grid-cols-3">
         <StatCard title="Total Purchases" value={formatCurrency(1254800)} hint="48 orders" icon={CurrencyRupeeIcon} emphasize />
         <StatCard title="This Month Spend" value={formatCurrency(285320)} hint="₹ 85,450" positive icon={ArrowTrendingUpIcon} />
         <StatCard title="Pending Orders" value="5" hint="Awaiting delivery" icon={ClockIcon} emphasize />

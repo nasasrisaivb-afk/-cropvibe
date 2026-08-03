@@ -8,10 +8,10 @@ import { FormInput } from '../common/FormInput'
 import { Select } from '../common/Select'
 import { formatCurrency } from '../../utils/format'
 import { cn } from '../../utils/format'
+import { RentalCreateFlow } from './RentalCreateFlow'
+import { ServiceCreateFlow } from './ServiceCreateFlow'
 
 const SELLER_CATEGORIES = ['Fruits', 'Vegetables', 'Grains', 'Dairy Products', 'Seeds', 'Fertilizers', 'Pesticides', 'Organic Produce', 'Livestock Products']
-const RENTAL_TYPES = ['Machinery', 'Equipment', 'Labour', 'Driver Services', 'Warehouse Storage']
-const SERVICE_TYPES = ['Soil Testing', 'Farm Consultancy', 'Mechanic Services', 'Irrigation Services', 'Equipment Repair', 'Drone Spraying', 'Crop Inspection']
 const COURSE_CATEGORIES = ['Organic Farming', 'Crop Management', 'Soil & Nutrition', 'Pest Management', 'Equipment & Machinery', 'Business & Marketing', 'Other']
 
 function Progress({ step, total, color }: { step: number; total: number; color: string }) {
@@ -159,134 +159,6 @@ function SellerCreateFlow({ onDone }: { onDone: () => void }) {
             {step === 5 ? 'Publish Listing' : 'Next'}
           </Button>
         </div>
-      </div>
-    </Card>
-  )
-}
-
-function RentalCreateFlow({ onDone }: { onDone: () => void }) {
-  const [step, setStep] = useState(1)
-  const [form, setForm] = useState({ type: '', name: '', power: '', condition: '', rate: '', unit: 'day', deposit: '', area: '25' })
-  const rate = Number(form.rate) || 0
-
-  return (
-    <Card>
-      <h1 className="mb-2 text-2xl font-bold">Add Equipment</h1>
-      <Progress step={step} total={5} color="#6B4423" />
-      {step === 1 && (
-        <div className="grid gap-2 sm:grid-cols-2">
-          {RENTAL_TYPES.map((t) => (
-            <button key={t} type="button" onClick={() => setForm((p) => ({ ...p, type: t }))} className={cn('rounded-md border-2 px-4 py-3 text-left text-sm', form.type === t ? 'border-amber-900 bg-amber-50 font-semibold' : 'border-slate-200')}>
-              {form.type === t ? '◉' : '○'} {t}
-            </button>
-          ))}
-        </div>
-      )}
-      {step === 2 && (
-        <div className="space-y-4">
-          <FormInput label="Equipment Name/Model" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
-          <FormInput label="Power (HP)" type="number" value={form.power} onChange={(e) => setForm((p) => ({ ...p, power: e.target.value }))} />
-          <Select label="Condition" value={form.condition} onChange={(e) => setForm((p) => ({ ...p, condition: e.target.value }))} options={['Excellent', 'Good', 'Fair'].map((o) => ({ value: o, label: o }))} />
-          <div className="rounded-lg border-2 border-dashed p-4"><p className="text-sm font-medium">Ownership Proof</p><input type="file" className="mt-2" /></div>
-        </div>
-      )}
-      {step === 3 && (
-        <div className="space-y-4">
-          <div className="rounded-lg border-2 border-dashed p-6 text-center">
-            <p className="font-medium">Upload Photos (min 4)</p>
-            <input type="file" accept="image/*" multiple className="mt-3" />
-          </div>
-          {['Working condition', 'Tires/wheels good', 'No major dents', 'Lights working', 'Documentation complete'].map((c) => (
-            <label key={c} className="flex items-center gap-2 text-sm"><input type="checkbox" defaultChecked /> {c}</label>
-          ))}
-        </div>
-      )}
-      {step === 4 && (
-        <div className="space-y-4">
-          <FormInput label="Rental Rate" type="number" value={form.rate} onChange={(e) => setForm((p) => ({ ...p, rate: e.target.value }))} required />
-          <Select label="Time Unit" value={form.unit} onChange={(e) => setForm((p) => ({ ...p, unit: e.target.value }))} options={['day', 'hour', 'shift'].map((o) => ({ value: o, label: `Per ${o}` }))} />
-          <FormInput label="Security Deposit" type="number" value={form.deposit} onChange={(e) => setForm((p) => ({ ...p, deposit: e.target.value }))} />
-          <FormInput label="Service Area (km)" type="number" value={form.area} onChange={(e) => setForm((p) => ({ ...p, area: e.target.value }))} />
-          {rate > 0 && (
-            <div className="rounded-lg bg-slate-50 p-4 text-sm">
-              <p>Rate: {formatCurrency(rate)}/{form.unit}</p>
-              <p>Platform fee: {formatCurrency(rate * 0.15)} (15%)</p>
-              <p className="font-semibold text-amber-900">Your earnings: {formatCurrency(rate * 0.85)} (85%)</p>
-            </div>
-          )}
-        </div>
-      )}
-      {step === 5 && (
-        <div className="space-y-2 text-sm">
-          <p><strong>Type:</strong> {form.type}</p>
-          <p><strong>Name:</strong> {form.name}</p>
-          <p><strong>Rate:</strong> {formatCurrency(rate)}/{form.unit}</p>
-        </div>
-      )}
-      <div className="mt-8 flex justify-between">
-        <Button variant="secondary" roleColor="rental" disabled={step === 1} onClick={() => setStep((s) => s - 1)}>Previous</Button>
-        <Button roleColor="rental" onClick={() => (step === 5 ? onDone() : setStep((s) => s + 1))}>{step === 5 ? 'Publish' : 'Next'}</Button>
-      </div>
-    </Card>
-  )
-}
-
-function ServiceCreateFlow({ onDone }: { onDone: () => void }) {
-  const [step, setStep] = useState(1)
-  const [form, setForm] = useState({ type: '', name: '', description: '', duration: '2 hours', price: '', area: '25' })
-  const price = Number(form.price) || 0
-
-  return (
-    <Card>
-      <h1 className="mb-2 text-2xl font-bold">Create Service Offering</h1>
-      <Progress step={step} total={5} color="#5D4E37" />
-      {step === 1 && (
-        <div className="grid gap-2 sm:grid-cols-2">
-          {SERVICE_TYPES.map((t) => (
-            <button key={t} type="button" onClick={() => setForm((p) => ({ ...p, type: t }))} className={cn('rounded-md border-2 px-4 py-3 text-left text-sm', form.type === t ? 'border-stone-700 bg-stone-50 font-semibold' : 'border-slate-200')}>
-              {form.type === t ? '◉' : '○'} {t}
-            </button>
-          ))}
-        </div>
-      )}
-      {step === 2 && (
-        <div className="space-y-4">
-          <FormInput label="Service Name" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
-          <FormInput label="Description" as="textarea" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} required />
-          {['Soil sample analysis', 'Nutrient report', 'Fertilizer recommendations', 'Follow-up consultation'].map((c) => (
-            <label key={c} className="flex items-center gap-2 text-sm"><input type="checkbox" /> {c}</label>
-          ))}
-        </div>
-      )}
-      {step === 3 && (
-        <div className="space-y-4">
-          <FormInput label="Service Area (km)" type="number" value={form.area} onChange={(e) => setForm((p) => ({ ...p, area: e.target.value }))} />
-          <Select label="Appointment Duration" value={form.duration} onChange={(e) => setForm((p) => ({ ...p, duration: e.target.value }))} options={['30 mins', '1 hour', '2 hours', '3 hours', 'Half-day', 'Full-day'].map((o) => ({ value: o, label: o }))} />
-        </div>
-      )}
-      {step === 4 && (
-        <div className="space-y-4">
-          <FormInput label="Service Price" type="number" value={form.price} onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))} required />
-          {price > 0 && (
-            <div className="rounded-lg bg-slate-50 p-4 text-sm">
-              <p>Service Price: {formatCurrency(price)}</p>
-              <p>Platform Fee: {formatCurrency(price * 0.15)} (15%)</p>
-              <p className="font-semibold text-stone-700">Your Earnings: {formatCurrency(price * 0.85)}</p>
-            </div>
-          )}
-        </div>
-      )}
-      {step === 5 && (
-        <div className="space-y-2 text-sm">
-          <p><strong>Type:</strong> {form.type}</p>
-          <p><strong>Name:</strong> {form.name}</p>
-          <p><strong>Price:</strong> {formatCurrency(price)}</p>
-          <p>{form.description}</p>
-        </div>
-      )}
-      <div className="mt-8 flex justify-between">
-        <Button variant="secondary" roleColor="service" disabled={step === 1} onClick={() => setStep((s) => s - 1)}>Previous</Button>
-        <Button roleColor="service" onClick={() => (step === 5 ? onDone() : setStep((s) => s + 1))}>{step === 5 ? 'Publish' : 'Next'}</Button>
       </div>
     </Card>
   )

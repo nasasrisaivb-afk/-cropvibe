@@ -120,7 +120,7 @@ export function SellerDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2.5 xl:grid-cols-3">
         <StatCard title="Total Revenue" value={formatCurrency(234500)} hint="12% vs last month" positive icon={CurrencyRupeeIcon} emphasize />
         <StatCard title="This Month" value={formatCurrency(45320)} hint="₹ 8,450" positive icon={ArrowTrendingUpIcon} />
         <StatCard title="Total Orders" value="127" hint="14 vs last week" positive icon={CubeIcon} />
