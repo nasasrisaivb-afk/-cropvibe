@@ -7,6 +7,7 @@ import { formatCurrency } from '../../utils/format'
 import { Badge, type BadgeStatus } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { PageHeader } from '../common/PageHeader'
 import { FormInput } from '../common/FormInput'
 import { Select } from '../common/Select'
 
@@ -413,10 +414,14 @@ function GenericOrders({ role }: { role: Role }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">{label}</h1>
-        <Button roleColor={role} onClick={() => navigate(cta.path)}>{cta.label}</Button>
-      </div>
+      <PageHeader
+        title={label}
+        actions={
+          <Button roleColor={role} onClick={() => navigate(cta.path)}>
+            {cta.label}
+          </Button>
+        }
+      />
       <div className="space-y-3">
         {rows.map((r) => (
           <Card key={r.id}>

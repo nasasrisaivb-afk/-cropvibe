@@ -17,6 +17,8 @@ import {
 import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { LargeTitle } from '../common/LargeTitle'
+import { useScrollCollapse } from '../../hooks/useScrollCollapse'
 import { useAppStore } from '../../store/appStore'
 import { formatCurrency, cn } from '../../utils/format'
 
@@ -128,7 +130,7 @@ function StatCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">{title}</p>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-[var(--cv-text)]">{value}</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--cv-text)]">{value}</p>
           {hint ? (
             <p
               className={cn(
@@ -154,6 +156,7 @@ function StatCard({
 export function ServiceDashboard() {
   const navigate = useNavigate()
   const user = useAppStore((s) => s.user)
+  const collapsed = useScrollCollapse()
   const kycPending = user?.kycStatus === 'pending'
   const name = user?.profile.name?.split(' ')[0] ?? 'Dr. Sharma'
   const hour = new Date().getHours()
@@ -162,37 +165,34 @@ export function ServiceDashboard() {
   const booked = OFFERINGS.filter((o) => o.status === 'booked').length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {kycPending ? (
-        <div className="flex items-start gap-3 rounded-2xl border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] px-4 py-3 text-sm text-[var(--cv-warning)]">
-          <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0" />
+        <div className="flex items-start gap-3 rounded-[16px] border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] px-4 py-3 text-sm text-[var(--cv-warning)]">
+          <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={1.5} />
           <div>
             <strong>KYC Pending — Review status.</strong> Offering services stays locked until approval.
           </div>
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-4 rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-surface)] p-5 sm:flex-row sm:items-end sm:justify-between sm:p-6">
-        <div>
-          <p className="text-sm font-medium text-[var(--cv-primary)]">Service Provider workspace</p>
-          <h2 className="mt-1 text-2xl font-bold tracking-tight text-[var(--cv-text)] sm:text-3xl">
-            {greeting}, {name}
-          </h2>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">
-            Last login: 30 min ago · {user?.profile.location ?? 'Bangalore, India'}
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button disabled={kycPending} onClick={() => navigate('/dashboard/create')}>
-            + Create Service Offering
-          </Button>
-          <Button variant="secondary" onClick={() => navigate('/dashboard/consultancy')}>
-            View Service Types
-          </Button>
-        </div>
-      </div>
+      <LargeTitle
+        collapsed={collapsed}
+        eyebrow="Service Provider"
+        title={`${greeting}, ${name}`}
+        subtitle={`Last login: 30 min ago · ${user?.profile.location ?? 'Bangalore, India'}`}
+        actions={
+          <>
+            <Button disabled={kycPending} onClick={() => navigate('/dashboard/create')}>
+              + Create Service Offering
+            </Button>
+            <Button variant="secondary" onClick={() => navigate('/dashboard/consultancy')}>
+              View Service Types
+            </Button>
+          </>
+        }
+      />
 
-      <div className="grid grid-cols-2 gap-2.5 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
         <StatCard
           title="Total Revenue"
           value={formatCurrency(345600)}

@@ -7,6 +7,7 @@ import { formatCurrency } from '../../utils/format'
 import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { PageHeader } from '../common/PageHeader'
 import { FormInput } from '../common/FormInput'
 
 const SELLER_PRODUCTS = [
@@ -48,28 +49,26 @@ const COURSES = [
   { name: 'Crop Planning 101', students: 28, completion: 71, rating: 4.4 },
 ]
 
-function PageHeader({ role }: { role: Role }) {
+function ListingsHero({ role }: { role: Role }) {
   const navigate = useNavigate()
   const cta = PRIMARY_CTA[role]
   const kycPending = useAppStore((s) => s.user?.kycStatus === 'pending')
   const locked = kycPending && role !== 'buyer'
 
   return (
-    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">{LISTINGS_LABEL[role]}</h1>
-        <p className="mt-1 text-sm text-[var(--cv-muted)]">
-          Manage and discover offerings for your {role} workspace.
-        </p>
-      </div>
-      <Button
-        disabled={locked}
-        onClick={() => navigate(cta.path)}
-        title={locked ? 'KYC approval required' : undefined}
-      >
-        {cta.label}
-      </Button>
-    </div>
+    <PageHeader
+      title={LISTINGS_LABEL[role]}
+      subtitle={`Manage and discover offerings for your ${role} workspace.`}
+      actions={
+        <Button
+          disabled={locked}
+          onClick={() => navigate(cta.path)}
+          title={locked ? 'KYC approval required' : undefined}
+        >
+          {cta.label}
+        </Button>
+      }
+    />
   )
 }
 
@@ -94,7 +93,7 @@ export function ListingsPage() {
   if (role === 'seller') {
     return (
       <div>
-        <PageHeader role={role} />
+        <ListingsHero role={role} />
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {SELLER_PRODUCTS.map((p) => (
             <Card key={p.name} className="!rounded-[12px]">
@@ -128,7 +127,7 @@ export function ListingsPage() {
   if (role === 'buyer') {
     return (
       <div>
-        <PageHeader role={role} />
+        <ListingsHero role={role} />
         <div className="mb-4">
           <FormInput
             label="Find suppliers"
@@ -184,7 +183,7 @@ export function ListingsPage() {
   if (role === 'rental') {
     return (
       <div>
-        <PageHeader role={role} />
+        <ListingsHero role={role} />
         <div className="mb-4 flex flex-wrap gap-2">
           <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/machinery')}>
             Machinery
@@ -224,7 +223,7 @@ export function ListingsPage() {
   if (role === 'service') {
     return (
       <div>
-        <PageHeader role={role} />
+        <ListingsHero role={role} />
         <div className="space-y-3">
           {SERVICES.map((s) => (
             <Card key={s.name} className="!rounded-[12px]">
@@ -254,7 +253,7 @@ export function ListingsPage() {
 
   return (
     <div>
-      <PageHeader role={role} />
+      <ListingsHero role={role} />
       <Card className="!rounded-[12px] !p-0 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">

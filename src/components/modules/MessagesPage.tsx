@@ -3,6 +3,7 @@ import { useAppStore } from '../../store/appStore'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
 import { FormInput } from '../common/FormInput'
+import { PageHeader } from '../common/PageHeader'
 import { cn } from '../../utils/format'
 
 interface Conversation {
@@ -67,12 +68,10 @@ export function MessagesPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Messages</h1>
-        <p className="mt-1 text-sm text-[var(--cv-muted)]">
-          Order-linked chats with read receipts. Attachments supported.
-        </p>
-      </div>
+      <PageHeader
+        title="Messages"
+        subtitle="Order-linked chats with read receipts. Attachments supported."
+      />
 
       <div className="grid h-[min(70vh,720px)] overflow-hidden rounded-[12px] border border-[var(--cv-border)] bg-[var(--cv-surface)] lg:grid-cols-[320px_1fr]">
         <aside
@@ -151,7 +150,7 @@ export function MessagesPage() {
                   className={cn(
                     'max-w-[80%] rounded-[12px] px-3 py-2 text-sm shadow-sm',
                     m.from === 'me'
-                      ? 'bg-[var(--cv-primary)] text-white'
+                      ? 'bg-[var(--cv-primary)] text-[var(--cv-btn-text)]'
                       : 'bg-[var(--cv-surface)] text-[var(--cv-text)]',
                   )}
                 >

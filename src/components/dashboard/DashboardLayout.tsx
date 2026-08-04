@@ -89,7 +89,7 @@ export function DashboardLayout() {
 
       <DashboardSidebar onNavigate={go} />
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <DashboardHeader
           breadcrumbs={breadcrumbs}
           searchPlaceholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'}
@@ -97,10 +97,10 @@ export function DashboardLayout() {
         />
 
         <main
-          className="cv-mobile-main flex-1 overflow-x-hidden px-3 py-3 sm:p-6 sm:pb-6 lg:px-8 lg:py-6"
+          className="cv-mobile-main min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-4 sm:p-6 sm:pb-6 lg:px-8 lg:py-6"
           id="main-content"
         >
-          <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-[1280px]">
             {currentPage === 'dashboard' ? <DashboardHome /> : <Outlet />}
           </div>
         </main>

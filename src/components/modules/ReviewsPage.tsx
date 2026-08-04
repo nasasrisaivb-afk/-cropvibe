@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { PageHeader } from '../common/PageHeader'
 import { Select } from '../common/Select'
 
 interface Review {
@@ -51,27 +52,25 @@ export function ReviewsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Reviews & ratings</h1>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">
-            Reputation center — respond to feedback and track rating mix.
-          </p>
-        </div>
-        <Select
-          label="Filter by stars"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          options={[
-            { value: 'all', label: 'All ratings' },
-            { value: '5', label: '5 stars' },
-            { value: '4', label: '4 stars' },
-            { value: '3', label: '3 stars' },
-            { value: '2', label: '2 stars' },
-            { value: '1', label: '1 star' },
-          ]}
-        />
-      </div>
+      <PageHeader
+        title="Reviews & ratings"
+        subtitle="Reputation center — respond to feedback and track rating mix."
+        actions={
+          <Select
+            label="Filter by stars"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            options={[
+              { value: 'all', label: 'All ratings' },
+              { value: '5', label: '5 stars' },
+              { value: '4', label: '4 stars' },
+              { value: '3', label: '3 stars' },
+              { value: '2', label: '2 stars' },
+              { value: '1', label: '1 star' },
+            ]}
+          />
+        }
+      />
 
       <div className="grid gap-3 sm:grid-cols-3">
         <Card className="!rounded-[12px]">

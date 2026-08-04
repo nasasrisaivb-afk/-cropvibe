@@ -5,6 +5,7 @@ import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
 import { FormInput } from '../common/FormInput'
+import { PageHeader } from '../common/PageHeader'
 
 const TXNS = [
   { id: 'TXN-9021', type: 'Credit', label: 'Order PO-8923 settlement', amount: 8450, date: '28 Jul 2026', status: 'completed' as const },
@@ -26,19 +27,17 @@ export function WalletPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Wallet & payments</h1>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">
-            Escrow-aware ledger, payouts, and GST-ready invoices.
-          </p>
-        </div>
-        {canPayout ? (
-          <Button onClick={() => setPayoutOpen(true)}>Request payout</Button>
-        ) : (
-          <Button variant="secondary">Add wallet balance</Button>
-        )}
-      </div>
+      <PageHeader
+        title="Wallet & payments"
+        subtitle="Escrow-aware ledger, payouts, and GST-ready invoices."
+        actions={
+          canPayout ? (
+            <Button onClick={() => setPayoutOpen(true)}>Request payout</Button>
+          ) : (
+            <Button variant="secondary">Add wallet balance</Button>
+          )
+        }
+      />
 
       <div className="grid gap-3 sm:grid-cols-3">
         <Card className="!rounded-[12px] ring-1 ring-[var(--cv-primary)]/15">

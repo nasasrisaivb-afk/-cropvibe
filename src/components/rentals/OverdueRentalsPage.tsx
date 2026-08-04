@@ -3,6 +3,7 @@ import { formatCurrency } from '../../utils/format'
 import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { PageHeader } from '../common/PageHeader'
 
 const OVERDUE = [
   {
@@ -30,17 +31,15 @@ export function OverdueRentalsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Overdue rentals</h1>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">
-            Late returns, accrued fees, and escalation actions.
-          </p>
-        </div>
-        <Button variant="secondary" onClick={() => navigate('/dashboard/bookings')}>
-          All bookings
-        </Button>
-      </div>
+      <PageHeader
+        title="Overdue rentals"
+        subtitle="Late returns, accrued fees, and escalation actions."
+        actions={
+          <Button variant="secondary" onClick={() => navigate('/dashboard/scheduling')}>
+            All scheduling
+          </Button>
+        }
+      />
 
       {OVERDUE.length === 0 ? (
         <Card className="!rounded-[12px] py-12 text-center">

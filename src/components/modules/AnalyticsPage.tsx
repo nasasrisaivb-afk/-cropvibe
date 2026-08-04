@@ -12,10 +12,12 @@ import {
 } from 'recharts'
 import { ROLE_LABELS } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
+import { CHART_THEME } from '../../theme/chartTheme'
 import type { Role } from '../../types/roles'
 import { formatCurrency } from '../../utils/format'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { PageHeader } from '../common/PageHeader'
 import { Select } from '../common/Select'
 
 const TREND = [
@@ -98,6 +100,8 @@ const BREAKDOWN: Record<Role, { name: string; value: number }[]> = {
 
 export function AnalyticsPage() {
   const role = useAppStore((s) => s.user?.activeRole ?? 'seller')
+  const theme = useAppStore((s) => s.theme)
+  const chart = CHART_THEME[theme]
   const [range, setRange] = useState('30d')
   const metrics = METRICS[role]
   const bars = BREAKDOWN[role]
@@ -105,30 +109,28 @@ export function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-medium text-[var(--cv-primary)]">{ROLE_LABELS[role]} insights</p>
-          <h1 className="text-2xl font-bold tracking-tight">Analytics & reports</h1>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">
-            Track activation, conversion, and revenue for your {ROLE_LABELS[role].toLowerCase()} workspace.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Select
-            label="Date range"
-            value={range}
-            onChange={(e) => setRange(e.target.value)}
-            options={[
-              { label: 'Last 7 days', value: '7d' },
-              { label: 'Last 30 days', value: '30d' },
-              { label: 'This quarter', value: 'q' },
-              { label: 'This year', value: 'y' },
-            ]}
-          />
-          <Button variant="secondary">Export CSV</Button>
-          <Button variant="secondary">Export PDF</Button>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow={`${ROLE_LABELS[role]} insights`}
+        title="Analytics & reports"
+        subtitle={`Track activation, conversion, and revenue for your ${ROLE_LABELS[role].toLowerCase()} workspace.`}
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Select
+              label="Date range"
+              value={range}
+              onChange={(e) => setRange(e.target.value)}
+              options={[
+                { label: 'Last 7 days', value: '7d' },
+                { label: 'Last 30 days', value: '30d' },
+                { label: 'This quarter', value: 'q' },
+                { label: 'This year', value: 'y' },
+              ]}
+            />
+            <Button variant="secondary">Export CSV</Button>
+            <Button variant="secondary">Export PDF</Button>
+          </div>
+        }
+      />
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map((m) => (
@@ -147,15 +149,22 @@ export function AnalyticsPage() {
               <AreaChart data={TREND}>
                 <defs>
                   <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#22C55E" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#22C55E" stopOpacity={0.02} />
+                    <stop offset="0%" stopColor="#CCFF00" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#CCFF00" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
-                <XAxis dataKey="month" tick={{ fill: '#9CA3AF', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#9CA3AF', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip />
-                <Area type="monotone" dataKey="revenue" stroke="#22C55E" fill="url(#revFill)" strokeWidth={2} />
+                <CartesianGrid stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="month" tick={{ fill: chart.tick, fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: chart.tick, fontSize: 12 }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{
+                    background: chart.tooltipBg,
+                    border: `1px solid ${chart.tooltipBorder}`,
+                    borderRadius: 12,
+                    color: 'var(--cv-text)',
+                  }}
+                />
+                <Area type="monotone" dataKey="revenue" stroke={chart.accent} fill="url(#revFill)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -165,11 +174,18 @@ export function AnalyticsPage() {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={TREND}>
-                <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
-                <XAxis dataKey="month" tick={{ fill: '#9CA3AF', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#9CA3AF', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip />
-                <Bar dataKey="orders" fill="#9CA3AF" radius={[8, 8, 0, 0]} />
+                <CartesianGrid stroke={chart.grid} vertical={false} />
+                <XAxis dataKey="month" tick={{ fill: chart.tick, fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: chart.tick, fontSize: 12 }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{
+                    background: chart.tooltipBg,
+                    border: `1px solid ${chart.tooltipBorder}`,
+                    borderRadius: 12,
+                    color: 'var(--cv-text)',
+                  }}
+                />
+                <Bar dataKey="orders" fill={chart.secondary} radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

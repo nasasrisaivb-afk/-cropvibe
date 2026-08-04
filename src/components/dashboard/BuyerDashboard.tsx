@@ -23,7 +23,11 @@ import {
 import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { LargeTitle } from '../common/LargeTitle'
+import { SegmentedControl } from '../common/SegmentedControl'
+import { useScrollCollapse } from '../../hooks/useScrollCollapse'
 import { useAppStore } from '../../store/appStore'
+import { CHART_THEME } from '../../theme/chartTheme'
 import { formatCurrency, cn } from '../../utils/format'
 
 const PURCHASES = [
@@ -79,7 +83,7 @@ function StatCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">{title}</p>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-[var(--cv-text)]">{value}</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--cv-text)]">{value}</p>
           {hint ? (
             <p
               className={cn(
@@ -105,35 +109,35 @@ function StatCard({
 export function BuyerDashboard() {
   const navigate = useNavigate()
   const user = useAppStore((s) => s.user)
+  const theme = useAppStore((s) => s.theme)
+  const chart = CHART_THEME[theme]
+  const collapsed = useScrollCollapse()
   const name = user?.profile.name?.split(' ')[0] ?? 'Priya'
   const [product, setProduct] = useState<'tomatoes' | 'potatoes' | 'carrots'>('tomatoes')
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening'
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-surface)] p-5 sm:flex-row sm:items-end sm:justify-between sm:p-6">
-        <div>
-          <p className="text-sm font-medium text-[var(--cv-primary)]">Buyer workspace</p>
-          <h2 className="mt-1 text-2xl font-bold tracking-tight text-[var(--cv-text)] sm:text-3xl">
-            {greeting}, {name}
-          </h2>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">
-            Last login: 3 hours ago · {user?.profile.location ?? 'Mumbai, India'}
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button onClick={() => navigate('/dashboard/create')}>
-            <MagnifyingGlassIcon className="h-4 w-4" />
-            Find Suppliers
-          </Button>
-          <Button variant="secondary" onClick={() => navigate('/dashboard/orders')}>
-            View Orders
-          </Button>
-        </div>
-      </div>
+    <div className="space-y-8">
+      <LargeTitle
+        collapsed={collapsed}
+        eyebrow="Buyer"
+        title={`${greeting}, ${name}`}
+        subtitle={`Last login: 3 hours ago · ${user?.profile.location ?? 'Mumbai, India'}`}
+        actions={
+          <>
+            <Button onClick={() => navigate('/dashboard/create')}>
+              <MagnifyingGlassIcon className="h-4 w-4" strokeWidth={1.5} />
+              Find Suppliers
+            </Button>
+            <Button variant="secondary" onClick={() => navigate('/dashboard/orders')}>
+              View Orders
+            </Button>
+          </>
+        }
+      />
 
-      <div className="grid grid-cols-2 gap-2.5 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
         <StatCard title="Total Purchases" value={formatCurrency(1254800)} hint="48 orders" icon={CurrencyRupeeIcon} emphasize />
         <StatCard title="This Month Spend" value={formatCurrency(285320)} hint="₹ 85,450" positive icon={ArrowTrendingUpIcon} />
         <StatCard title="Pending Orders" value="5" hint="Awaiting delivery" icon={ClockIcon} emphasize />
@@ -273,32 +277,32 @@ export function BuyerDashboard() {
             <h3 className="font-semibold text-[var(--cv-text)]">Price Trends</h3>
             <p className="text-xs text-[var(--cv-muted)]">Last 30 days · ₹/kg</p>
           </div>
-          <div className="flex gap-2">
-            {(['tomatoes', 'potatoes', 'carrots'] as const).map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setProduct(p)}
-                className={cn(
-                  'rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition',
-                  product === p
-                    ? 'bg-[var(--cv-btn-bg)] text-[var(--cv-btn-text)]'
-                    : 'bg-[var(--cv-elevated)] text-[var(--cv-muted)] hover:text-[var(--cv-text)]',
-                )}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
+          <SegmentedControl
+            ariaLabel="Price trend crop"
+            value={product}
+            onChange={setProduct}
+            options={[
+              { value: 'tomatoes', label: 'Tomatoes' },
+              { value: 'potatoes', label: 'Potatoes' },
+              { value: 'carrots', label: 'Carrots' },
+            ]}
+          />
         </div>
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={PRICE}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-              <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#9ca3af' }} />
-              <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} />
-              <Tooltip contentStyle={{ background: '#161616', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12 }} />
-              <Line type="monotone" dataKey={product} stroke="#22C55E" strokeWidth={2} dot={false} name={`${product} ₹/kg`} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+              <XAxis dataKey="day" tick={{ fontSize: 12, fill: chart.tick }} />
+              <YAxis tick={{ fontSize: 12, fill: chart.tick }} />
+              <Tooltip
+                contentStyle={{
+                  background: chart.tooltipBg,
+                  border: `1px solid ${chart.tooltipBorder}`,
+                  borderRadius: 12,
+                  color: 'var(--cv-text)',
+                }}
+              />
+              <Line type="monotone" dataKey={product} stroke={chart.accent} strokeWidth={2} dot={false} name={`${product} ₹/kg`} />
             </LineChart>
           </ResponsiveContainer>
         </div>

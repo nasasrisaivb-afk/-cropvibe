@@ -1,66 +1,65 @@
 import type { Role } from '../types/roles'
+import { TOKENS } from './tokens'
 
 /**
- * CropVibe 60 / 30 / 10 — Black · Grey · Green
- * 60% Base:     #0B0B0B black canvas
- * 30% Secondary:#161616 / #222222 grey surfaces
- * 10% Accent:   #22C55E green actions & highlights
+ * CropVibe 60 / 30 / 10 — Charcoal · Surface · Signature Lime
+ * Light-first for field/mixed portals; dark available everywhere (admin dark-first).
  */
 export const BRAND = {
-  bg60: '#0B0B0B',
-  surface30: '#161616',
-  elevated10: '#222222',
-  text: '#F3F4F6',
-  textMuted: '#9CA3AF',
-  border: 'rgba(255, 255, 255, 0.08)',
-  btnBg: '#22C55E',
-  btnText: '#0B0B0B',
-  accent: '#22C55E',
-  accentMuted: '#16A34A',
-  accentSoft: 'rgba(34, 197, 94, 0.14)',
-  primary: '#22C55E',
-  primaryMuted: '#16A34A',
-  primarySoft: 'rgba(34, 197, 94, 0.14)',
-  success: '#22C55E',
-  warning: '#EAB308',
-  danger: '#EF4444',
-  info: '#38BDF8',
+  bg60: TOKENS.dark.bgPrimary,
+  surface30: TOKENS.dark.surface1,
+  elevated10: TOKENS.dark.surface2,
+  text: TOKENS.dark.textPrimary,
+  textMuted: TOKENS.dark.textSecondary,
+  border: TOKENS.dark.border,
+  btnBg: TOKENS.accent.solid,
+  btnText: TOKENS.accent.onAccent,
+  accent: TOKENS.accent.solid,
+  accentMuted: TOKENS.accent.hover,
+  accentSoft: TOKENS.accent.muted,
+  primary: TOKENS.accent.solid,
+  primaryMuted: TOKENS.accent.hover,
+  primarySoft: TOKENS.accent.muted,
+  success: TOKENS.semantic.success,
+  warning: TOKENS.semantic.warning,
+  danger: TOKENS.semantic.error,
+  info: TOKENS.semantic.info,
 } as const
 
-/** Role identity stays on brand green */
+/** All roles share signature lime — identity is typography/copy, not rainbow chrome */
 export const ROLE_PALETTE: Record<
   Role,
   { solid: string; soft: string; muted: string; label: string }
 > = {
   seller: {
-    solid: '#22C55E',
-    soft: 'rgba(34, 197, 94, 0.14)',
-    muted: '#16A34A',
-    label: 'Seller green',
+    solid: TOKENS.accent.solid,
+    soft: TOKENS.accent.muted,
+    muted: TOKENS.accent.hover,
+    label: 'Seller',
   },
   buyer: {
-    solid: '#22C55E',
-    soft: 'rgba(34, 197, 94, 0.14)',
-    muted: '#16A34A',
-    label: 'Buyer green',
+    solid: TOKENS.accent.solid,
+    soft: TOKENS.accent.muted,
+    muted: TOKENS.accent.hover,
+    label: 'Buyer',
   },
   rental: {
-    solid: '#22C55E',
-    soft: 'rgba(34, 197, 94, 0.14)',
-    muted: '#16A34A',
-    label: 'Rental green',
+    solid: TOKENS.accent.solid,
+    soft: TOKENS.accent.muted,
+    muted: TOKENS.accent.hover,
+    label: 'Rental',
   },
   service: {
-    solid: '#22C55E',
-    soft: 'rgba(34, 197, 94, 0.14)',
-    muted: '#16A34A',
-    label: 'Service green',
+    solid: TOKENS.accent.solid,
+    soft: TOKENS.accent.muted,
+    muted: TOKENS.accent.hover,
+    label: 'Service',
   },
   educator: {
-    solid: '#22C55E',
-    soft: 'rgba(34, 197, 94, 0.14)',
-    muted: '#16A34A',
-    label: 'Educator green',
+    solid: TOKENS.accent.solid,
+    soft: TOKENS.accent.muted,
+    muted: TOKENS.accent.hover,
+    label: 'Educator',
   },
 }
 

@@ -4,6 +4,7 @@ import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
 import { FormInput } from '../common/FormInput'
+import { PageHeader } from '../common/PageHeader'
 import { Select } from '../common/Select'
 import { formatCurrency } from '../../utils/format'
 
@@ -78,13 +79,11 @@ export function ServiceCatalogPage({ category }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{copy.title}</h1>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">{copy.description}</p>
-        </div>
-        <Button onClick={() => navigate('/dashboard/create')}>+ Add service slot</Button>
-      </div>
+      <PageHeader
+        title={copy.title}
+        subtitle={copy.description}
+        actions={<Button onClick={() => navigate('/dashboard/create')}>+ Add service slot</Button>}
+      />
 
       <div className="flex flex-col gap-3 rounded-[12px] border border-[var(--cv-border)] bg-[var(--cv-surface)] p-4 sm:flex-row sm:items-end">
         <FormInput label="Search" placeholder="Service name or ID" value={q} onChange={(e) => setQ(e.target.value)} />

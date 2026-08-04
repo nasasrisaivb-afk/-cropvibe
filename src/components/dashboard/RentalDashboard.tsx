@@ -13,6 +13,8 @@ import {
 import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { LargeTitle } from '../common/LargeTitle'
+import { useScrollCollapse } from '../../hooks/useScrollCollapse'
 import { useAppStore } from '../../store/appStore'
 import { formatCurrency, cn } from '../../utils/format'
 
@@ -71,19 +73,19 @@ function StatCard({
   return (
     <div
       className={cn(
-        'rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-surface)] p-4 transition hover:border-[var(--cv-primary)]/25',
-        emphasize && 'ring-1 ring-[var(--cv-primary)]/20',
+        'rounded-[16px] border border-[var(--cv-border)] bg-[var(--cv-surface)] p-4 transition hover:shadow-[var(--shadow-md)]',
+        emphasize && 'ring-1 ring-[var(--cv-primary)]/15',
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">{title}</p>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-[var(--cv-text)]">{value}</p>
+          <p className="text-[13px] font-medium text-[var(--cv-muted)]">{title}</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--cv-text)]">{value}</p>
           {hint ? (
             <p
               className={cn(
-                'mt-1.5 text-xs font-medium',
-                positive === true && 'text-[var(--cv-primary)]',
+                'mt-1.5 text-[13px] font-medium',
+                positive === true && 'text-[var(--cv-success)]',
                 positive === false && 'text-[var(--cv-danger)]',
                 positive === undefined && 'text-[var(--cv-muted)]',
               )}
@@ -93,8 +95,8 @@ function StatCard({
             </p>
           ) : null}
         </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--cv-primary-soft)] text-[var(--cv-primary)]">
-          <Icon className="h-5 w-5" />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[var(--cv-primary-soft)] text-[var(--cv-primary)]">
+          <Icon className="h-5 w-5" strokeWidth={1.5} />
         </span>
       </div>
     </div>
@@ -104,6 +106,7 @@ function StatCard({
 export function RentalDashboard() {
   const navigate = useNavigate()
   const user = useAppStore((s) => s.user)
+  const collapsed = useScrollCollapse()
   const kycPending = user?.kycStatus === 'pending'
   const name = user?.profile.name?.split(' ')[0] ?? 'Rakesh'
   const hour = new Date().getHours()
@@ -112,37 +115,34 @@ export function RentalDashboard() {
   const booked = EQUIPMENT.filter((e) => e.status === 'booked').length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {kycPending ? (
-        <div className="flex items-start gap-3 rounded-2xl border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] px-4 py-3 text-sm text-[var(--cv-warning)]">
-          <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0" />
+        <div className="flex items-start gap-3 rounded-[16px] border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] px-4 py-3 text-sm text-[var(--cv-warning)]">
+          <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={1.5} />
           <div>
             <strong>KYC Pending — Review status.</strong> Adding equipment stays locked until approval.
           </div>
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-4 rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-surface)] p-5 sm:flex-row sm:items-end sm:justify-between sm:p-6">
-        <div>
-          <p className="text-sm font-medium text-[var(--cv-primary)]">Rental Provider workspace</p>
-          <h2 className="mt-1 text-2xl font-bold tracking-tight text-[var(--cv-text)] sm:text-3xl">
-            {greeting}, {name}
-          </h2>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">
-            Last login: 1 hour ago · {user?.profile.location ?? 'Nagpur, MH'}
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button disabled={kycPending} onClick={() => navigate('/dashboard/create')}>
-            + Add Equipment
-          </Button>
-          <Button variant="secondary" onClick={() => navigate('/dashboard/machinery')}>
-            View Listing Types
-          </Button>
-        </div>
-      </div>
+      <LargeTitle
+        collapsed={collapsed}
+        eyebrow="Rental Provider"
+        title={`${greeting}, ${name}`}
+        subtitle={`Last login: 1 hour ago · ${user?.profile.location ?? 'Nagpur, MH'}`}
+        actions={
+          <>
+            <Button disabled={kycPending} onClick={() => navigate('/dashboard/create')}>
+              + Add Equipment
+            </Button>
+            <Button variant="secondary" onClick={() => navigate('/dashboard/machinery')}>
+              View Listing Types
+            </Button>
+          </>
+        }
+      />
 
-      <div className="grid grid-cols-2 gap-2.5 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
         <StatCard title="Total Revenue" value={formatCurrency(582300)} hint="18% YoY" positive icon={CurrencyRupeeIcon} emphasize />
         <StatCard title="This Month" value={formatCurrency(123450)} hint="₹ 34,200" positive icon={ArrowTrendingUpIcon} />
         <StatCard title="Fleet Utilization" value={`${booked} of ${EQUIPMENT.length}`} hint={`${Math.round((booked / EQUIPMENT.length) * 100)}% booked`} icon={TruckIcon} />
@@ -158,7 +158,7 @@ export function RentalDashboard() {
               <h3 className="font-semibold text-[var(--cv-text)]">Upcoming Bookings</h3>
               <p className="text-xs text-[var(--cv-muted)]">Pickups and returns this week</p>
             </div>
-            <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/bookings')}>
+            <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/scheduling')}>
               View all
             </Button>
           </div>
@@ -226,8 +226,8 @@ export function RentalDashboard() {
                   <Button size="sm" onClick={() => navigate('/dashboard/overdue')}>
                     Review overdue
                   </Button>
-                  <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/calendar')}>
-                    Calendar
+                  <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/scheduling')}>
+                    Scheduling
                   </Button>
                 </div>
               </div>
@@ -307,14 +307,17 @@ export function RentalDashboard() {
       </Card>
 
       <div className="flex flex-wrap gap-2">
-        <Button variant="secondary" onClick={() => navigate('/dashboard/calendar')}>
-          Availability Calendar
+        <Button variant="secondary" onClick={() => navigate('/dashboard/scheduling')}>
+          Scheduling
+        </Button>
+        <Button variant="secondary" onClick={() => navigate('/dashboard/finance')}>
+          Finance
         </Button>
         <Button variant="secondary" onClick={() => navigate('/dashboard/agreements')}>
           Agreements
         </Button>
         <Button variant="ghost" onClick={() => navigate('/dashboard/damage')}>
-          Damage Reports
+          Reports
         </Button>
       </div>
     </div>

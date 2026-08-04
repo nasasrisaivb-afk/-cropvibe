@@ -19,30 +19,29 @@ export interface NavSection {
   items: NavItem[]
 }
 
-/** Shared account / support items used across roles */
-const SUPPORT_ITEMS: NavItem[] = [
-  { id: 'wallet', label: 'Settlements', path: '/dashboard/wallet' },
+/** Rental account / inbox (profile lives in header account menu) */
+const RENTAL_ACCOUNT_ITEMS: NavItem[] = [
   { id: 'messages', label: 'Messages', path: '/dashboard/messages' },
+  { id: 'notifications', label: 'Notifications', path: '/dashboard/notifications' },
   { id: 'reviews', label: 'Reviews', path: '/dashboard/reviews' },
-  { id: 'help', label: 'Help Desk', path: '/dashboard/help' },
-  { id: 'profile', label: 'Profile', path: '/dashboard/profile' },
+  { id: 'help', label: 'Help', path: '/dashboard/help' },
   { id: 'settings', label: 'Settings', path: '/dashboard/settings' },
 ]
 
 export const SELLER_NAV_SECTIONS: NavSection[] = [
   {
-    title: 'Platform',
+    title: 'Home',
     items: [
       { id: 'dashboard', label: 'Overview', path: '/dashboard' },
       { id: 'analytics', label: 'Analytics', path: '/dashboard/analytics' },
     ],
   },
   {
-    title: 'Operations',
+    title: 'Sell',
     items: [
       { id: 'listings', label: 'Listings', path: '/dashboard/listings' },
       { id: 'orders', label: 'Orders', path: '/dashboard/orders' },
-      { id: 'create', label: 'Create Listing', path: '/dashboard/create' },
+      { id: 'create', label: 'Create listing', path: '/dashboard/create' },
     ],
   },
   {
@@ -54,30 +53,29 @@ export const SELLER_NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: 'Support',
+    title: 'Account',
     items: [
       { id: 'wallet', label: 'Settlements', path: '/dashboard/wallet' },
-      { id: 'profile', label: 'Profile', path: '/dashboard/profile' },
       { id: 'settings', label: 'Settings', path: '/dashboard/settings' },
-      { id: 'help', label: 'Help Desk', path: '/dashboard/help' },
+      { id: 'help', label: 'Help', path: '/dashboard/help' },
     ],
   },
 ]
 
 export const BUYER_NAV_SECTIONS: NavSection[] = [
   {
-    title: 'Platform',
+    title: 'Home',
     items: [
       { id: 'dashboard', label: 'Overview', path: '/dashboard' },
       { id: 'analytics', label: 'Analytics', path: '/dashboard/analytics' },
     ],
   },
   {
-    title: 'Operations',
+    title: 'Buy',
     items: [
       { id: 'listings', label: 'Suppliers', path: '/dashboard/listings' },
-      { id: 'orders', label: 'Purchase Orders', path: '/dashboard/orders' },
-      { id: 'create', label: 'Find Suppliers', path: '/dashboard/create' },
+      { id: 'orders', label: 'Purchase orders', path: '/dashboard/orders' },
+      { id: 'create', label: 'Find suppliers', path: '/dashboard/create' },
     ],
   },
   {
@@ -89,61 +87,76 @@ export const BUYER_NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: 'Support',
+    title: 'Account',
     items: [
       { id: 'wallet', label: 'Wallet', path: '/dashboard/wallet' },
-      { id: 'profile', label: 'Profile', path: '/dashboard/profile' },
       { id: 'settings', label: 'Settings', path: '/dashboard/settings' },
-      { id: 'help', label: 'Help Desk', path: '/dashboard/help' },
+      { id: 'help', label: 'Help', path: '/dashboard/help' },
     ],
   },
 ]
 
+/**
+ * Rental IA — fewer groups, task-first labels.
+ * Inventory is collapsible in the sidebar UI (see Navigation).
+ */
 export const RENTAL_NAV_SECTIONS: NavSection[] = [
   {
-    title: 'Platform',
+    title: 'Home',
     items: [
       { id: 'dashboard', label: 'Overview', path: '/dashboard' },
       { id: 'analytics', label: 'Analytics', path: '/dashboard/analytics' },
     ],
   },
   {
-    title: 'Operations',
+    title: 'Inventory',
     items: [
       { id: 'machinery', label: 'Machinery', path: '/dashboard/machinery' },
       { id: 'equipment', label: 'Equipment', path: '/dashboard/equipment' },
-      { id: 'labours', label: 'Labours', path: '/dashboard/labours' },
+      { id: 'labours', label: 'Labour', path: '/dashboard/labours' },
       { id: 'drivers', label: 'Drivers', path: '/dashboard/drivers' },
       { id: 'land', label: 'Land', path: '/dashboard/land' },
       { id: 'warehouses', label: 'Warehouses', path: '/dashboard/warehouses' },
     ],
   },
   {
-    title: 'Monitoring',
+    title: 'Bookings',
     items: [
-      { id: 'bookings', label: 'Bookings', path: '/dashboard/bookings' },
-      { id: 'calendar', label: 'Calendar', path: '/dashboard/calendar' },
-      { id: 'agreements', label: 'Agreements', path: '/dashboard/agreements' },
-      { id: 'damage', label: 'Damage Reports', path: '/dashboard/damage' },
-      { id: 'overdue', label: 'Overdue Rentals', path: '/dashboard/overdue' },
+      { id: 'scheduling', label: 'Schedule', path: '/dashboard/scheduling' },
+      { id: 'overdue', label: 'Overdue', path: '/dashboard/overdue' },
     ],
   },
   {
-    title: 'Support',
-    items: SUPPORT_ITEMS,
+    title: 'Documents',
+    items: [
+      { id: 'agreements', label: 'Agreements', path: '/dashboard/agreements' },
+      { id: 'damage', label: 'Damage reports', path: '/dashboard/damage' },
+    ],
+  },
+  {
+    title: 'Money',
+    items: [
+      { id: 'finance', label: 'Earnings', path: '/dashboard/finance' },
+      { id: 'payouts', label: 'Payouts', path: '/dashboard/payouts' },
+      { id: 'disputes', label: 'Issues', path: '/dashboard/disputes' },
+    ],
+  },
+  {
+    title: 'Account',
+    items: RENTAL_ACCOUNT_ITEMS,
   },
 ]
 
 export const SERVICE_NAV_SECTIONS: NavSection[] = [
   {
-    title: 'Platform',
+    title: 'Home',
     items: [
       { id: 'dashboard', label: 'Overview', path: '/dashboard' },
       { id: 'analytics', label: 'Analytics', path: '/dashboard/analytics' },
     ],
   },
   {
-    title: 'Operations',
+    title: 'Services',
     items: [
       { id: 'consultancy', label: 'Consultancy', path: '/dashboard/consultancy' },
       { id: 'testing', label: 'Testing', path: '/dashboard/testing' },
@@ -153,35 +166,39 @@ export const SERVICE_NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: 'Monitoring',
+    title: 'Bookings',
     items: [
       { id: 'orders', label: 'Appointments', path: '/dashboard/orders' },
       { id: 'calendar', label: 'Calendar', path: '/dashboard/calendar' },
+    ],
+  },
+  {
+    title: 'Inbox',
+    items: [
       { id: 'messages', label: 'Messages', path: '/dashboard/messages' },
       { id: 'reviews', label: 'Reviews', path: '/dashboard/reviews' },
     ],
   },
   {
-    title: 'Support',
+    title: 'Account',
     items: [
       { id: 'wallet', label: 'Settlements', path: '/dashboard/wallet' },
-      { id: 'profile', label: 'Profile', path: '/dashboard/profile' },
       { id: 'settings', label: 'Settings', path: '/dashboard/settings' },
-      { id: 'help', label: 'Help Desk', path: '/dashboard/help' },
+      { id: 'help', label: 'Help', path: '/dashboard/help' },
     ],
   },
 ]
 
 export const EDUCATOR_NAV_SECTIONS: NavSection[] = [
   {
-    title: 'Platform',
+    title: 'Home',
     items: [
       { id: 'dashboard', label: 'Overview', path: '/dashboard' },
       { id: 'analytics', label: 'Analytics', path: '/dashboard/analytics' },
     ],
   },
   {
-    title: 'Operations',
+    title: 'Courses',
     items: [
       { id: 'selfpaced', label: 'Self-paced', path: '/dashboard/selfpaced' },
       { id: 'live', label: 'Live cohorts', path: '/dashboard/live' },
@@ -189,21 +206,25 @@ export const EDUCATOR_NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: 'Monitoring',
+    title: 'Learners',
     items: [
       { id: 'orders', label: 'Enrollments', path: '/dashboard/orders' },
       { id: 'calendar', label: 'Calendar', path: '/dashboard/calendar' },
+    ],
+  },
+  {
+    title: 'Inbox',
+    items: [
       { id: 'messages', label: 'Messages', path: '/dashboard/messages' },
       { id: 'reviews', label: 'Reviews', path: '/dashboard/reviews' },
     ],
   },
   {
-    title: 'Support',
+    title: 'Account',
     items: [
       { id: 'wallet', label: 'Settlements', path: '/dashboard/wallet' },
-      { id: 'profile', label: 'Profile', path: '/dashboard/profile' },
       { id: 'settings', label: 'Settings', path: '/dashboard/settings' },
-      { id: 'help', label: 'Help Desk', path: '/dashboard/help' },
+      { id: 'help', label: 'Help', path: '/dashboard/help' },
     ],
   },
 ]
@@ -252,7 +273,7 @@ export const MOBILE_TABS: PageId[] = ['dashboard', 'listings', 'orders', 'messag
 export const RENTAL_MOBILE_TABS: PageId[] = [
   'dashboard',
   'equipment',
-  'bookings',
+  'scheduling',
   'messages',
   'profile',
 ]
@@ -299,10 +320,14 @@ const baseSearch: Partial<Record<PageId, string>> = {
   land: 'Search land rentals...',
   warehouses: 'Search warehouses...',
   bookings: 'Search bookings...',
+  scheduling: 'Search schedule by renter, asset, or date...',
   calendar: 'Search calendar...',
   agreements: 'Search agreements...',
-  damage: 'Search damage reports...',
+  damage: 'Search reports by asset, renter, or status...',
   overdue: 'Search overdue rentals...',
+  finance: 'Search earnings and revenue...',
+  payouts: 'Search payouts and settlements...',
+  disputes: 'Search finance issues...',
   settlements: 'Search settlements...',
   help: 'Search help articles...',
   consultancy: 'Search consultancy services...',
@@ -322,38 +347,42 @@ export const SEARCH_PLACEHOLDERS = new Proxy(baseSearch as Record<PageId, string
 })
 
 const baseCrumbs: Partial<Record<PageId, string[]>> = {
-  dashboard: ['Dashboard', 'Overview'],
-  listings: ['Operations', 'Listings'],
-  orders: ['Operations', 'Orders'],
-  wallet: ['Support', 'Settlements'],
-  messages: ['Support', 'Messages'],
-  notifications: ['Inbox', 'Notifications'],
-  reviews: ['Support', 'Reviews'],
-  analytics: ['Platform', 'Analytics'],
-  profile: ['Support', 'Profile'],
-  settings: ['Support', 'Settings'],
-  create: ['Operations', 'Create'],
-  equipment: ['Operations', 'Equipment'],
-  machinery: ['Operations', 'Machinery'],
-  labours: ['Operations', 'Labours'],
-  drivers: ['Operations', 'Drivers'],
-  land: ['Operations', 'Land'],
-  warehouses: ['Operations', 'Warehouses'],
-  bookings: ['Monitoring', 'Bookings'],
-  calendar: ['Monitoring', 'Calendar'],
-  agreements: ['Monitoring', 'Agreements'],
-  damage: ['Monitoring', 'Damage Reports'],
-  overdue: ['Monitoring', 'Overdue Rentals'],
-  settlements: ['Support', 'Settlements'],
-  help: ['Support', 'Help Desk'],
-  consultancy: ['Operations', 'Consultancy'],
-  testing: ['Operations', 'Testing'],
-  repair: ['Operations', 'Repair'],
-  aerial: ['Operations', 'Aerial'],
-  irrigation: ['Operations', 'Irrigation'],
-  selfpaced: ['Operations', 'Self-paced'],
-  live: ['Operations', 'Live cohorts'],
-  certifications: ['Operations', 'Certifications'],
+  dashboard: ['Home', 'Overview'],
+  listings: ['Sell', 'Listings'],
+  orders: ['Sell', 'Orders'],
+  wallet: ['Account', 'Settlements'],
+  messages: ['Account', 'Messages'],
+  notifications: ['Account', 'Notifications'],
+  reviews: ['Account', 'Reviews'],
+  analytics: ['Home', 'Analytics'],
+  profile: ['Account', 'Profile'],
+  settings: ['Account', 'Settings'],
+  create: ['Sell', 'Create'],
+  equipment: ['Inventory', 'Equipment'],
+  machinery: ['Inventory', 'Machinery'],
+  labours: ['Inventory', 'Labour'],
+  drivers: ['Inventory', 'Drivers'],
+  land: ['Inventory', 'Land'],
+  warehouses: ['Inventory', 'Warehouses'],
+  bookings: ['Bookings', 'Bookings'],
+  scheduling: ['Bookings', 'Schedule'],
+  calendar: ['Bookings', 'Calendar'],
+  agreements: ['Documents', 'Agreements'],
+  damage: ['Documents', 'Damage reports'],
+  overdue: ['Bookings', 'Overdue'],
+  finance: ['Money', 'Earnings'],
+  payouts: ['Money', 'Payouts'],
+  disputes: ['Money', 'Issues'],
+  settlements: ['Account', 'Settlements'],
+  help: ['Account', 'Help'],
+  consultancy: ['Services', 'Consultancy'],
+  testing: ['Services', 'Testing'],
+  repair: ['Services', 'Repair'],
+  aerial: ['Services', 'Aerial'],
+  irrigation: ['Services', 'Irrigation'],
+  selfpaced: ['Courses', 'Self-paced'],
+  live: ['Courses', 'Live cohorts'],
+  certifications: ['Courses', 'Certifications'],
 }
 
 export const BREADCRUMB_TITLES = new Proxy(baseCrumbs as Record<PageId, string[]>, {
@@ -378,5 +407,9 @@ export function getAllNavPaths(): Record<PageId, string> {
   paths.reviews = '/dashboard/reviews'
   paths.settlements = '/dashboard/wallet'
   paths.help = '/dashboard/help'
+  paths.scheduling = '/dashboard/scheduling'
+  paths.finance = '/dashboard/finance'
+  paths.payouts = '/dashboard/payouts'
+  paths.disputes = '/dashboard/disputes'
   return paths
 }

@@ -3,15 +3,16 @@ import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '../../store/appStore'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { PageHeader } from '../common/PageHeader'
 import { cn } from '../../utils/format'
 
 type DayStatus = 'available' | 'booked' | 'blocked' | 'maintenance'
 
 const STATUS_STYLE: Record<DayStatus, string> = {
-  available: 'bg-[var(--cv-primary-soft)] text-[var(--cv-primary)] border-[var(--cv-primary)]/20',
-  booked: 'bg-sky-50 text-[var(--cv-info)] border-sky-200',
-  blocked: 'bg-[var(--cv-elevated)] text-[var(--cv-muted)] border-[var(--cv-border)]',
-  maintenance: 'bg-[var(--cv-accent-soft)] text-[var(--cv-accent-muted)] border-[var(--cv-accent)]/30',
+  available: 'cv-cal-available border',
+  booked: 'cv-cal-booked border',
+  blocked: 'cv-cal-blocked border',
+  maintenance: 'cv-cal-maintenance border',
 }
 
 function buildMonth(year: number, month: number) {
@@ -54,28 +55,31 @@ export function CalendarPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {isService ? 'Appointment calendar' : isEducator ? 'Course schedule' : 'Availability calendar'}
-          </h1>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">
-            {isService
-              ? 'Confirm slots, buffer travel time, and avoid double bookings.'
-              : isEducator
-                ? 'Track live sessions, enrollment windows, and workshops.'
-                : 'Green = available · Blue = booked · Amber = maintenance · Gray = blocked'}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="secondary" onClick={() => navigate('/dashboard/bookings')}>
-            View bookings
-          </Button>
-          <Button onClick={() => navigate('/dashboard/create')}>
-            {isService ? 'Set availability' : '+ Block dates'}
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title={
+          isService ? 'Appointment calendar' : isEducator ? 'Course schedule' : 'Availability calendar'
+        }
+        subtitle={
+          isService
+            ? 'Confirm slots, buffer travel time, and avoid double bookings.'
+            : isEducator
+              ? 'Track live sessions, enrollment windows, and workshops.'
+              : 'Green = available · Blue = booked · Amber = maintenance · Gray = blocked'
+        }
+        actions={
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => navigate(role === 'rental' ? '/dashboard/scheduling' : '/dashboard/bookings')}
+            >
+              {role === 'rental' ? 'Open scheduling' : 'View bookings'}
+            </Button>
+            <Button onClick={() => navigate('/dashboard/create')}>
+              {isService ? 'Set availability' : '+ Block dates'}
+            </Button>
+          </div>
+        }
+      />
 
       <Card className="!rounded-[12px]">
         <div className="mb-4 flex items-center justify-between">

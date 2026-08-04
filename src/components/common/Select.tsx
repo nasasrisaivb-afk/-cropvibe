@@ -33,7 +33,7 @@ export function Select({
       <select
         id={selectId}
         className={cn(
-          'focus-ring cv-input w-full rounded-md px-3 py-3 text-base md:py-2 md:text-sm min-h-12 md:min-h-10',
+          'focus-ring cv-input w-full px-3 py-2.5 text-base md:text-sm',
           error ? 'border-[var(--cv-danger)]' : '',
           className,
         )}

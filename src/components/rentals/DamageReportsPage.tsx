@@ -5,6 +5,7 @@ import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
 import { FormInput } from '../common/FormInput'
+import { PageHeader } from '../common/PageHeader'
 
 interface DamageReport {
   id: string
@@ -65,17 +66,15 @@ export function DamageReportsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Damage reports</h1>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">
-            Track claims, repair estimates, and deposit deductions.
-          </p>
-        </div>
-        <Button variant="secondary" onClick={() => navigate('/dashboard/bookings')}>
-          Open bookings
-        </Button>
-      </div>
+      <PageHeader
+        title="Reports"
+        subtitle="Damage claims, inspection notes, and compliance report history."
+        actions={
+          <Button variant="secondary" onClick={() => navigate('/dashboard/scheduling')}>
+            Open scheduling
+          </Button>
+        }
+      />
 
       <FormInput
         label="Search reports"

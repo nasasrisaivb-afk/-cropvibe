@@ -17,20 +17,90 @@ export type BadgeStatus =
   | 'low'
 
 const CONFIG: Record<BadgeStatus, { bg: string; text: string; icon: string; label: string }> = {
-  approved: { bg: 'bg-[var(--cv-primary-soft)]', text: 'text-[var(--cv-primary)]', icon: '✓', label: 'Approved' },
-  pending: { bg: 'bg-[var(--cv-accent-soft)]', text: 'text-[var(--cv-warning)]', icon: '⏱', label: 'Pending' },
-  rejected: { bg: 'bg-[rgba(239,68,68,0.14)]', text: 'text-[var(--cv-danger)]', icon: '✗', label: 'Rejected' },
-  active: { bg: 'bg-[var(--cv-primary-soft)]', text: 'text-[var(--cv-primary)]', icon: '●', label: 'Active' },
-  inactive: { bg: 'bg-[var(--cv-elevated)]', text: 'text-[var(--cv-muted)]', icon: '○', label: 'Inactive' },
-  verified: { bg: 'bg-[var(--cv-primary-soft)]', text: 'text-[var(--cv-primary)]', icon: '✓', label: 'Verified' },
-  packed: { bg: 'bg-[var(--cv-primary-soft)]', text: 'text-[var(--cv-primary)]', icon: '✓', label: 'Packed' },
-  shipped: { bg: 'bg-[rgba(56,189,248,0.14)]', text: 'text-[var(--cv-info)]', icon: '🚚', label: 'Shipped' },
-  delivered: { bg: 'bg-[var(--cv-primary-soft)]', text: 'text-[var(--cv-primary)]', icon: '✓', label: 'Delivered' },
-  completed: { bg: 'bg-[var(--cv-elevated)]', text: 'text-[var(--cv-muted)]', icon: '✓', label: 'Completed' },
-  accepted: { bg: 'bg-[rgba(56,189,248,0.14)]', text: 'text-[var(--cv-info)]', icon: '●', label: 'Accepted' },
-  high: { bg: 'bg-[rgba(239,68,68,0.14)]', text: 'text-[var(--cv-danger)]', icon: '!', label: 'High' },
-  medium: { bg: 'bg-[var(--cv-accent-soft)]', text: 'text-[var(--cv-warning)]', icon: '!', label: 'Medium' },
-  low: { bg: 'bg-[var(--cv-elevated)]', text: 'text-[var(--cv-muted)]', icon: '•', label: 'Low' },
+  approved: {
+    bg: 'bg-[rgba(74,222,128,0.12)]',
+    text: 'text-[var(--cv-success)]',
+    icon: '✓',
+    label: 'Approved',
+  },
+  pending: {
+    bg: 'bg-[rgba(251,191,36,0.12)]',
+    text: 'text-[var(--cv-warning)]',
+    icon: '⏱',
+    label: 'Pending',
+  },
+  rejected: {
+    bg: 'bg-[rgba(248,113,113,0.12)]',
+    text: 'text-[var(--cv-danger)]',
+    icon: '✗',
+    label: 'Rejected',
+  },
+  active: {
+    bg: 'bg-[var(--cv-primary-soft)]',
+    text: 'text-[var(--cv-primary)]',
+    icon: '●',
+    label: 'Active',
+  },
+  inactive: {
+    bg: 'bg-[var(--cv-elevated)]',
+    text: 'text-[var(--cv-muted)]',
+    icon: '○',
+    label: 'Inactive',
+  },
+  verified: {
+    bg: 'bg-[rgba(74,222,128,0.12)]',
+    text: 'text-[var(--cv-success)]',
+    icon: '✓',
+    label: 'Verified',
+  },
+  packed: {
+    bg: 'bg-[var(--cv-primary-soft)]',
+    text: 'text-[var(--cv-primary)]',
+    icon: '✓',
+    label: 'Packed',
+  },
+  shipped: {
+    bg: 'bg-[rgba(56,189,248,0.12)]',
+    text: 'text-[var(--cv-info)]',
+    icon: '→',
+    label: 'Shipped',
+  },
+  delivered: {
+    bg: 'bg-[rgba(74,222,128,0.12)]',
+    text: 'text-[var(--cv-success)]',
+    icon: '✓',
+    label: 'Delivered',
+  },
+  completed: {
+    bg: 'bg-[var(--cv-elevated)]',
+    text: 'text-[var(--cv-muted)]',
+    icon: '✓',
+    label: 'Completed',
+  },
+  accepted: {
+    bg: 'bg-[rgba(56,189,248,0.12)]',
+    text: 'text-[var(--cv-info)]',
+    icon: '●',
+    label: 'Accepted',
+  },
+  high: {
+    bg: 'bg-[rgba(248,113,113,0.12)]',
+    text: 'text-[var(--cv-danger)]',
+    icon: '!',
+    label: 'High',
+  },
+  medium: {
+    bg: 'bg-[rgba(251,191,36,0.12)]',
+    text: 'text-[var(--cv-warning)]',
+    icon: '!',
+    label: 'Medium',
+  },
+  low: {
+    bg: 'bg-[var(--cv-elevated)]',
+    text: 'text-[var(--cv-muted)]',
+    icon: '•',
+    label: 'Low',
+  },
 }
 
 interface BadgeProps {
@@ -45,7 +115,7 @@ export function Badge({ status = 'pending', children, showIcon = true, className
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium',
+        'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[13px] font-medium',
         config.bg,
         config.text,
         className,

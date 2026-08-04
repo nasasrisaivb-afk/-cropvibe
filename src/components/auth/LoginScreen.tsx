@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../common/Button'
 import { FormInput } from '../common/FormInput'
+import { ThemeToggle } from '../common/ThemeToggle'
 import { useState } from 'react'
 
 export function LoginScreen() {
@@ -12,25 +13,24 @@ export function LoginScreen() {
       <div
         className="relative hidden flex-col justify-end overflow-hidden p-10 text-white md:flex"
         style={{
-          background:
-            'linear-gradient(160deg, #0b0b0b 0%, #161616 48%, #0f1a12 100%)',
+          background: 'linear-gradient(160deg, #1A1A1A 0%, #242424 52%, #1A1A1A 100%)',
         }}
       >
         <div
-          className="pointer-events-none absolute inset-0 opacity-50"
+          className="pointer-events-none absolute inset-0 opacity-60"
           style={{
             background:
-              'radial-gradient(circle at 18% 22%, rgba(34,197,94,0.28), transparent 42%), radial-gradient(circle at 85% 75%, rgba(255,255,255,0.06), transparent 38%)',
+              'radial-gradient(circle at 18% 22%, rgba(204,255,0,0.16), transparent 42%), radial-gradient(circle at 85% 75%, rgba(255,255,255,0.05), transparent 38%)',
           }}
         />
         <div className="relative z-10 max-w-md">
-          <p className="cv-logo text-4xl text-white">
+          <p className="cv-logo text-4xl text-[var(--cv-text)]">
             Crop<span className="text-[var(--cv-primary)]">Vibe</span>
           </p>
-          <p className="mt-4 text-lg text-white/85">
+          <p className="mt-4 text-lg text-[var(--cv-muted)]">
             Discover, book, buy, rent, and manage agricultural resources in one trusted marketplace.
           </p>
-          <ul className="mt-8 space-y-2 text-white/75">
+          <ul className="mt-8 space-y-2 text-[var(--cv-muted)]">
             <li className="flex gap-2">
               <span className="text-[var(--cv-primary)]">✓</span> Phone OTP secure login
             </li>
@@ -44,14 +44,17 @@ export function LoginScreen() {
         </div>
       </div>
 
-      <main className="flex min-h-screen items-center justify-center bg-[var(--cv-bg)] px-6 py-10">
+      <main className="relative flex min-h-screen items-center justify-center bg-[var(--cv-bg)] px-6 py-10">
+        <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+          <ThemeToggle />
+        </div>
         <div className="w-full max-w-[440px] rounded-[12px] border border-[var(--cv-border)] bg-[var(--cv-surface)] p-8 shadow-sm">
           <div className="mb-6 flex items-center gap-2 md:hidden">
             <span className="cv-logo text-xl">
               Crop<span className="cv-logo-accent">Vibe</span>
             </span>
           </div>
-          <h1 className="text-3xl font-bold text-[var(--cv-text)]">Welcome back</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-[var(--cv-text)]">Welcome back</h1>
           <p className="mt-2 text-[var(--cv-muted)]">Sign in with phone OTP (recommended) or email</p>
 
           <div className="mt-5 grid grid-cols-2 gap-2 rounded-[12px] bg-[var(--cv-elevated)] p-1">

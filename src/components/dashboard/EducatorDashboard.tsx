@@ -21,7 +21,10 @@ import {
 } from 'recharts'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { LargeTitle } from '../common/LargeTitle'
+import { useScrollCollapse } from '../../hooks/useScrollCollapse'
 import { useAppStore } from '../../store/appStore'
+import { CHART_THEME } from '../../theme/chartTheme'
 import { formatCurrency, cn } from '../../utils/format'
 
 const COURSES = [
@@ -79,7 +82,7 @@ function StatCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">{title}</p>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-[var(--cv-text)]">{value}</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--cv-text)]">{value}</p>
           {hint ? (
             <p
               className={cn(
@@ -105,43 +108,43 @@ function StatCard({
 export function EducatorDashboard() {
   const navigate = useNavigate()
   const user = useAppStore((s) => s.user)
+  const theme = useAppStore((s) => s.theme)
+  const chart = CHART_THEME[theme]
+  const collapsed = useScrollCollapse()
   const kycPending = user?.kycStatus === 'pending'
   const name = user?.profile.name?.split(' ')[0] ?? 'Ms. Patel'
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {kycPending ? (
-        <div className="flex items-start gap-3 rounded-2xl border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] px-4 py-3 text-sm text-[var(--cv-warning)]">
-          <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0" />
+        <div className="flex items-start gap-3 rounded-[16px] border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] px-4 py-3 text-sm text-[var(--cv-warning)]">
+          <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={1.5} />
           <div>
             <strong>KYC Pending — Review status.</strong> Creating courses stays locked until approval.
           </div>
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-4 rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-surface)] p-5 sm:flex-row sm:items-end sm:justify-between sm:p-6">
-        <div>
-          <p className="text-sm font-medium text-[var(--cv-primary)]">Educator workspace</p>
-          <h2 className="mt-1 text-2xl font-bold tracking-tight text-[var(--cv-text)] sm:text-3xl">
-            {greeting}, {name}
-          </h2>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">
-            Last login: 4 hours ago · {user?.profile.location ?? 'Ahmedabad, India'}
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button disabled={kycPending} onClick={() => navigate('/dashboard/selfpaced')}>
-            + Create Course
-          </Button>
-          <Button variant="secondary" onClick={() => navigate('/dashboard/selfpaced')}>
-            View Courses
-          </Button>
-        </div>
-      </div>
+      <LargeTitle
+        collapsed={collapsed}
+        eyebrow="Educator"
+        title={`${greeting}, ${name}`}
+        subtitle={`Last login: 4 hours ago · ${user?.profile.location ?? 'Ahmedabad, India'}`}
+        actions={
+          <>
+            <Button disabled={kycPending} onClick={() => navigate('/dashboard/selfpaced')}>
+              + Create Course
+            </Button>
+            <Button variant="secondary" onClick={() => navigate('/dashboard/selfpaced')}>
+              View Courses
+            </Button>
+          </>
+        }
+      />
 
-      <div className="grid grid-cols-2 gap-2.5 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
         <StatCard title="Total Revenue" value={formatCurrency(215400)} hint="5 courses" icon={CurrencyRupeeIcon} emphasize />
         <StatCard title="This Month" value={formatCurrency(45600)} hint="₹ 12,300" positive icon={ArrowTrendingUpIcon} />
         <StatCard title="Total Students" value="127" hint="98 active" icon={UserGroupIcon} />
@@ -276,13 +279,20 @@ export function EducatorDashboard() {
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={ENGAGEMENT}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#9ca3af' }} />
-                <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} />
-                <Tooltip contentStyle={{ background: '#161616', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                <XAxis dataKey="month" tick={{ fontSize: 12, fill: chart.tick }} />
+                <YAxis tick={{ fontSize: 12, fill: chart.tick }} />
+                <Tooltip
+                  contentStyle={{
+                    background: chart.tooltipBg,
+                    border: `1px solid ${chart.tooltipBorder}`,
+                    borderRadius: 12,
+                    color: 'var(--cv-text)',
+                  }}
+                />
                 <Legend />
-                <Line type="monotone" dataKey="enrollments" stroke="#22C55E" strokeWidth={2} name="Enrollments" />
-                <Line type="monotone" dataKey="completion" stroke="#9CA3AF" strokeWidth={2} name="Completion %" />
+                <Line type="monotone" dataKey="enrollments" stroke={chart.accent} strokeWidth={2} name="Enrollments" />
+                <Line type="monotone" dataKey="completion" stroke={chart.secondary} strokeWidth={2} name="Completion %" />
               </LineChart>
             </ResponsiveContainer>
           </div>

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { PageHeader } from '../common/PageHeader'
 import { FormInput } from '../common/FormInput'
 import { Select } from '../common/Select'
 
@@ -60,12 +61,10 @@ export function AgreementsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Agreements</h1>
-        <p className="mt-1 text-sm text-[var(--cv-muted)]">
-          Digital rental agreements, e-signature status, and document history.
-        </p>
-      </div>
+      <PageHeader
+        title="Agreements"
+        subtitle="Digital rental agreements, e-signature status, and document history."
+      />
 
       <div className="grid gap-3 sm:grid-cols-2">
         <FormInput label="Search" placeholder="Agreement ID, renter, equipment" value={q} onChange={(e) => setQ(e.target.value)} />

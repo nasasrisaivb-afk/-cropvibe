@@ -4,6 +4,7 @@ import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
 import { FormInput, FormTextarea } from '../common/FormInput'
+import { PageHeader } from '../common/PageHeader'
 import { Select } from '../common/Select'
 
 const FAQ = [
@@ -35,12 +36,10 @@ export function HelpDeskPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Help desk</h1>
-        <p className="mt-1 text-sm text-[var(--cv-muted)]">
-          FAQ, tickets, and live support for rental providers.
-        </p>
-      </div>
+      <PageHeader
+        title="Help desk"
+        subtitle="FAQ, tickets, and live support for rental providers."
+      />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="!rounded-[12px]" title="Frequently asked">

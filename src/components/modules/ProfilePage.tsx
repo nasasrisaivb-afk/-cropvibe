@@ -6,6 +6,8 @@ import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
 import { FormInput } from '../common/FormInput'
+import { PageHeader } from '../common/PageHeader'
+import { RoleSwitcher } from '../common/RoleSwitcher'
 
 export function ProfilePage() {
   const navigate = useNavigate()
@@ -18,37 +20,36 @@ export function ProfilePage() {
   const [location, setLocation] = useState(user?.profile.location ?? '')
 
   const kyc = user?.kycStatus ?? 'none'
+  const roleCount = user?.roles?.length ?? 0
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Profile</h1>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">
-            Personal and business identity for {ROLE_LABELS[user?.activeRole ?? 'seller']}.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setSaved(true)
-              setTimeout(() => setSaved(false), 2000)
-            }}
-          >
-            Save changes
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              logout()
-              navigate('/login')
-            }}
-          >
-            Logout
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Profile"
+        subtitle={`Personal and business identity for ${ROLE_LABELS[user?.activeRole ?? 'seller']}.`}
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setSaved(true)
+                setTimeout(() => setSaved(false), 2000)
+              }}
+            >
+              Save changes
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                logout()
+                navigate('/login')
+              }}
+            >
+              Logout
+            </Button>
+          </div>
+        }
+      />
 
       {saved ? (
         <div className="rounded-[12px] border border-[var(--cv-primary)]/30 bg-[var(--cv-primary-soft)] px-4 py-3 text-sm text-[var(--cv-primary)]">
@@ -58,7 +59,7 @@ export function ProfilePage() {
 
       <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
         <Card className="!rounded-[12px] text-center">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[var(--cv-primary)] text-2xl font-bold text-white">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[var(--cv-primary)] text-2xl font-semibold text-[var(--cv-btn-text)]">
             {(name || 'U').slice(0, 1)}
           </div>
           <p className="mt-3 font-semibold">{name || 'User'}</p>
@@ -76,6 +77,18 @@ export function ProfilePage() {
         </Card>
 
         <div className="space-y-4">
+          <Card
+            className="!rounded-[12px]"
+            title="Switch role"
+            subtitle={
+              roleCount > 1
+                ? 'Choose which workspace you are working in. Navigation and tools update instantly.'
+                : undefined
+            }
+          >
+            <RoleSwitcher />
+          </Card>
+
           <Card className="!rounded-[12px]" title="Personal information">
             <div className="grid gap-4 sm:grid-cols-2">
               <FormInput label="Full name" value={name} onChange={(e) => setName(e.target.value)} />
@@ -99,20 +112,6 @@ export function ProfilePage() {
             <p className="mt-3 text-xs text-[var(--cv-muted)]">
               Bank account is required before the first payout. Sensitive changes are audit-logged.
             </p>
-          </Card>
-
-          <Card className="!rounded-[12px]" title="Roles on this account">
-            <ul className="flex flex-wrap gap-2">
-              {(user?.roles ?? []).map((r) => (
-                <li
-                  key={r}
-                  className="rounded-full bg-[var(--cv-elevated)] px-3 py-1 text-sm font-medium text-[var(--cv-muted)]"
-                >
-                  {ROLE_LABELS[r]}
-                  {r === user?.activeRole ? ' · Active' : ''}
-                </li>
-              ))}
-            </ul>
           </Card>
         </div>
       </div>

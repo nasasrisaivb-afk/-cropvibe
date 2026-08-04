@@ -19,9 +19,13 @@ import { OrdersPage } from './components/orders/OrdersPage'
 import { CourseCatalogPage } from './components/educators/CourseCatalogPage'
 import { AgreementsPage } from './components/rentals/AgreementsPage'
 import { DamageReportsPage } from './components/rentals/DamageReportsPage'
+import { DisputesPage } from './components/rentals/DisputesPage'
+import { FinancePage } from './components/rentals/FinancePage'
 import { HelpDeskPage } from './components/rentals/HelpDeskPage'
 import { OverdueRentalsPage } from './components/rentals/OverdueRentalsPage'
+import { PayoutsPage } from './components/rentals/PayoutsPage'
 import { RentalInventoryPage } from './components/rentals/RentalInventoryPage'
+import { SchedulingPage } from './components/rentals/SchedulingPage'
 import { ServiceCatalogPage } from './components/services/ServiceCatalogPage'
 
 function App() {
@@ -43,7 +47,8 @@ function App() {
         <Route element={<RentalInventoryPage category="warehouses" />} path="warehouses" />
         <Route element={<CreateWorkflowPage />} path="create" />
         <Route element={<OrdersPage />} path="orders" />
-        <Route element={<OrdersPage />} path="bookings" />
+        <Route element={<Navigate replace to="/dashboard/scheduling" />} path="bookings" />
+        <Route element={<SchedulingPage />} path="scheduling" />
         <Route element={<ServiceCatalogPage category="consultancy" />} path="consultancy" />
         <Route element={<ServiceCatalogPage category="testing" />} path="testing" />
         <Route element={<ServiceCatalogPage category="repair" />} path="repair" />
@@ -56,6 +61,9 @@ function App() {
         <Route element={<AgreementsPage />} path="agreements" />
         <Route element={<DamageReportsPage />} path="damage" />
         <Route element={<OverdueRentalsPage />} path="overdue" />
+        <Route element={<FinancePage />} path="finance" />
+        <Route element={<PayoutsPage />} path="payouts" />
+        <Route element={<DisputesPage />} path="disputes" />
         <Route element={<HelpDeskPage />} path="help" />
         <Route element={<WalletPage />} path="wallet" />
         <Route element={<MessagesPage />} path="messages" />

@@ -4,6 +4,7 @@ import { Badge, type BadgeStatus } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
 import { FormInput } from '../common/FormInput'
+import { PageHeader } from '../common/PageHeader'
 import { Select } from '../common/Select'
 import { formatCurrency } from '../../utils/format'
 
@@ -124,13 +125,11 @@ export function RentalInventoryPage({ category }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{copy.title}</h1>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">{copy.description}</p>
-        </div>
-        <Button onClick={() => navigate('/dashboard/create')}>{copy.cta}</Button>
-      </div>
+      <PageHeader
+        title={copy.title}
+        subtitle={copy.description}
+        actions={<Button onClick={() => navigate('/dashboard/create')}>{copy.cta}</Button>}
+      />
 
       <div className="grid gap-3 sm:grid-cols-3">
         <Card className="!rounded-[12px]">

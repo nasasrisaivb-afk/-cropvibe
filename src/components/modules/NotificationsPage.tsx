@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { PageHeader } from '../common/PageHeader'
+import { SegmentedControl } from '../common/SegmentedControl'
 import { cn } from '../../utils/format'
 
 type NotifType = 'order' | 'message' | 'system' | 'review'
@@ -63,38 +65,32 @@ export function NotificationsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Notifications</h1>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">
-            Push, SMS, email, and in-app alerts with quiet hours support.
-          </p>
-        </div>
-        <Button
-          variant="secondary"
-          onClick={() => setItems((prev) => prev.map((n) => ({ ...n, read: true })))}
-        >
-          Mark all read
-        </Button>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {(['all', 'order', 'message', 'review', 'system'] as const).map((f) => (
-          <button
-            key={f}
-            type="button"
-            className={cn(
-              'rounded-full px-3 py-1.5 text-sm font-medium capitalize',
-              filter === f
-                ? 'bg-[var(--cv-primary)] text-white'
-                : 'bg-[var(--cv-elevated)] text-[var(--cv-muted)]',
-            )}
-            onClick={() => setFilter(f)}
+      <PageHeader
+        title="Notifications"
+        subtitle="Push, SMS, email, and in-app alerts with quiet hours support."
+        actions={
+          <Button
+            variant="secondary"
+            onClick={() => setItems((prev) => prev.map((n) => ({ ...n, read: true })))}
           >
-            {f === 'all' ? 'All' : TYPE_LABEL[f]}
-          </button>
-        ))}
-      </div>
+            Mark all read
+          </Button>
+        }
+      />
+
+      <SegmentedControl
+        fullWidth
+        ariaLabel="Filter notifications"
+        value={filter}
+        onChange={setFilter}
+        options={[
+          { value: 'all', label: 'All' },
+          { value: 'order', label: TYPE_LABEL.order },
+          { value: 'message', label: TYPE_LABEL.message },
+          { value: 'review', label: TYPE_LABEL.review },
+          { value: 'system', label: TYPE_LABEL.system },
+        ]}
+      />
 
       <Card className="!rounded-[12px] !p-0 overflow-hidden">
         <ul className="divide-y divide-[var(--cv-border)]">

@@ -19,10 +19,14 @@ export type PageId =
   | 'land'
   | 'warehouses'
   | 'bookings'
+  | 'scheduling'
   | 'calendar'
   | 'agreements'
   | 'damage'
   | 'overdue'
+  | 'finance'
+  | 'payouts'
+  | 'disputes'
   | 'settlements'
   | 'help'
   | 'consultancy'
@@ -52,19 +56,19 @@ export interface User {
 }
 
 export const ROLE_COLORS: Record<Role, string> = {
-  seller: '#22C55E',
-  buyer: '#22C55E',
-  rental: '#22C55E',
-  service: '#22C55E',
-  educator: '#22C55E',
+  seller: '#CCFF00',
+  buyer: '#CCFF00',
+  rental: '#CCFF00',
+  service: '#CCFF00',
+  educator: '#CCFF00',
 }
 
 export const ROLE_SOFT: Record<Role, string> = {
-  seller: 'rgba(34,197,94,0.14)',
-  buyer: 'rgba(34,197,94,0.14)',
-  rental: 'rgba(34,197,94,0.14)',
-  service: 'rgba(34,197,94,0.14)',
-  educator: 'rgba(34,197,94,0.14)',
+  seller: 'rgba(204,255,0,0.12)',
+  buyer: 'rgba(204,255,0,0.12)',
+  rental: 'rgba(204,255,0,0.12)',
+  service: 'rgba(204,255,0,0.12)',
+  educator: 'rgba(204,255,0,0.12)',
 }
 
 export const ROLE_ICONS: Record<Role, string> = {

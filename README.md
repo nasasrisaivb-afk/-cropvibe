@@ -16,16 +16,27 @@ Demo path: Login → OTP (any 6 digits) → role switcher in the header.
 
 ## Design system (60 / 30 / 10)
 
-- **60%** Base `#F7F8F5`
-- **30%** Brand green `#2E7D32`
-- **10%** Accent amber `#F59E0B`
+- **60%** Canvas `#1A1A1A` dark / `#FAFAF8` light
+- **30%** Surfaces `#242424` / `#FFFFFF`
+- **10%** Signature lime `#CCFF00` (near-black text on lime)
 
 ## Apps
 
 | App | Path | Command |
 |-----|------|---------|
-| Web dashboard | repo root (Vite) | `npm run dev` |
+| Web dashboard (marketplace) | repo root (Vite) | `npm run dev` |
+| **Admin console** | `admin/` (Next.js 14) | `cd admin && npm run dev` |
 | API | `backend/` | see `backend/README.md` |
+
+### Admin console
+
+```bash
+cd admin
+npm install
+npm run dev
+```
+
+Open http://localhost:3000 — login `admin@cropvibe.com` / `Admin@123`. See [`admin/README.md`](admin/README.md).
 
 ## Web (frontend)
 
