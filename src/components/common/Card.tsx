@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react'
+import type { HTMLAttributes, ReactNode } from 'react'
 import { cn } from '../../utils/format'
 
-interface CardProps {
+interface CardProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode
   title?: string
   subtitle?: string
@@ -9,14 +9,22 @@ interface CardProps {
   interactive?: boolean
 }
 
-export function Card({ children, title, subtitle, className = '', interactive = false }: CardProps) {
+export function Card({
+  children,
+  title,
+  subtitle,
+  className = '',
+  interactive = false,
+  ...rest
+}: CardProps) {
   return (
     <section
       className={cn(
-        'rounded-[16px] border border-[var(--cv-border)] bg-[var(--cv-surface)] p-6 shadow-[var(--shadow-sm)] transition-[box-shadow,transform] duration-150 ease-out',
+        'rounded-xl border border-[var(--cv-border)] bg-[var(--cv-surface)] p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[box-shadow,transform] duration-150 ease-out max-lg:rounded-[20px] max-lg:p-5 max-lg:shadow-[0_4px_16px_rgba(15,23,42,0.05)]',
         interactive && 'cv-card-interactive hover:shadow-[var(--shadow-md)]',
         className,
       )}
+      {...rest}
     >
       {title ? (
         <div className={subtitle ? 'mb-4' : 'mb-4'}>

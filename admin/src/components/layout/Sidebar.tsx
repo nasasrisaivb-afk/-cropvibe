@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
+import { useSession, signOut } from 'next-auth/react'
 import {
   LayoutDashboard,
   Users,
@@ -21,11 +22,16 @@ import {
   Info,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  Search,
+  MoreHorizontal,
+  Sprout,
 } from 'lucide-react'
-import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/cn'
 import { useUiStore } from '@/lib/store/ui'
 import { getOverviewKpis } from '@/lib/api/overview.api'
+import { Avatar } from '@/components/ui/avatar'
+import { ADMIN_ROLE_LABELS } from '@/lib/types'
 
 const sections = [
   {
@@ -64,44 +70,99 @@ const sections = [
 
 export function Sidebar() {
   const pathname = usePathname()
-  const { sidebarCollapsed, toggleSidebar, mobileNavOpen, setMobileNavOpen } = useUiStore()
+  const { data: session } = useSession()
+  const { sidebarCollapsed, toggleSidebar, mobileNavOpen, setMobileNavOpen, setCommandOpen } =
+    useUiStore()
   const { data } = useQuery({ queryKey: ['overview'], queryFn: getOverviewKpis })
+
+  const userName = session?.user?.name ?? 'Admin'
+  const userRole = session?.user?.role
+    ? ADMIN_ROLE_LABELS[session.user.role]
+    : 'Administrator'
 
   const nav = (
     <aside
       className={cn(
         'flex h-full flex-col border-r border-border-default bg-bg-surface transition-all duration-200',
-        sidebarCollapsed ? 'w-20' : 'w-60'
+        sidebarCollapsed ? 'w-[4.5rem]' : 'w-60'
       )}
     >
-      <div className="flex h-14 items-center justify-between border-b border-border-light px-4">
-        {!sidebarCollapsed ? (
-          <div>
-            <p className="text-sm font-bold text-brand-lime">CropVibe</p>
-            <p className="text-[10px] text-text-muted">Admin Console</p>
-          </div>
-        ) : (
-          <span className="text-sm font-bold text-brand-lime">CV</span>
-        )}
+      {/* Workspace header */}
+      <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border-light px-3">
+        <div className="flex min-w-0 flex-1 items-center gap-2.5">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-lime text-text-inverse shadow-sm">
+            <Sprout className="h-4 w-4" strokeWidth={2.25} />
+          </span>
+          {!sidebarCollapsed ? (
+            <button
+              type="button"
+              className="flex min-w-0 flex-1 items-center gap-1 rounded-md py-1 text-left hover:bg-bg-surfaceHover"
+            >
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-semibold text-text-primary">
+                  CropVibe
+                </span>
+                <span className="block truncate text-[11px] text-text-muted">Admin Console</span>
+              </span>
+              <ChevronDown className="h-3.5 w-3.5 shrink-0 text-text-muted" />
+            </button>
+          ) : null}
+        </div>
         <button
           type="button"
           onClick={toggleSidebar}
-          className="hidden rounded-md p-1.5 text-text-muted hover:bg-bg-surfaceHover hover:text-text-primary lg:inline-flex"
+          className="hidden shrink-0 rounded-md p-1.5 text-text-muted hover:bg-bg-surfaceHover hover:text-text-primary lg:inline-flex"
           aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {sidebarCollapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
         </button>
       </div>
 
-      <nav className="flex-1 overflow-y-auto scrollbar-thin p-3">
-        {sections.map((section) => (
-          <div key={section.title} className="mb-4">
+      {/* Search */}
+      {!sidebarCollapsed ? (
+        <div className="px-3 pt-3">
+          <button
+            type="button"
+            onClick={() => setCommandOpen(true)}
+            className="flex h-9 w-full items-center gap-2 rounded-lg border border-border-default bg-bg-base/40 px-2.5 text-left text-sm text-text-muted transition hover:border-border-focus/40 hover:bg-bg-surfaceHover"
+          >
+            <Search className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+            <span className="flex-1 truncate">Search…</span>
+            <kbd className="rounded border border-border-default bg-bg-surfaceAlt px-1.5 py-0.5 font-mono text-[10px] text-text-muted">
+              ⌘K
+            </kbd>
+          </button>
+        </div>
+      ) : (
+        <div className="flex justify-center px-2 pt-3">
+          <button
+            type="button"
+            onClick={() => setCommandOpen(true)}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border-default text-text-muted hover:bg-bg-surfaceHover hover:text-text-primary"
+            aria-label="Search"
+          >
+            <Search className="h-4 w-4" strokeWidth={1.75} />
+          </button>
+        </div>
+      )}
+
+      {/* Nav sections */}
+      <nav className="flex-1 overflow-y-auto scrollbar-thin px-2 py-3">
+        {sections.map((section, sectionIndex) => (
+          <div
+            key={section.title}
+            className={cn(sectionIndex > 0 && 'mt-4 border-t border-border-light pt-4')}
+          >
             {!sidebarCollapsed ? (
-              <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+              <p className="mb-1.5 px-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-text-muted">
                 {section.title}
               </p>
             ) : null}
-            <ul className="space-y-1">
+            <ul className="space-y-0.5">
               {section.items.map((item) => {
                 const active =
                   item.href === '/'
@@ -117,25 +178,32 @@ export function Sidebar() {
                       onClick={() => setMobileNavOpen(false)}
                       title={sidebarCollapsed ? item.label : undefined}
                       className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+                        'group flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors',
+                        sidebarCollapsed && 'justify-center px-0',
                         active
-                          ? 'bg-brand-lime/12 text-brand-lime'
+                          ? 'bg-brand-lime/15 font-medium text-brand-lime'
                           : 'text-text-secondary hover:bg-bg-surfaceHover hover:text-text-primary'
                       )}
                     >
-                      <Icon className="h-4 w-4 shrink-0" />
+                      <Icon
+                        className={cn(
+                          'h-[18px] w-[18px] shrink-0',
+                          active ? 'text-brand-lime' : 'text-text-muted group-hover:text-text-secondary'
+                        )}
+                        strokeWidth={active ? 2 : 1.75}
+                      />
                       {!sidebarCollapsed ? (
                         <>
                           <span className="flex-1 truncate">{item.label}</span>
                           {badge != null && badge > 0 ? (
                             <span
                               className={cn(
-                                'rounded-full px-1.5 py-0.5 text-[10px] font-semibold',
+                                'min-w-[1.25rem] rounded-full px-1.5 py-0.5 text-center text-[10px] font-semibold tabular-nums',
                                 'urgent' in item && item.urgent
-                                  ? 'bg-status-error/20 text-status-error'
+                                  ? 'bg-status-error text-white'
                                   : 'warn' in item && item.warn
-                                    ? 'bg-status-warning/20 text-status-warning'
-                                    : 'bg-bg-surfaceAlt text-text-muted'
+                                    ? 'bg-status-warning text-text-inverse'
+                                    : 'bg-brand-lime text-text-inverse'
                               )}
                             >
                               {badge > 999 ? '999+' : badge}
@@ -152,31 +220,65 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-border-light p-3 space-y-1">
-        <button
-          type="button"
-          onClick={() => signOut({ callbackUrl: '/login' })}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-text-secondary hover:bg-bg-surfaceHover hover:text-text-primary"
-        >
-          <LogOut className="h-4 w-4" />
-          {!sidebarCollapsed ? 'Logout' : null}
-        </button>
+      {/* Footer */}
+      <div className="shrink-0 space-y-2 border-t border-border-light p-3">
         {!sidebarCollapsed ? (
-          <>
-            <a
-              href="https://cropvibe.com"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-text-secondary hover:bg-bg-surfaceHover"
-            >
-              <Info className="h-4 w-4" /> About
-            </a>
+          <div className="space-y-0.5">
             <a
               href="mailto:support@cropvibe.com"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-text-secondary hover:bg-bg-surfaceHover"
+              className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-text-secondary hover:bg-bg-surfaceHover hover:text-text-primary"
             >
-              <HelpCircle className="h-4 w-4" /> Help
+              <HelpCircle className="h-[18px] w-[18px] text-text-muted" strokeWidth={1.75} />
+              Help
             </a>
-          </>
-        ) : null}
+            <a
+              href="https://cropvibe.com"
+              className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-text-secondary hover:bg-bg-surfaceHover hover:text-text-primary"
+            >
+              <Info className="h-[18px] w-[18px] text-text-muted" strokeWidth={1.75} />
+              About
+            </a>
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: '/login' })}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-text-secondary hover:bg-bg-surfaceHover hover:text-text-primary"
+            >
+              <LogOut className="h-[18px] w-[18px] text-text-muted" strokeWidth={1.75} />
+              Logout
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-bg-surfaceHover hover:text-text-primary"
+            aria-label="Logout"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
+        )}
+
+        {!sidebarCollapsed ? (
+          <div className="flex items-center gap-2.5 rounded-xl border border-border-default bg-bg-base/30 p-2">
+            <Avatar name={userName} size="sm" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-text-primary">{userName}</p>
+              <p className="truncate text-[11px] text-text-muted">{userRole}</p>
+            </div>
+            <button
+              type="button"
+              className="rounded-md p-1 text-text-muted hover:bg-bg-surfaceHover hover:text-text-primary"
+              aria-label="Account menu"
+              onClick={() => signOut({ callbackUrl: '/login' })}
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <Avatar name={userName} size="sm" />
+          </div>
+        )}
       </div>
     </aside>
   )

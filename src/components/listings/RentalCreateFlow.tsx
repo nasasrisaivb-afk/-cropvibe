@@ -5,6 +5,7 @@ import {
   CheckIcon,
   ChevronLeftIcon,
   Cog6ToothIcon,
+  DocumentTextIcon,
   MapIcon,
   PencilSquareIcon,
   TruckIcon,
@@ -26,6 +27,7 @@ import {
   type RentalCategory,
   type RentalCategoryId,
 } from './rentalCategoryContent'
+import { AgreementCreateFlow } from './AgreementCreateFlow'
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>
 
@@ -320,6 +322,7 @@ function unitOptions(category: RentalCategory) {
 }
 
 export function RentalCreateFlow({ onDone }: { onDone: () => void }) {
+  const [flow, setFlow] = useState<'listing' | 'agreement'>('listing')
   const [step, setStep] = useState(1)
   const [form, setForm] = useState<RentalFormState>(INITIAL_FORM)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -360,14 +363,15 @@ export function RentalCreateFlow({ onDone }: { onDone: () => void }) {
 
   const selectCategory = (id: RentalCategoryId) => {
     const cat = getCategoryById(id)
+    const sample = cat?.profileSample
     setForm((p) => ({
       ...p,
       categoryId: id,
-      fields: {},
+      fields: sample?.fields ?? {},
       checklist: {},
       unit: cat?.pricing.unit ?? 'day',
-      name: '',
-      description: '',
+      name: sample?.name ?? '',
+      description: sample?.description ?? '',
     }))
     setErrors({})
   }
@@ -430,6 +434,15 @@ export function RentalCreateFlow({ onDone }: { onDone: () => void }) {
             4 *
             100,
         )
+
+  if (flow === 'agreement') {
+    return (
+      <AgreementCreateFlow
+        onDone={onDone}
+        onBackToCategories={() => setFlow('listing')}
+      />
+    )
+  }
 
   // Inline edit from review
   if (editingSection === 'details' && category) {
@@ -514,6 +527,34 @@ export function RentalCreateFlow({ onDone }: { onDone: () => void }) {
 
       {step === 1 && (
         <div>
+          <button
+            type="button"
+            onClick={() => setFlow('agreement')}
+            className="mb-4 flex w-full items-start gap-3 rounded-xl border-2 border-[var(--cv-border)] bg-[var(--cv-surface)] p-4 text-left transition hover:border-[var(--cv-nav-active-fg)]/50 focus-ring"
+          >
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--cv-primary-soft)] text-[var(--cv-nav-active-bg)]">
+              <DocumentTextIcon className="h-5 w-5" strokeWidth={1.5} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-[var(--cv-text)]">Rental agreements</p>
+              <p className="mt-0.5 text-xs leading-snug text-[var(--cv-muted)]">
+                Create a digital contract with e-signature, deposit, and damage clauses
+              </p>
+              <ul className="mt-2.5 space-y-0.5">
+                {['Renter & asset details', 'Commercials & deposit', 'Send for e-signature'].map((ex) => (
+                  <li key={ex} className="flex items-start gap-1.5 text-xs text-[var(--cv-text)]/80">
+                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-[var(--cv-nav-active-fg)]" />
+                    {ex}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </button>
+
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--cv-muted)]">
+            Or list equipment
+          </p>
+
           <div className="grid gap-3 sm:grid-cols-2">
             {RENTAL_CATEGORIES.map((cat) => {
               const Icon = CATEGORY_ICONS[cat.id]
@@ -661,7 +702,7 @@ export function RentalCreateFlow({ onDone }: { onDone: () => void }) {
                       className={cn(
                         'rounded-md px-2 py-0.5 text-[11px]',
                         form.checklist[item]
-                          ? 'bg-emerald-50 text-emerald-800'
+                          ? 'bg-[var(--color-success-soft)] text-[var(--cv-success)]'
                           : 'bg-[var(--cv-elevated)] text-[var(--cv-muted)]',
                       )}
                     >
@@ -824,14 +865,21 @@ function DetailsStep({
             placeholder={category.namePlaceholder}
             required
             error={errors.name}
-            helperText="Include model, size, or location if it helps matching"
+            helperText={
+              isProfile
+                ? 'Include your role and city so renters can find you'
+                : 'Include model, size, or location if it helps matching'
+            }
           />
           <FormInput
             as="textarea"
             label="What renters get (optional)"
             value={form.description}
             onChange={(e) => update('description', e.target.value)}
-            placeholder="Highlight recent servicing, special features, or delivery options…"
+            placeholder={
+              category.descriptionPlaceholder ??
+              'Highlight recent servicing, special features, or delivery options…'
+            }
             helperText="Benefit-focused details help renters decide faster"
           />
         </div>
@@ -881,7 +929,7 @@ function DetailsStep({
             onChange={(e) => update('photoCount', e.target.files?.length ?? 0)}
           />
           {form.photoCount > 0 ? (
-            <p className="mt-2 text-xs font-medium text-emerald-700">
+            <p className="mt-2 text-xs font-medium text-[var(--cv-success)]">
               {form.photoCount} file{form.photoCount === 1 ? '' : 's'} selected
             </p>
           ) : null}

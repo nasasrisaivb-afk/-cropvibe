@@ -4,11 +4,25 @@ import { LISTINGS_LABEL, PRIMARY_CTA } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
 import type { Role } from '../../types/roles'
 import { formatCurrency } from '../../utils/format'
-import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
-import { Card } from '../common/Card'
-import { PageHeader } from '../common/PageHeader'
-import { FormInput } from '../common/FormInput'
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableHead,
+  DataTableRow,
+  ExportButton,
+  FilterSelect,
+  OverviewFooter,
+  OverviewPanel,
+  OverviewSearch,
+  OverviewShell,
+  OverviewTabs,
+  OverviewToolbar,
+  PrimaryActionButton,
+  StatusPill,
+  type StatusTone,
+} from '../common/DataOverview'
 
 const SELLER_PRODUCTS = [
   { name: 'Organic Tomatoes', stock: '45 kg', price: 45, status: 'active' as const, orders: 28 },
@@ -35,6 +49,13 @@ const RENTAL_EQUIPMENT = [
   { name: 'Sprayer #2', status: 'Maintenance', next: 'Due tomorrow', rate: 800 },
 ]
 
+const RENTAL_CATEGORY_LINKS = [
+  { label: 'Machinery', path: '/dashboard/machinery' },
+  { label: 'Labours', path: '/dashboard/labours' },
+  { label: 'Warehouses', path: '/dashboard/warehouses' },
+  { label: 'Calendar', path: '/dashboard/calendar' },
+] as const
+
 const SERVICES = [
   { name: 'Farm Consultancy', bookings: 34, revenue: 123600, rating: 4.9 },
   { name: 'Soil Testing', bookings: 18, revenue: 78300, rating: 4.8 },
@@ -49,26 +70,141 @@ const COURSES = [
   { name: 'Crop Planning 101', students: 28, completion: 71, rating: 4.4 },
 ]
 
-function ListingsHero({ role }: { role: Role }) {
+const EQUIPMENT_TONE: Record<string, StatusTone> = {
+  Available: 'success',
+  Booked: 'info',
+  Maintenance: 'warning',
+}
+
+function useListingChrome(role: Role) {
   const navigate = useNavigate()
   const cta = PRIMARY_CTA[role]
   const kycPending = useAppStore((s) => s.user?.kycStatus === 'pending')
-  const locked = kycPending && role !== 'buyer'
+  const locked = Boolean(kycPending && role !== 'buyer')
+  return {
+    title: `${LISTINGS_LABEL[role]} overview`,
+    subtitle: `Manage and discover offerings for your ${role} workspace.`,
+    actions: (
+      <>
+        <ExportButton onClick={() => undefined} />
+        <PrimaryActionButton disabled={locked} onClick={() => navigate(cta.path)}>
+          {cta.label}
+        </PrimaryActionButton>
+      </>
+    ),
+  }
+}
+
+function RentalEquipmentView() {
+  const navigate = useNavigate()
+  const chrome = useListingChrome('rental')
+  const [tab, setTab] = useState('all')
+  const [query, setQuery] = useState('')
+
+  const tabs = useMemo(() => {
+    const counts = {
+      all: RENTAL_EQUIPMENT.length,
+      Available: RENTAL_EQUIPMENT.filter((i) => i.status === 'Available').length,
+      Booked: RENTAL_EQUIPMENT.filter((i) => i.status === 'Booked').length,
+      Maintenance: RENTAL_EQUIPMENT.filter((i) => i.status === 'Maintenance').length,
+    }
+    return [
+      { value: 'all', label: 'All equipment', count: counts.all },
+      { value: 'Available', label: 'Available', count: counts.Available },
+      { value: 'Booked', label: 'Booked', count: counts.Booked },
+      { value: 'Maintenance', label: 'Maintenance', count: counts.Maintenance },
+    ]
+  }, [])
+
+  const items = useMemo(() => {
+    return RENTAL_EQUIPMENT.filter((item) => {
+      const matchTab = tab === 'all' || item.status === tab
+      const q = query.trim().toLowerCase()
+      const matchQ =
+        !q ||
+        item.name.toLowerCase().includes(q) ||
+        item.status.toLowerCase().includes(q) ||
+        item.next.toLowerCase().includes(q)
+      return matchTab && matchQ
+    })
+  }, [query, tab])
 
   return (
-    <PageHeader
-      title={LISTINGS_LABEL[role]}
-      subtitle={`Manage and discover offerings for your ${role} workspace.`}
-      actions={
-        <Button
-          disabled={locked}
-          onClick={() => navigate(cta.path)}
-          title={locked ? 'KYC approval required' : undefined}
-        >
-          {cta.label}
-        </Button>
-      }
-    />
+    <OverviewShell title={chrome.title} subtitle={chrome.subtitle} actions={chrome.actions}>
+      <div className="mb-3 flex flex-wrap gap-2">
+        {RENTAL_CATEGORY_LINKS.map((link) => (
+          <button
+            key={link.path}
+            type="button"
+            onClick={() => navigate(link.path)}
+            className="rounded-lg border border-[var(--cv-border)] bg-[var(--cv-surface)] px-3 py-1.5 text-sm font-medium text-[var(--cv-text)] transition hover:bg-[var(--cv-elevated)]"
+          >
+            {link.label}
+          </button>
+        ))}
+      </div>
+
+      <OverviewPanel>
+        <OverviewTabs tabs={tabs} value={tab} onChange={setTab} />
+        <OverviewToolbar>
+          <div className="flex flex-wrap gap-2">
+            <FilterSelect
+              label="Status"
+              value={tab}
+              onChange={setTab}
+              options={[
+                { value: 'all', label: 'Status' },
+                { value: 'Available', label: 'Available' },
+                { value: 'Booked', label: 'Booked' },
+                { value: 'Maintenance', label: 'Maintenance' },
+              ]}
+            />
+            <FilterSelect
+              label="Category"
+              value="all"
+              onChange={() => undefined}
+              options={[
+                { value: 'all', label: 'Category' },
+                { value: 'machinery', label: 'Machinery' },
+                { value: 'tools', label: 'Tools' },
+              ]}
+            />
+          </div>
+          <OverviewSearch
+            placeholder="Search equipment"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </OverviewToolbar>
+
+        <DataTable>
+          <DataTableHead columns={['Equipment', 'Schedule', 'Rate', 'Status']} />
+          <DataTableBody>
+            {items.map((item) => (
+              <DataTableRow key={item.name}>
+                <DataTableCell strong>{item.name}</DataTableCell>
+                <DataTableCell className="text-[var(--cv-muted)]">{item.next}</DataTableCell>
+                <DataTableCell strong>
+                  {formatCurrency(item.rate)}
+                  <span className="font-medium text-[var(--cv-muted)]">/day</span>
+                </DataTableCell>
+                <DataTableCell>
+                  <StatusPill tone={EQUIPMENT_TONE[item.status] ?? 'neutral'}>
+                    {item.status}
+                  </StatusPill>
+                </DataTableCell>
+              </DataTableRow>
+            ))}
+          </DataTableBody>
+        </DataTable>
+
+        <OverviewFooter
+          countLabel={`${items.length} result${items.length === 1 ? '' : 's'}`}
+          disablePrev
+          disableNext
+        />
+      </OverviewPanel>
+    </OverviewShell>
   )
 }
 
@@ -76,7 +212,9 @@ export function ListingsPage() {
   const role = useAppStore((s) => s.user?.activeRole ?? 'seller')
   const navigate = useNavigate()
   const [buyerQuery, setBuyerQuery] = useState('')
+  const [sellerTab, setSellerTab] = useState('all')
   const [saved, setSaved] = useState<string[]>(['Organic Roots'])
+  const chrome = useListingChrome(role)
 
   const suppliers = useMemo(
     () =>
@@ -90,200 +228,247 @@ export function ListingsPage() {
     [buyerQuery],
   )
 
+  const sellerItems = useMemo(() => {
+    if (sellerTab === 'all') return SELLER_PRODUCTS
+    return SELLER_PRODUCTS.filter((p) => p.status === sellerTab)
+  }, [sellerTab])
+
+  if (role === 'rental') {
+    return <RentalEquipmentView />
+  }
+
   if (role === 'seller') {
     return (
-      <div>
-        <ListingsHero role={role} />
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {SELLER_PRODUCTS.map((p) => (
-            <Card key={p.name} className="!rounded-[12px]">
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="font-semibold">{p.name}</h3>
-                <Badge status={p.status === 'active' ? 'active' : 'pending'} />
-              </div>
-              <p className="mt-2 text-sm text-[var(--cv-muted)]">Stock: {p.stock}</p>
-              <p className="text-sm font-medium text-[var(--cv-primary)]">{formatCurrency(p.price)}/kg</p>
-              <p className="text-xs text-[var(--cv-muted)]">{p.orders} orders</p>
-              {p.stock === '5 kg' ? (
-                <p className="mt-2 rounded-[10px] bg-[var(--cv-accent-soft)] px-2 py-1 text-xs text-[var(--cv-accent-muted)]">
-                  Low stock — reorder level 20 kg
-                </p>
-              ) : null}
-              <div className="mt-3 flex gap-2">
-                <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/create')}>
-                  Edit
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/orders')}>
-                  Orders
-                </Button>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
+      <OverviewShell title={chrome.title} subtitle={chrome.subtitle} actions={chrome.actions}>
+        <OverviewPanel>
+          <OverviewTabs
+            tabs={[
+              { value: 'all', label: 'All products', count: SELLER_PRODUCTS.length },
+              {
+                value: 'active',
+                label: 'Active',
+                count: SELLER_PRODUCTS.filter((p) => p.status === 'active').length,
+              },
+              {
+                value: 'pending',
+                label: 'Pending',
+                count: SELLER_PRODUCTS.filter((p) => p.status === 'pending').length,
+              },
+            ]}
+            value={sellerTab}
+            onChange={setSellerTab}
+          />
+          <OverviewToolbar>
+            <FilterSelect
+              label="Status"
+              value={sellerTab}
+              onChange={setSellerTab}
+              options={[
+                { value: 'all', label: 'Status' },
+                { value: 'active', label: 'Active' },
+                { value: 'pending', label: 'Pending' },
+              ]}
+            />
+            <OverviewSearch placeholder="Search products" />
+          </OverviewToolbar>
+          <DataTable>
+            <DataTableHead columns={['Product', 'Stock', 'Price', 'Orders', 'Status', '']} />
+            <DataTableBody>
+              {sellerItems.map((p) => (
+                <DataTableRow key={p.name}>
+                  <DataTableCell strong>{p.name}</DataTableCell>
+                  <DataTableCell className="text-[var(--cv-muted)]">{p.stock}</DataTableCell>
+                  <DataTableCell strong>{formatCurrency(p.price)}/kg</DataTableCell>
+                  <DataTableCell>{p.orders}</DataTableCell>
+                  <DataTableCell>
+                    <StatusPill tone={p.status === 'active' ? 'success' : 'warning'}>
+                      {p.status === 'active' ? 'Active' : 'Pending'}
+                    </StatusPill>
+                  </DataTableCell>
+                  <DataTableCell>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/create')}>
+                        Edit
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/orders')}>
+                        Orders
+                      </Button>
+                    </div>
+                  </DataTableCell>
+                </DataTableRow>
+              ))}
+            </DataTableBody>
+          </DataTable>
+          <OverviewFooter countLabel={`${sellerItems.length} results`} disablePrev disableNext />
+        </OverviewPanel>
+      </OverviewShell>
     )
   }
 
   if (role === 'buyer') {
     return (
-      <div>
-        <ListingsHero role={role} />
-        <div className="mb-4">
-          <FormInput
-            label="Find suppliers"
-            placeholder="Search by product, supplier, or location"
-            value={buyerQuery}
-            onChange={(e) => setBuyerQuery(e.target.value)}
+      <OverviewShell title={chrome.title} subtitle={chrome.subtitle} actions={chrome.actions}>
+        <OverviewPanel>
+          <OverviewTabs
+            tabs={[{ value: 'all', label: 'All suppliers', count: BUYER_SUPPLIERS.length }]}
+            value="all"
+            onChange={() => undefined}
           />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {suppliers.map((s) => {
-            const isSaved = saved.includes(s.name)
-            return (
-              <Card key={s.name} className="!rounded-[12px]">
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-semibold">{s.name}</h3>
-                  <span className="text-sm font-medium text-[var(--cv-accent-muted)]">{s.rating}★</span>
-                </div>
-                <p className="text-xs text-[var(--cv-muted)]">{s.location} · ETA {s.delivery}</p>
-                <p className="mt-2 text-sm">
-                  {s.product} · MOQ {s.moq}
-                </p>
-                <p className="mt-1 font-semibold text-[var(--cv-primary)]">{formatCurrency(s.price)}/kg</p>
-                <div className="mt-3 flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() =>
-                      setSaved((prev) =>
-                        isSaved ? prev.filter((n) => n !== s.name) : [...prev, s.name],
-                      )
-                    }
-                  >
-                    {isSaved ? 'Saved' : 'Save'}
-                  </Button>
-                  <Button size="sm" onClick={() => navigate('/dashboard/create')}>
-                    Request quote
-                  </Button>
-                </div>
-              </Card>
-            )
-          })}
-        </div>
-        {suppliers.length === 0 ? (
-          <Card className="!rounded-[12px] mt-4 py-10 text-center">
-            <p className="font-semibold">No suppliers found</p>
-            <p className="mt-1 text-sm text-[var(--cv-muted)]">Try a different product or location.</p>
-          </Card>
-        ) : null}
-      </div>
-    )
-  }
-
-  if (role === 'rental') {
-    return (
-      <div>
-        <ListingsHero role={role} />
-        <div className="mb-4 flex flex-wrap gap-2">
-          <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/machinery')}>
-            Machinery
-          </Button>
-          <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/labours')}>
-            Labours
-          </Button>
-          <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/warehouses')}>
-            Warehouses
-          </Button>
-          <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/calendar')}>
-            Calendar
-          </Button>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {RENTAL_EQUIPMENT.map((e) => (
-            <Card key={e.name} className="!rounded-[12px]">
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="font-semibold">{e.name}</h3>
-                <Badge
-                  status={
-                    e.status === 'Available' ? 'active' : e.status === 'Booked' ? 'accepted' : 'pending'
-                  }
-                >
-                  {e.status}
-                </Badge>
-              </div>
-              <p className="mt-2 text-sm text-[var(--cv-muted)]">{e.next}</p>
-              <p className="text-sm font-medium text-[var(--cv-primary)]">{formatCurrency(e.rate)}/day</p>
-            </Card>
-          ))}
-        </div>
-      </div>
+          <OverviewToolbar>
+            <FilterSelect
+              label="Location"
+              value="all"
+              onChange={() => undefined}
+              options={[
+                { value: 'all', label: 'Location' },
+                ...Array.from(new Set(BUYER_SUPPLIERS.map((s) => s.location))).map((loc) => ({
+                  value: loc,
+                  label: loc,
+                })),
+              ]}
+            />
+            <OverviewSearch
+              placeholder="Search by product, supplier, or location"
+              value={buyerQuery}
+              onChange={(e) => setBuyerQuery(e.target.value)}
+            />
+          </OverviewToolbar>
+          <DataTable>
+            <DataTableHead columns={['Supplier', 'Product', 'MOQ', 'Price', 'ETA', '']} />
+            <DataTableBody>
+              {suppliers.map((s) => {
+                const isSaved = saved.includes(s.name)
+                return (
+                  <DataTableRow key={s.name}>
+                    <DataTableCell>
+                      <p className="font-semibold">{s.name}</p>
+                      <p className="text-xs text-[var(--cv-muted)]">
+                        {s.location} · {s.rating}★
+                      </p>
+                    </DataTableCell>
+                    <DataTableCell>{s.product}</DataTableCell>
+                    <DataTableCell className="text-[var(--cv-muted)]">{s.moq}</DataTableCell>
+                    <DataTableCell strong>{formatCurrency(s.price)}/kg</DataTableCell>
+                    <DataTableCell className="text-[var(--cv-muted)]">{s.delivery}</DataTableCell>
+                    <DataTableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() =>
+                            setSaved((prev) =>
+                              isSaved ? prev.filter((n) => n !== s.name) : [...prev, s.name],
+                            )
+                          }
+                        >
+                          {isSaved ? 'Saved' : 'Save'}
+                        </Button>
+                        <Button size="sm" onClick={() => navigate('/dashboard/create')}>
+                          Request quote
+                        </Button>
+                      </div>
+                    </DataTableCell>
+                  </DataTableRow>
+                )
+              })}
+            </DataTableBody>
+          </DataTable>
+          <OverviewFooter countLabel={`${suppliers.length} results`} disablePrev disableNext />
+        </OverviewPanel>
+      </OverviewShell>
     )
   }
 
   if (role === 'service') {
     return (
-      <div>
-        <ListingsHero role={role} />
-        <div className="space-y-3">
-          {SERVICES.map((s) => (
-            <Card key={s.name} className="!rounded-[12px]">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <h3 className="font-semibold">{s.name}</h3>
-                  <p className="text-sm text-[var(--cv-muted)]">
-                    {s.bookings} bookings · {s.rating}★
-                  </p>
-                </div>
-                <p className="font-medium text-[var(--cv-primary)]">{formatCurrency(s.revenue)}</p>
-              </div>
-              <div className="mt-3 flex gap-2">
-                <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/calendar')}>
-                  Calendar
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/create')}>
-                  Edit
-                </Button>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
+      <OverviewShell title={chrome.title} subtitle={chrome.subtitle} actions={chrome.actions}>
+        <OverviewPanel>
+          <OverviewTabs
+            tabs={[{ value: 'all', label: 'All services', count: SERVICES.length }]}
+            value="all"
+            onChange={() => undefined}
+          />
+          <OverviewToolbar>
+            <FilterSelect
+              label="Sort"
+              value="revenue"
+              onChange={() => undefined}
+              options={[
+                { value: 'revenue', label: 'Revenue' },
+                { value: 'bookings', label: 'Bookings' },
+              ]}
+            />
+            <OverviewSearch placeholder="Search services" />
+          </OverviewToolbar>
+          <DataTable>
+            <DataTableHead columns={['Service', 'Bookings', 'Rating', 'Revenue', '']} />
+            <DataTableBody>
+              {SERVICES.map((s) => (
+                <DataTableRow key={s.name}>
+                  <DataTableCell strong>{s.name}</DataTableCell>
+                  <DataTableCell>{s.bookings}</DataTableCell>
+                  <DataTableCell>{s.rating}★</DataTableCell>
+                  <DataTableCell strong>{formatCurrency(s.revenue)}</DataTableCell>
+                  <DataTableCell>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/calendar')}>
+                        Calendar
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/create')}>
+                        Edit
+                      </Button>
+                    </div>
+                  </DataTableCell>
+                </DataTableRow>
+              ))}
+            </DataTableBody>
+          </DataTable>
+          <OverviewFooter countLabel={`${SERVICES.length} results`} disablePrev disableNext />
+        </OverviewPanel>
+      </OverviewShell>
     )
   }
 
   return (
-    <div>
-      <ListingsHero role={role} />
-      <Card className="!rounded-[12px] !p-0 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-[var(--cv-border)] text-[var(--cv-muted)]">
-              <tr>
-                <th className="px-5 py-3 font-medium">Course</th>
-                <th className="px-5 py-3 font-medium">Students</th>
-                <th className="px-5 py-3 font-medium">Completion</th>
-                <th className="px-5 py-3 font-medium">Rating</th>
-                <th className="px-5 py-3 font-medium">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {COURSES.map((c) => (
-                <tr key={c.name} className="border-b border-[var(--cv-border)] last:border-0">
-                  <td className="px-5 py-3.5 font-medium">{c.name}</td>
-                  <td className="px-5 py-3.5">{c.students}</td>
-                  <td className="px-5 py-3.5">{c.completion}%</td>
-                  <td className="px-5 py-3.5">{c.rating}★</td>
-                  <td className="px-5 py-3.5">
-                    <Button size="sm" variant="secondary">
-                      View
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-    </div>
+    <OverviewShell title={chrome.title} subtitle={chrome.subtitle} actions={chrome.actions}>
+      <OverviewPanel>
+        <OverviewTabs
+          tabs={[{ value: 'all', label: 'All courses', count: COURSES.length }]}
+          value="all"
+          onChange={() => undefined}
+        />
+        <OverviewToolbar>
+          <FilterSelect
+            label="Sort"
+            value="students"
+            onChange={() => undefined}
+            options={[
+              { value: 'students', label: 'Students' },
+              { value: 'rating', label: 'Rating' },
+            ]}
+          />
+          <OverviewSearch placeholder="Search courses" />
+        </OverviewToolbar>
+        <DataTable>
+          <DataTableHead columns={['Course', 'Students', 'Completion', 'Rating', '']} />
+          <DataTableBody>
+            {COURSES.map((c) => (
+              <DataTableRow key={c.name}>
+                <DataTableCell strong>{c.name}</DataTableCell>
+                <DataTableCell>{c.students}</DataTableCell>
+                <DataTableCell>{c.completion}%</DataTableCell>
+                <DataTableCell>{c.rating}★</DataTableCell>
+                <DataTableCell>
+                  <Button size="sm" variant="secondary">
+                    View
+                  </Button>
+                </DataTableCell>
+              </DataTableRow>
+            ))}
+          </DataTableBody>
+        </DataTable>
+        <OverviewFooter countLabel={`${COURSES.length} results`} disablePrev disableNext />
+      </OverviewPanel>
+    </OverviewShell>
   )
 }

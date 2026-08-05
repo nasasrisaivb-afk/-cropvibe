@@ -18,7 +18,7 @@ import type { OverviewKpis } from '@/lib/types'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { formatInr } from '@/lib/utils'
 
-const COLORS = ['#CCFF00', '#B8E600', '#3B82F6', '#A78BFA', '#F59E0B', '#22C55E', '#EF4444', '#38BDF8']
+const COLORS = ['#CCFF00', '#B8E600', '#38BDF8', '#FBBF24', '#4ADE80', '#F87171', '#9CA3AF', '#E8FF4D']
 
 export default function Charts({ kpis }: { kpis: OverviewKpis }) {
   return (

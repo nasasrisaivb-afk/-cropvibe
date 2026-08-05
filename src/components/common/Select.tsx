@@ -11,6 +11,8 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   options: SelectOption[]
   error?: string
   helperText?: string
+  /** When false, omit the empty "Select..." option (use when options already include a default). */
+  placeholderOption?: boolean
 }
 
 export function Select({
@@ -21,6 +23,7 @@ export function Select({
   className = '',
   id,
   required,
+  placeholderOption = true,
   ...props
 }: SelectProps) {
   const selectId = id ?? label.toLowerCase().replace(/\s+/g, '-')
@@ -40,7 +43,7 @@ export function Select({
         required={required}
         {...props}
       >
-        <option value="">Select...</option>
+        {placeholderOption ? <option value="">Select...</option> : null}
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

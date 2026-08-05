@@ -113,6 +113,22 @@ export function ProfilePage() {
               Bank account is required before the first payout. Sensitive changes are audit-logged.
             </p>
           </Card>
+
+          <Card
+            className="!rounded-[12px]"
+            title="Reviews & reputation"
+            subtitle="Ratings from renters and buyers tied to this profile."
+          >
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-2xl font-semibold text-[var(--cv-text)]">4.8</p>
+                <p className="text-sm text-[var(--cv-muted)]">Average · 89 reviews</p>
+              </div>
+              <Button variant="secondary" onClick={() => navigate('/dashboard/reviews')}>
+                View all reviews
+              </Button>
+            </div>
+          </Card>
         </div>
       </div>
     </div>

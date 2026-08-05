@@ -60,7 +60,7 @@ export function Button({
       <button
         className={cn(
           base,
-          'bg-[rgba(248,113,113,0.14)] text-[var(--cv-danger)] hover:bg-[rgba(248,113,113,0.22)]',
+          'bg-[color-mix(in_srgb,var(--cv-danger)_14%,transparent)] text-[var(--cv-danger)] hover:bg-[color-mix(in_srgb,var(--cv-danger)_22%,transparent)]',
         )}
         disabled={disabled || loading}
         style={style}

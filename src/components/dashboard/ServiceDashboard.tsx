@@ -91,7 +91,7 @@ const ALERTS = [
 
 const statusMeta = {
   open: { label: 'Open', className: 'bg-[var(--cv-primary-soft)] text-[var(--cv-primary)]' },
-  booked: { label: 'Booked', className: 'bg-[rgba(56,189,248,0.14)] text-[var(--cv-info)]' },
+  booked: { label: 'Booked', className: 'bg-[var(--color-info-soft)] text-[var(--cv-info)]' },
   paused: { label: 'Paused', className: 'bg-[var(--cv-elevated)] text-[var(--cv-muted)]' },
 }
 
@@ -167,7 +167,7 @@ export function ServiceDashboard() {
   return (
     <div className="space-y-8">
       {kycPending ? (
-        <div className="flex items-start gap-3 rounded-[16px] border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] px-4 py-3 text-sm text-[var(--cv-warning)]">
+        <div className="flex items-start gap-3 rounded-[16px] border border-[var(--cv-warning)]/30 bg-[var(--color-warning-soft)] px-4 py-3 text-sm text-[var(--cv-warning)]">
           <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={1.5} />
           <div>
             <strong>KYC Pending — Review status.</strong> Offering services stays locked until approval.
@@ -286,9 +286,9 @@ export function ServiceDashboard() {
         </Card>
 
         <div className="space-y-6">
-          <Card className="!rounded-2xl border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.08)]">
+          <Card className="!rounded-2xl border-[var(--cv-warning)]/30 bg-[var(--color-warning-soft)]">
             <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[rgba(245,185,66,0.15)] text-[var(--cv-warning)]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-warning-soft)] text-[var(--cv-warning)]">
                 <ClockIcon className="h-5 w-5" />
               </span>
               <div className="min-w-0 flex-1">

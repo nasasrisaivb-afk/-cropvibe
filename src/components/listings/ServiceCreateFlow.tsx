@@ -620,7 +620,7 @@ export function ServiceCreateFlow({ onDone }: { onDone: () => void }) {
                       className={cn(
                         'rounded-md px-2 py-0.5 text-[11px]',
                         form.includes[item]
-                          ? 'bg-emerald-50 text-emerald-800'
+                          ? 'bg-[var(--color-success-soft)] text-[var(--cv-success)]'
                           : 'bg-[var(--cv-elevated)] text-[var(--cv-muted)]',
                       )}
                     >
@@ -889,7 +889,7 @@ function DetailsStep({
             onChange={(e) => update('photoCount', e.target.files?.length ?? 0)}
           />
           {form.photoCount > 0 ? (
-            <p className="mt-2 text-xs font-medium text-emerald-700">
+            <p className="mt-2 text-xs font-medium text-[var(--cv-success)]">
               {form.photoCount} file{form.photoCount === 1 ? '' : 's'} selected
             </p>
           ) : null}

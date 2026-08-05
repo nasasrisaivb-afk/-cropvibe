@@ -73,7 +73,7 @@ export function MessagesPage() {
         subtitle="Order-linked chats with read receipts. Attachments supported."
       />
 
-      <div className="grid h-[min(70vh,720px)] overflow-hidden rounded-[12px] border border-[var(--cv-border)] bg-[var(--cv-surface)] lg:grid-cols-[320px_1fr]">
+      <div className="grid h-[min(calc(100dvh-12rem),720px)] overflow-hidden rounded-[12px] border border-[var(--cv-border)] bg-[var(--cv-surface)] max-lg:h-[min(calc(100dvh-10rem),640px)] lg:grid-cols-[320px_1fr]">
         <aside
           className={cn(
             'border-r border-[var(--cv-border)]',

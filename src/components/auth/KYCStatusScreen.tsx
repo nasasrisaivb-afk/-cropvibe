@@ -65,7 +65,7 @@ export function KYCStatusScreen() {
           ))}
         </div>
 
-        <div className="mt-4 rounded-lg border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] p-3 text-sm text-[var(--cv-warning)]">
+        <div className="mt-4 rounded-lg border border-[var(--cv-warning)]/30 bg-[var(--color-warning-soft)] p-3 text-sm text-[var(--cv-warning)]">
           <strong>KYC Pending — Review status</strong>
           <p className="mt-1">Locked until approval: Create listings, rent equipment, offer services, full messaging.</p>
           <p className="mt-1">Available: Browse as buyer, wallet (read-only), limited messages, profile view.</p>

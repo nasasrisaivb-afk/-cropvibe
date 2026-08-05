@@ -17,10 +17,10 @@ const COURSE_CATEGORIES = ['Organic Farming', 'Crop Management', 'Soil & Nutriti
 function Progress({ step, total, color }: { step: number; total: number; color: string }) {
   return (
     <div className="mb-6">
-      <div className="mb-2 flex justify-between text-sm text-slate-500">
+      <div className="mb-2 flex justify-between text-sm text-[var(--cv-muted)]">
         <span>Step {step} of {total}</span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+      <div className="h-2 overflow-hidden rounded-full bg-[var(--cv-elevated)]">
         <div className="h-full rounded-full transition-all" style={{ width: `${(step / total) * 100}%`, backgroundColor: color }} />
       </div>
     </div>
@@ -67,7 +67,7 @@ function SellerCreateFlow({ onDone }: { onDone: () => void }) {
   return (
     <Card>
       <h1 className="mb-2 text-2xl font-bold">Create Product Listing</h1>
-      <Progress step={step} total={5} color="#2D5016" />
+      <Progress step={step} total={5} color="var(--cv-nav-active-fg)" />
 
       {step === 1 && (
         <div>
@@ -78,13 +78,13 @@ function SellerCreateFlow({ onDone }: { onDone: () => void }) {
                 key={cat}
                 type="button"
                 onClick={() => update('category', cat)}
-                className={cn('rounded-md border-2 px-4 py-3 text-left text-sm', form.category === cat ? 'border-green-800 bg-green-50 font-semibold' : 'border-slate-200')}
+                className={cn('rounded-md border-2 px-4 py-3 text-left text-sm', form.category === cat ? 'border-[var(--cv-btn-bg)] bg-[var(--color-success-soft)] font-semibold' : 'border-[var(--cv-border)]')}
               >
                 {form.category === cat ? '◉' : '○'} {cat}
               </button>
             ))}
           </div>
-          {errors.category ? <p className="mt-2 text-sm text-red-600">{errors.category}</p> : null}
+          {errors.category ? <p className="mt-2 text-sm text-[var(--cv-danger)]">{errors.category}</p> : null}
         </div>
       )}
 
@@ -101,9 +101,9 @@ function SellerCreateFlow({ onDone }: { onDone: () => void }) {
 
       {step === 3 && (
         <div className="space-y-4">
-          <div className="rounded-lg border-2 border-dashed border-slate-300 p-6 text-center">
+          <div className="rounded-lg border-2 border-dashed border-[var(--cv-border)] p-6 text-center">
             <p className="font-medium">Upload Images (min 3, max 10)</p>
-            <p className="text-xs text-slate-500">1024×1024 recommended, &lt; 5MB each</p>
+            <p className="text-xs text-[var(--cv-muted)]">1024×1024 recommended, &lt; 5MB each</p>
             <input type="file" accept="image/*" multiple className="mt-3" />
           </div>
           <FormInput label="Size / Weight" value={form.sizeWeight} onChange={(e) => update('sizeWeight', e.target.value)} placeholder="Medium, 150-200g" />
@@ -122,10 +122,10 @@ function SellerCreateFlow({ onDone }: { onDone: () => void }) {
           <FormInput label="Reorder Level" type="number" value={form.reorderLevel} onChange={(e) => update('reorderLevel', e.target.value)} helperText="Alert when stock drops below this" />
           <FormInput label="Available Till" type="date" value={form.availableTill} onChange={(e) => update('availableTill', e.target.value)} />
           {price > 0 && (
-            <div className="rounded-lg bg-slate-50 p-4 text-sm">
+            <div className="rounded-lg bg-[var(--cv-surface-muted)] p-4 text-sm">
               <p>Base Price: {formatCurrency(price)}/{form.unit}</p>
               <p>Platform Fee: {formatCurrency(fee)}/{form.unit} (15%)</p>
-              <p className="font-semibold text-green-800">Your Earnings: {formatCurrency(earnings)}/{form.unit} (85%)</p>
+              <p className="font-semibold text-[var(--cv-success)]">Your Earnings: {formatCurrency(earnings)}/{form.unit} (85%)</p>
             </div>
           )}
         </div>
@@ -139,8 +139,8 @@ function SellerCreateFlow({ onDone }: { onDone: () => void }) {
           <p><strong>Origin:</strong> {form.origin}</p>
           <p><strong>Price:</strong> {formatCurrency(price)}/{form.unit}</p>
           <p><strong>MOQ:</strong> {form.moq} {form.unit}</p>
-          <p className="text-slate-600">{form.description}</p>
-          <p className="rounded-md bg-slate-50 p-3 text-xs text-slate-500">Your listing will go live after quick review (usually &lt; 1 hour).</p>
+          <p className="text-[var(--cv-muted)]">{form.description}</p>
+          <p className="rounded-md bg-[var(--cv-surface-muted)] p-3 text-xs text-[var(--cv-muted)]">Your listing will go live after quick review (usually &lt; 1 hour).</p>
         </div>
       )}
 
@@ -173,7 +173,7 @@ function EducatorCreateFlow({ onDone }: { onDone: () => void }) {
   return (
     <Card>
       <h1 className="mb-2 text-2xl font-bold">Create Course</h1>
-      <Progress step={step} total={5} color="#4A235A" />
+      <Progress step={step} total={5} color="var(--cv-nav-active-fg)" />
       {step === 1 && (
         <div className="space-y-4">
           <FormInput label="Course Title" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} required />
@@ -186,7 +186,7 @@ function EducatorCreateFlow({ onDone }: { onDone: () => void }) {
       )}
       {step === 2 && (
         <div className="space-y-4">
-          <p className="text-sm text-slate-600">Add modules and lessons (demo structure).</p>
+          <p className="text-sm text-[var(--cv-muted)]">Add modules and lessons (demo structure).</p>
           <FormInput label="Module 1 Name" placeholder="Introduction to Soil Health" />
           <FormInput label="Lesson 1 Title" placeholder="What is soil composition?" />
           <Select label="Content Type" value="Video" onChange={() => undefined} options={['Video', 'Document', 'Quiz', 'Assignment'].map((o) => ({ value: o, label: o }))} />
@@ -209,10 +209,10 @@ function EducatorCreateFlow({ onDone }: { onDone: () => void }) {
             <FormInput label="Price" type="number" value={form.price} onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))} />
           )}
           {price > 0 && form.paid === 'Paid' && (
-            <div className="rounded-lg bg-slate-50 p-4 text-sm">
+            <div className="rounded-lg bg-[var(--cv-surface-muted)] p-4 text-sm">
               <p>Course Price: {formatCurrency(price)}</p>
               <p>Platform Fee: {formatCurrency(price * 0.15)}</p>
-              <p className="font-semibold text-purple-900">Your Earnings: {formatCurrency(price * 0.85)}</p>
+              <p className="font-semibold text-[var(--cv-success)]">Your Earnings: {formatCurrency(price * 0.85)}</p>
             </div>
           )}
         </div>
@@ -252,15 +252,15 @@ function BuyerSupplierFlow() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Find suppliers by product"
-        className="focus-ring w-full rounded-md border border-slate-300 px-4 py-3"
+        className="focus-ring w-full rounded-md border border-[var(--cv-border)] px-4 py-3"
       />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {suppliers.map((s) => (
           <Card key={s.name}>
             <p className="font-semibold">{s.name}</p>
-            <p className="text-xs text-slate-500">{s.location} · {s.rating}⭐</p>
+            <p className="text-xs text-[var(--cv-muted)]">{s.location} · {s.rating}⭐</p>
             <p className="mt-2 text-sm">{s.specialties} · MOQ {s.moq}</p>
-            <p className="text-sm font-medium text-blue-900">{s.price}</p>
+            <p className="text-sm font-medium text-[var(--cv-info)]">{s.price}</p>
             <div className="mt-3 flex gap-2">
               <Button size="sm" variant="secondary" roleColor="buyer">♡ Save</Button>
               <Button size="sm" roleColor="buyer">Send Quote</Button>
@@ -282,7 +282,7 @@ export function CreateWorkflowPage() {
     return (
       <Card>
         <h1 className="text-xl font-bold">Feature Locked</h1>
-        <p className="mt-2 text-sm text-slate-600">KYC approval required before creating listings, equipment, services, or courses.</p>
+        <p className="mt-2 text-sm text-[var(--cv-muted)]">KYC approval required before creating listings, equipment, services, or courses.</p>
         <Button className="mt-4" onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>
       </Card>
     )

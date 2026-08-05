@@ -29,7 +29,7 @@ function readTheme(role?: Role | null): ColorMode {
 function applyTheme(theme: ColorMode) {
   document.documentElement.setAttribute('data-theme', theme)
   const meta = document.querySelector('meta[name="theme-color"]')
-  if (meta) meta.setAttribute('content', theme === 'light' ? '#FAFAF8' : '#1A1A1A')
+  if (meta) meta.setAttribute('content', theme === 'light' ? '#F2F5F0' : '#1A1A1A')
 }
 
 interface AppState {

@@ -51,7 +51,7 @@ const ALERTS = [
 
 const statusMeta = {
   available: { label: 'Available', className: 'bg-[var(--cv-primary-soft)] text-[var(--cv-primary)]' },
-  booked: { label: 'Booked', className: 'bg-[rgba(56,189,248,0.14)] text-[var(--cv-info)]' },
+  booked: { label: 'Booked', className: 'bg-[var(--color-info-soft)] text-[var(--cv-info)]' },
   maintenance: { label: 'Maintenance', className: 'bg-[var(--cv-elevated)] text-[var(--cv-muted)]' },
 }
 
@@ -73,21 +73,33 @@ function StatCard({
   return (
     <div
       className={cn(
-        'rounded-[16px] border border-[var(--cv-border)] bg-[var(--cv-surface)] p-4 transition hover:shadow-[var(--shadow-md)]',
-        emphasize && 'ring-1 ring-[var(--cv-primary)]/15',
+        'rounded-[28px] p-5 transition duration-150',
+        emphasize
+          ? 'bg-[var(--cv-nav-active-fg)] text-[var(--cv-nav-active-bg)] shadow-[0_0_32px_color-mix(in_srgb,var(--cv-nav-active-fg)_18%,transparent)]'
+          : 'border border-[var(--cv-border)] bg-[var(--cv-surface)] text-[var(--cv-text)]',
       )}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[13px] font-medium text-[var(--cv-muted)]">{title}</p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--cv-text)]">{value}</p>
+          <p className={cn('text-[13px] font-medium', emphasize ? 'text-[var(--cv-nav-active-bg)]/70' : 'text-[var(--cv-muted)]')}>
+            {title}
+          </p>
+          <p
+            className={cn(
+              'mt-2 text-[1.65rem] font-semibold tracking-tight',
+              emphasize ? 'text-[var(--cv-nav-active-bg)]' : 'text-[var(--cv-text)]',
+            )}
+          >
+            {value}
+          </p>
           {hint ? (
             <p
               className={cn(
                 'mt-1.5 text-[13px] font-medium',
-                positive === true && 'text-[var(--cv-success)]',
-                positive === false && 'text-[var(--cv-danger)]',
-                positive === undefined && 'text-[var(--cv-muted)]',
+                emphasize && 'text-[var(--cv-nav-active-bg)]/75',
+                !emphasize && positive === true && 'text-[var(--cv-primary)]',
+                !emphasize && positive === false && 'text-[var(--cv-danger)]',
+                !emphasize && positive === undefined && 'text-[var(--cv-muted)]',
               )}
             >
               {positive === true ? '↑ ' : positive === false ? '↓ ' : ''}
@@ -95,13 +107,21 @@ function StatCard({
             </p>
           ) : null}
         </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[var(--cv-primary-soft)] text-[var(--cv-primary)]">
+        <span
+          className={cn(
+            'flex h-10 w-10 shrink-0 items-center justify-center rounded-full',
+            emphasize ? 'bg-[var(--cv-nav-active-bg)] text-[var(--cv-nav-active-fg)]' : 'bg-[var(--cv-elevated)] text-[var(--cv-text)]',
+          )}
+          aria-hidden
+        >
           <Icon className="h-5 w-5" strokeWidth={1.5} />
         </span>
       </div>
     </div>
   )
 }
+
+const panelClass = '!rounded-[28px] !shadow-none'
 
 export function RentalDashboard() {
   const navigate = useNavigate()
@@ -117,7 +137,7 @@ export function RentalDashboard() {
   return (
     <div className="space-y-8">
       {kycPending ? (
-        <div className="flex items-start gap-3 rounded-[16px] border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] px-4 py-3 text-sm text-[var(--cv-warning)]">
+        <div className="flex items-start gap-3 rounded-[24px] border border-[var(--cv-warning)]/30 bg-[var(--color-warning-soft)] px-4 py-3 text-sm text-[var(--cv-warning)]">
           <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={1.5} />
           <div>
             <strong>KYC Pending — Review status.</strong> Adding equipment stays locked until approval.
@@ -130,19 +150,10 @@ export function RentalDashboard() {
         eyebrow="Rental Provider"
         title={`${greeting}, ${name}`}
         subtitle={`Last login: 1 hour ago · ${user?.profile.location ?? 'Nagpur, MH'}`}
-        actions={
-          <>
-            <Button disabled={kycPending} onClick={() => navigate('/dashboard/create')}>
-              + Add Equipment
-            </Button>
-            <Button variant="secondary" onClick={() => navigate('/dashboard/machinery')}>
-              View Listing Types
-            </Button>
-          </>
-        }
+        className="[&_h1]:text-[32px] sm:[&_h1]:text-[40px] sm:[&_h1]:leading-[1.1]"
       />
 
-      <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-3 xl:gap-4">
         <StatCard title="Total Revenue" value={formatCurrency(582300)} hint="18% YoY" positive icon={CurrencyRupeeIcon} emphasize />
         <StatCard title="This Month" value={formatCurrency(123450)} hint="₹ 34,200" positive icon={ArrowTrendingUpIcon} />
         <StatCard title="Fleet Utilization" value={`${booked} of ${EQUIPMENT.length}`} hint={`${Math.round((booked / EQUIPMENT.length) * 100)}% booked`} icon={TruckIcon} />
@@ -151,14 +162,14 @@ export function RentalDashboard() {
         <StatCard title="Avg Rating" value="4.8 / 5.0" hint="89 reviews" icon={StarIcon} />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.55fr_1fr]">
-        <Card className="!rounded-2xl !p-0 overflow-hidden">
+      <div className="grid gap-5 xl:grid-cols-[1.55fr_1fr]">
+        <Card className={cn(panelClass, '!p-0 overflow-hidden')}>
           <div className="flex items-center justify-between border-b border-[var(--cv-border)] px-5 py-4">
             <div>
               <h3 className="font-semibold text-[var(--cv-text)]">Upcoming Bookings</h3>
               <p className="text-xs text-[var(--cv-muted)]">Pickups and returns this week</p>
             </div>
-            <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/scheduling')}>
+            <Button size="sm" variant="ghost" className="!rounded-full" onClick={() => navigate('/dashboard/scheduling')}>
               View all
             </Button>
           </div>
@@ -195,7 +206,7 @@ export function RentalDashboard() {
           </div>
           <div className="space-y-2 p-4 md:hidden">
             {BOOKINGS.map((b) => (
-              <div key={b.id} className="rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] p-3">
+              <div key={b.id} className="rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] p-3">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-semibold text-[var(--cv-text)]">{b.id}</span>
                   <Badge status={b.status} />
@@ -211,10 +222,10 @@ export function RentalDashboard() {
           </div>
         </Card>
 
-        <div className="space-y-6">
-          <Card className="!rounded-2xl border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.08)]">
+        <div className="space-y-5">
+          <Card className={cn(panelClass, 'border-[var(--cv-warning)]/25 bg-[var(--color-warning-soft)]')}>
             <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[rgba(245,185,66,0.15)] text-[var(--cv-warning)]">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--color-warning-soft)] text-[var(--cv-warning)]">
                 <ClockIcon className="h-5 w-5" />
               </span>
               <div className="min-w-0 flex-1">
@@ -223,10 +234,10 @@ export function RentalDashboard() {
                   <strong className="text-[var(--cv-text)]">2 assets</strong> due today — follow up before overdue fees apply.
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <Button size="sm" onClick={() => navigate('/dashboard/overdue')}>
+                  <Button size="sm" className="!rounded-full" onClick={() => navigate('/dashboard/overdue')}>
                     Review overdue
                   </Button>
-                  <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/scheduling')}>
+                  <Button size="sm" variant="secondary" className="!rounded-full" onClick={() => navigate('/dashboard/scheduling')}>
                     Scheduling
                   </Button>
                 </div>
@@ -234,7 +245,7 @@ export function RentalDashboard() {
             </div>
           </Card>
 
-          <Card className="!rounded-2xl" title="Revenue by Category">
+          <Card className={panelClass} title="Revenue by Category">
             <div className="space-y-4">
               {REVENUE.map((r) => (
                 <div key={r.name}>
@@ -242,7 +253,7 @@ export function RentalDashboard() {
                     <span className="font-medium text-[var(--cv-muted)]">{r.name}</span>
                     <span className="font-semibold text-[var(--cv-primary)]">{formatCurrency(r.amount)}</span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-[var(--cv-elevated)]">
+                  <div className="h-2.5 overflow-hidden rounded-full bg-[var(--cv-elevated)]">
                     <div className="h-full rounded-full bg-[var(--cv-primary)]" style={{ width: `${r.pct}%` }} />
                   </div>
                 </div>
@@ -250,7 +261,7 @@ export function RentalDashboard() {
             </div>
           </Card>
 
-          <Card className="!rounded-2xl" title="Maintenance">
+          <Card className={panelClass} title="Maintenance">
             <ul className="space-y-3">
               {ALERTS.map((a) => (
                 <li key={a.text} className="flex gap-2 text-sm text-[var(--cv-muted)]">
@@ -267,13 +278,13 @@ export function RentalDashboard() {
         </div>
       </div>
 
-      <Card className="!rounded-2xl !p-0 overflow-hidden">
+      <Card className={cn(panelClass, '!p-0 overflow-hidden')}>
         <div className="flex items-center justify-between border-b border-[var(--cv-border)] px-5 py-4">
           <div>
             <h3 className="font-semibold text-[var(--cv-text)]">Fleet Status</h3>
             <p className="text-xs text-[var(--cv-muted)]">Live availability across equipment</p>
           </div>
-          <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/machinery')}>
+          <Button size="sm" variant="ghost" className="!rounded-full" onClick={() => navigate('/dashboard/machinery')}>
             Manage fleet
           </Button>
         </div>
@@ -282,7 +293,7 @@ export function RentalDashboard() {
             <button
               key={eq.name}
               type="button"
-              className="rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] p-4 text-left transition hover:border-[var(--cv-primary)]/30 hover:bg-[var(--cv-surface)]"
+              className="rounded-[22px] border border-[var(--cv-border)] bg-[var(--cv-elevated)] p-4 text-left transition hover:border-[var(--cv-primary)]/30 hover:bg-[var(--cv-surface)]"
               onClick={() => navigate('/dashboard/equipment')}
             >
               <div className="flex items-start justify-between gap-2">
@@ -307,16 +318,27 @@ export function RentalDashboard() {
       </Card>
 
       <div className="flex flex-wrap gap-2">
-        <Button variant="secondary" onClick={() => navigate('/dashboard/scheduling')}>
+        <Button
+          className="!rounded-full !bg-[var(--cv-nav-active-fg)] !text-[var(--cv-nav-active-bg)] hover:!brightness-95"
+          onClick={() => navigate('/dashboard/scheduling')}
+        >
           Scheduling
         </Button>
-        <Button variant="secondary" onClick={() => navigate('/dashboard/finance')}>
+        <Button
+          variant="secondary"
+          className="!rounded-full !border-white/10"
+          onClick={() => navigate('/dashboard/finance')}
+        >
           Finance
         </Button>
-        <Button variant="secondary" onClick={() => navigate('/dashboard/agreements')}>
+        <Button
+          variant="secondary"
+          className="!rounded-full !border-white/10"
+          onClick={() => navigate('/dashboard/agreements')}
+        >
           Agreements
         </Button>
-        <Button variant="ghost" onClick={() => navigate('/dashboard/damage')}>
+        <Button variant="ghost" className="!rounded-full" onClick={() => navigate('/dashboard/damage')}>
           Reports
         </Button>
       </div>
