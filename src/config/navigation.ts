@@ -88,24 +88,25 @@ export const RENTAL_NAV_SECTIONS: NavSection[] = [
   },
   {
     title: 'Bookings',
+    items: [{ id: 'scheduling', label: 'Schedule', path: '/dashboard/scheduling' }],
+  },
+  {
+    title: 'Reports & issues',
     items: [
-      { id: 'scheduling', label: 'Schedule', path: '/dashboard/scheduling' },
+      { id: 'damage', label: 'Reports', path: '/dashboard/damage' },
       { id: 'overdue', label: 'Overdue', path: '/dashboard/overdue' },
+      { id: 'disputes', label: 'Issues', path: '/dashboard/disputes' },
     ],
   },
   {
     title: 'Documents',
-    items: [
-      { id: 'agreements', label: 'Agreements', path: '/dashboard/agreements' },
-      { id: 'damage', label: 'Damage reports', path: '/dashboard/damage' },
-    ],
+    items: [{ id: 'agreements', label: 'Agreements', path: '/dashboard/agreements' }],
   },
   {
     title: 'Money',
     items: [
       { id: 'finance', label: 'Earnings', path: '/dashboard/finance' },
       { id: 'payouts', label: 'Payouts', path: '/dashboard/payouts' },
-      { id: 'disputes', label: 'Issues', path: '/dashboard/disputes' },
     ],
   },
 ]
@@ -306,11 +307,11 @@ const baseCrumbs: Partial<Record<PageId, string[]>> = {
   scheduling: ['Bookings', 'Schedule'],
   calendar: ['Bookings', 'Calendar'],
   agreements: ['Documents', 'Agreements'],
-  damage: ['Documents', 'Damage reports'],
-  overdue: ['Bookings', 'Overdue'],
+  damage: ['Reports & issues', 'Reports'],
+  overdue: ['Reports & issues', 'Overdue'],
   finance: ['Money', 'Earnings'],
   payouts: ['Money', 'Payouts'],
-  disputes: ['Money', 'Issues'],
+  disputes: ['Reports & issues', 'Issues'],
   settlements: ['Money', 'Settlements'],
   help: ['Help', 'Help Desk'],
   consultancy: ['Services', 'Consultancy'],
