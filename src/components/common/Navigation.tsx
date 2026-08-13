@@ -7,26 +7,30 @@ import {
   CalendarDaysIcon,
   ChartBarIcon,
   ChatBubbleLeftRightIcon,
-  ChevronDoubleLeftIcon,
+  Bars3BottomLeftIcon,
   ChevronDoubleRightIcon,
-  ChevronDownIcon,
+  ChevronUpDownIcon,
   ClipboardDocumentCheckIcon,
   ClipboardDocumentListIcon,
   CloudIcon,
   Cog6ToothIcon,
   CreditCardIcon,
   DocumentTextIcon,
+  EnvelopeIcon,
   ExclamationTriangleIcon,
   FolderOpenIcon,
   HomeIcon,
   MagnifyingGlassIcon,
   MapIcon,
+  MoonIcon,
   PaperAirplaneIcon,
   PlusIcon,
   QuestionMarkCircleIcon,
   ScaleIcon,
   Squares2X2Icon,
+  SparklesIcon,
   FunnelIcon,
+  SunIcon,
   TruckIcon,
   UserCircleIcon,
   UserGroupIcon,
@@ -34,7 +38,6 @@ import {
   WrenchScrewdriverIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   getMobileTabs,
@@ -94,6 +97,7 @@ const SECTION_ICONS: Record<string, typeof HomeIcon> = {
   Inventory: ArchiveBoxIcon,
   Bookings: CalendarDaysIcon,
   Documents: DocumentTextIcon,
+  'Reports & issues': ExclamationTriangleIcon,
   Money: WalletIcon,
   Services: WrenchScrewdriverIcon,
   Sell: Squares2X2Icon,
@@ -108,7 +112,97 @@ interface ShellNavProps {
   breadcrumbs: string[]
 }
 
-export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate'>) {
+function SidebarThemeToggle({ collapsed }: { collapsed: boolean }) {
+  const theme = useAppStore((s) => s.theme)
+  const toggleTheme = useAppStore((s) => s.toggleTheme)
+  const isDark = theme === 'dark'
+
+  return (
+    <button
+      type="button"
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={isDark ? 'Light mode' : 'Dark mode'}
+      className={cn(
+        'focus-ring cv-sidebar-item flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] transition',
+        collapsed && 'lg:justify-center lg:px-2',
+      )}
+      onClick={toggleTheme}
+    >
+      {isDark ? (
+        <SunIcon className="h-[18px] w-[18px] shrink-0 opacity-70" strokeWidth={1.5} />
+      ) : (
+        <MoonIcon className="h-[18px] w-[18px] shrink-0 opacity-70" strokeWidth={1.5} />
+      )}
+      <span className={cn('truncate', collapsed && 'lg:hidden')}>
+        {isDark ? 'Light mode' : 'Dark mode'}
+      </span>
+    </button>
+  )
+}
+
+function SidebarNavButton({
+  active,
+  collapsed,
+  label,
+  count,
+  onClick,
+  icon: Icon,
+}: {
+  active: boolean
+  collapsed: boolean
+  label: string
+  count?: number
+  onClick: () => void
+  icon: typeof HomeIcon
+}) {
+  return (
+    <li className="group relative">
+      <button
+        type="button"
+        title={label}
+        aria-current={active ? 'page' : undefined}
+        className={cn(
+          'focus-ring flex min-h-10 w-full items-center gap-3 rounded-xl px-3 py-2 text-[13px] transition',
+          active
+            ? 'border font-medium shadow-[var(--cv-sidebar-active-shadow)]'
+            : 'border border-transparent hover:bg-[var(--cv-sidebar-hover)]',
+          active
+            ? 'border-[var(--cv-sidebar-active-border)] bg-[var(--cv-sidebar-active-bg)] text-[var(--cv-sidebar-text)]'
+            : 'text-[var(--cv-sidebar-muted)] hover:text-[var(--cv-sidebar-text)]',
+          collapsed && 'lg:justify-center lg:px-2',
+        )}
+        onClick={onClick}
+      >
+        <Icon
+          className={cn(
+            'h-[18px] w-[18px] shrink-0',
+            active ? 'text-[var(--cv-sidebar-text)]' : 'opacity-70 group-hover:opacity-100',
+          )}
+          strokeWidth={1.5}
+        />
+        <span className={cn('min-w-0 flex-1 truncate text-left', collapsed && 'lg:hidden')}>
+          {label}
+        </span>
+        {!collapsed && count !== undefined && count > 0 ? (
+          <span className="shrink-0 rounded-md bg-[var(--cv-sidebar-badge-bg)] px-1.5 py-0.5 text-[11px] font-semibold tabular-nums text-[var(--cv-sidebar-text)]">
+            {count > 15 ? '15+' : count > 9 ? '9+' : count}
+          </span>
+        ) : null}
+      </button>
+      {collapsed ? (
+        <span className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-xl border border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-bg)] px-2.5 py-1.5 text-xs font-medium text-[var(--cv-sidebar-text)] shadow-lg group-hover:block lg:group-hover:block">
+          {label}
+          {count ? ` (${count})` : ''}
+        </span>
+      ) : null}
+    </li>
+  )
+}
+
+export function DashboardSidebar({
+  onNavigate,
+  searchPlaceholder,
+}: Pick<ShellNavProps, 'onNavigate' | 'searchPlaceholder'>) {
   const user = useAppStore((state) => state.user)
   const currentPage = useAppStore((state) => state.currentPage)
   const sidebarOpen = useAppStore((state) => state.sidebarOpen)
@@ -119,205 +213,282 @@ export function DashboardSidebar({ onNavigate }: Pick<ShellNavProps, 'onNavigate
   const sections = getNavSections(role)
   const kycPending = user?.kycStatus === 'pending'
   const closeDrawer = () => setSidebarOpen(false)
-
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({})
-
-  useEffect(() => {
-    setExpanded((prev) => {
-      const next = { ...prev }
-      for (const section of sections) {
-        const containsActive = section.items.some((item) => item.id === currentPage)
-        if (containsActive) next[section.title] = true
-        else if (next[section.title] === undefined) next[section.title] = section.items.length <= 3
-      }
-      return next
-    })
-  }, [sections, currentPage, role])
+  const firstName = user?.profile.name?.split(' ')[0] ?? 'User'
+  const initial = (user?.profile.name ?? 'U').slice(0, 1)
 
   const go = (id: PageId) => {
     onNavigate(id)
     closeDrawer()
   }
 
-  const isOpen = (title: string) => expanded[title] ?? true
+  const alertItems: { id: PageId; label: string; Icon: typeof EnvelopeIcon; count: number }[] = [
+    { id: 'messages', label: 'Inbox', Icon: EnvelopeIcon, count: 3 },
+    { id: 'notifications', label: 'Notifications', Icon: BellIcon, count: 8 },
+  ]
 
   return (
     <>
       {sidebarOpen ? (
         <button
           aria-label="Close menu"
-          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           type="button"
           onClick={closeDrawer}
         />
       ) : null}
 
-      <aside
+      <div
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex w-[min(18rem,92vw)] max-w-sm flex-col border-r border-white/[0.06] bg-[var(--cv-nav-active-bg)] text-white transition-all duration-300 ease-in-out lg:static lg:z-0 lg:max-w-none lg:translate-x-0',
-          sidebarCollapsed ? 'lg:w-[72px]' : 'lg:w-60',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+          'cv-sidebar-shell shrink-0',
+          sidebarCollapsed ? 'lg:w-[88px]' : 'lg:w-[272px]',
         )}
-        style={{
-          paddingTop: 'var(--cv-safe-top)',
-          paddingBottom: 'var(--cv-safe-bottom)',
-          paddingLeft: 'var(--cv-safe-left)',
-        }}
       >
-        {/* Workspace header */}
-        <div
+        <aside
           className={cn(
-            'flex shrink-0 items-center gap-2 px-3 pt-3',
-            sidebarCollapsed ? 'justify-center px-2' : '',
+            'cv-sidebar cv-sidebar-panel fixed inset-y-0 left-0 z-50 flex flex-col transition-all duration-300 ease-in-out lg:static lg:z-0 lg:translate-x-0',
+            sidebarCollapsed ? 'w-[min(17.5rem,92vw)] lg:w-[76px]' : 'w-[min(17.5rem,92vw)] lg:w-[260px]',
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full',
           )}
+          style={{
+            paddingTop: 'var(--cv-safe-top)',
+            paddingBottom: 'var(--cv-safe-bottom)',
+            paddingLeft: 'var(--cv-safe-left)',
+          }}
         >
-          <Link
-            to="/dashboard"
+          {/* Brand header — Pointsale-style */}
+          <div
             className={cn(
-              'group flex min-w-0 flex-1 items-center gap-2.5 rounded-2xl px-2 py-2 transition hover:bg-white/[0.04]',
-              sidebarCollapsed && 'flex-none justify-center px-0',
+              'flex shrink-0 items-center gap-2.5 px-4 pb-3 pt-4',
+              sidebarCollapsed && 'lg:justify-center lg:px-2',
             )}
-            onClick={() => go('dashboard')}
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/[0.08] text-[var(--cv-nav-active-fg)]">
-              <Squares2X2Icon className="h-4 w-4" strokeWidth={1.5} />
-            </span>
-            {!sidebarCollapsed ? (
-              <span className="min-w-0 flex-1">
-                <span className="cv-logo block truncate text-[15px] leading-tight tracking-wide text-white">
-                  CropVibe
-                </span>
-                <span className="block truncate text-[11px] text-white/45">{ROLE_LABELS[role]}</span>
+            <Link
+              to="/dashboard"
+              className={cn(
+                'flex min-w-0 flex-1 items-center gap-3',
+                sidebarCollapsed && 'lg:flex-none lg:justify-center',
+              )}
+              onClick={() => go('dashboard')}
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--cv-sidebar-logo-bg)] text-[var(--cv-sidebar-logo-fg)] shadow-sm">
+                <Squares2X2Icon className="h-[18px] w-[18px]" strokeWidth={2} />
               </span>
-            ) : null}
+              {!sidebarCollapsed ? (
+                <span className="min-w-0">
+                  <span className="cv-logo block truncate text-[15px] font-semibold leading-tight text-[var(--cv-sidebar-text)]">
+                    CropVibe
+                  </span>
+                  <span className="block truncate text-[11px] text-[var(--cv-sidebar-muted)]">
+                    {ROLE_LABELS[role]}
+                  </span>
+                </span>
+              ) : null}
+            </Link>
+
             {!sidebarCollapsed ? (
-              <ChevronDownIcon className="h-4 w-4 shrink-0 text-white/35" strokeWidth={1.5} />
-            ) : null}
-            <span className="sr-only">CropVibe {ROLE_LABELS[role]}</span>
-          </Link>
-
-          <button
-            aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            className="focus-ring hidden h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/40 hover:bg-white/[0.06] hover:text-white/80 lg:inline-flex"
-            type="button"
-            onClick={toggleSidebarCollapsed}
-          >
-            {sidebarCollapsed ? (
-              <ChevronDoubleRightIcon className="h-4 w-4" strokeWidth={1.5} />
+              <button
+                aria-label="Collapse sidebar"
+                className="focus-ring hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[var(--cv-sidebar-muted)] transition hover:bg-[var(--cv-sidebar-hover)] hover:text-[var(--cv-sidebar-text)] lg:inline-flex"
+                type="button"
+                onClick={toggleSidebarCollapsed}
+              >
+                <Bars3BottomLeftIcon className="h-[18px] w-[18px]" strokeWidth={1.5} />
+              </button>
             ) : (
-              <ChevronDoubleLeftIcon className="h-4 w-4" strokeWidth={1.5} />
+              <button
+                aria-label="Expand sidebar"
+                className="focus-ring hidden h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[var(--cv-sidebar-muted)] transition hover:bg-[var(--cv-sidebar-hover)] hover:text-[var(--cv-sidebar-text)] lg:inline-flex"
+                type="button"
+                onClick={toggleSidebarCollapsed}
+              >
+                <ChevronDoubleRightIcon className="h-4 w-4" strokeWidth={1.5} />
+              </button>
             )}
-          </button>
 
-          <button
-            aria-label="Close menu"
-            className="cv-touch flex items-center justify-center rounded-xl text-white/50 hover:bg-white/[0.06] hover:text-white lg:hidden"
-            type="button"
-            onClick={closeDrawer}
-          >
-            <XMarkIcon className="h-5 w-5" />
-          </button>
-        </div>
+            <button
+              aria-label="Close menu"
+              className="cv-touch flex h-9 w-9 items-center justify-center rounded-lg text-[var(--cv-sidebar-muted)] hover:bg-[var(--cv-sidebar-hover)] hover:text-[var(--cv-sidebar-text)] lg:hidden"
+              type="button"
+              onClick={closeDrawer}
+            >
+              <XMarkIcon className="h-5 w-5" />
+            </button>
+          </div>
 
-        <div className="flex-1 overflow-y-auto overscroll-contain px-2.5 pb-4 pt-3 [-webkit-overflow-scrolling:touch]">
-          {!sidebarCollapsed && kycPending ? (
-            <div className="mb-3 rounded-2xl border border-[var(--cv-warning)]/30 bg-[var(--color-warning-soft)] px-3 py-2 text-xs text-[var(--cv-warning)]">
-              KYC Pending — create/offer locked
-            </div>
-          ) : null}
+          <div className="flex min-h-0 flex-1 flex-col">
+            <div className="flex-1 overflow-y-auto overscroll-contain px-3 pb-3 [-webkit-overflow-scrolling:touch]">
+              {/* Quick search */}
+              {!sidebarCollapsed ? (
+                <label className="relative mb-3 block">
+                  <span className="sr-only">Quick search</span>
+                  <MagnifyingGlassIcon
+                    className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--cv-sidebar-muted)]"
+                    strokeWidth={1.75}
+                  />
+                  <input
+                    type="search"
+                    placeholder={searchPlaceholder || 'Quick search'}
+                    aria-label="Quick search"
+                    className="focus-ring w-full rounded-xl border border-transparent bg-[var(--cv-sidebar-search-bg)] py-2.5 pl-9 pr-3 text-[13px] text-[var(--cv-sidebar-text)] placeholder:text-[var(--cv-sidebar-muted)]"
+                  />
+                </label>
+              ) : (
+                <button
+                  type="button"
+                  title="Quick search"
+                  aria-label="Quick search"
+                  className="focus-ring mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--cv-sidebar-search-bg)] text-[var(--cv-sidebar-muted)] hover:text-[var(--cv-sidebar-text)] lg:flex"
+                >
+                  <MagnifyingGlassIcon className="h-[18px] w-[18px]" strokeWidth={1.75} />
+                </button>
+              )}
 
-          <nav aria-label="Sidebar navigation" className="space-y-6">
-            {sections.map((section) => {
-              const open = isOpen(section.title)
-              const sectionActive = section.items.some((i) => i.id === currentPage)
+              {/* Inbox / notifications */}
+              <ul className="mb-1 space-y-0.5">
+                {alertItems.map(({ id, label, Icon, count }) => (
+                  <SidebarNavButton
+                    key={id}
+                    active={currentPage === id}
+                    collapsed={sidebarCollapsed}
+                    label={label}
+                    count={count}
+                    icon={Icon}
+                    onClick={() => go(id)}
+                  />
+                ))}
+              </ul>
 
-              return (
-                <div key={section.title}>
-                  {/* Section header — Folders-style */}
-                  {!sidebarCollapsed ? (
-                    <button
-                      type="button"
-                      aria-expanded={open}
-                      className="mb-1.5 flex w-full items-center gap-1.5 px-2.5 py-1 text-left"
-                      onClick={() =>
-                        setExpanded((prev) => ({ ...prev, [section.title]: !open }))
-                      }
-                    >
-                      <ChevronDownIcon
-                        className={cn(
-                          'h-3.5 w-3.5 shrink-0 text-white/35 transition duration-200',
-                          open ? '' : '-rotate-90',
-                        )}
-                        strokeWidth={2}
-                      />
-                      <span
-                        className={cn(
-                          'min-w-0 flex-1 truncate text-[12px] font-medium',
-                          sectionActive ? 'text-white/70' : 'text-white/40',
-                        )}
-                      >
-                        {section.title}
-                      </span>
-                    </button>
-                  ) : (
-                    <div className="mb-1 flex justify-center py-1" title={section.title}>
-                      <span className="h-1 w-1 rounded-full bg-white/25" />
-                    </div>
-                  )}
+              <div className="my-3 h-px bg-[var(--cv-sidebar-border)]" aria-hidden />
 
-                  {open || sidebarCollapsed ? (
+              {/* Main menu */}
+              <nav aria-label="Sidebar navigation" className="space-y-4">
+                {sections.map((section, sectionIndex) => (
+                  <div key={section.title}>
+                    {!sidebarCollapsed ? (
+                      <p className="mb-2 px-3 text-[12px] font-medium text-[var(--cv-sidebar-muted)]">
+                        {sectionIndex === 0 ? 'Menu' : section.title}
+                      </p>
+                    ) : sectionIndex > 0 ? (
+                      <div className="mb-2 flex justify-center">
+                        <span className="h-px w-5 bg-[var(--cv-sidebar-border)]" />
+                      </div>
+                    ) : null}
+
                     <ul className="space-y-0.5">
                       {section.items.map((item) => {
                         const Icon = NAV_ICONS[item.id] ?? SECTION_ICONS[section.title] ?? ArchiveBoxIcon
-                        const active = currentPage === item.id
-
                         return (
-                          <li key={item.id} className="group relative">
-                            <button
-                              type="button"
-                              title={item.label}
-                              aria-current={active ? 'page' : undefined}
-                              className={cn(
-                                'focus-ring flex min-h-10 w-full items-center gap-3 rounded-2xl px-2.5 py-2 text-[13px] transition',
-                                active
-                                  ? 'bg-white/[0.08] font-medium text-white'
-                                  : 'text-white/65 hover:bg-white/[0.04] hover:text-white/90',
-                                sidebarCollapsed && 'lg:justify-center lg:px-2',
-                              )}
-                              onClick={() => go(item.id)}
-                            >
-                              <Icon
-                                className={cn(
-                                  'h-[18px] w-[18px] shrink-0',
-                                  active ? 'text-white' : 'text-white/45 group-hover:text-white/70',
-                                )}
-                                strokeWidth={1.5}
-                              />
-                              <span
-                                className={cn(
-                                  'min-w-0 flex-1 truncate text-left',
-                                  sidebarCollapsed && 'lg:hidden',
-                                )}
-                              >
-                                {item.label}
-                              </span>
-                            </button>
-                            {sidebarCollapsed ? (
-                              <span className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-xl bg-[var(--cv-nav-active-bg)] px-2.5 py-1.5 text-xs font-medium text-white shadow-lg ring-1 ring-white/10 group-hover:block lg:group-hover:block">
-                                {item.label}
-                              </span>
-                            ) : null}
-                          </li>
+                          <SidebarNavButton
+                            key={item.id}
+                            active={currentPage === item.id}
+                            collapsed={sidebarCollapsed}
+                            label={item.label}
+                            icon={Icon}
+                            onClick={() => go(item.id)}
+                          />
                         )
                       })}
                     </ul>
-                  ) : null}
+                  </div>
+                ))}
+              </nav>
+
+              {/* Promo / KYC card */}
+              {!sidebarCollapsed && kycPending ? (
+                <div className="mt-4 rounded-2xl border border-[var(--cv-sidebar-promo-border)] bg-[var(--cv-sidebar-promo-bg)] p-3.5">
+                  <div className="flex items-start gap-2">
+                    <SparklesIcon className="mt-0.5 h-4 w-4 shrink-0 text-indigo-500" strokeWidth={1.75} />
+                    <div>
+                      <p className="text-[13px] font-semibold text-[var(--cv-sidebar-text)]">
+                        Verification pending
+                      </p>
+                      <p className="mt-1 text-xs leading-relaxed text-[var(--cv-sidebar-muted)]">
+                        Complete KYC to unlock create and offer actions.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="focus-ring mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-active-bg)] px-3 py-2 text-xs font-semibold text-[var(--cv-sidebar-text)] shadow-sm hover:bg-[var(--cv-sidebar-hover)]"
+                    onClick={() => go('profile')}
+                  >
+                    <SparklesIcon className="h-3.5 w-3.5" strokeWidth={2} />
+                    Complete KYC
+                  </button>
                 </div>
-              )
-            })}
-          </nav>
-        </div>
-      </aside>
+              ) : sidebarCollapsed && kycPending ? (
+                <button
+                  type="button"
+                  title="Complete KYC"
+                  aria-label="Complete KYC"
+                  className="focus-ring mx-auto mt-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--cv-sidebar-promo-bg)] text-indigo-500 lg:flex"
+                  onClick={() => go('profile')}
+                >
+                  <SparklesIcon className="h-[18px] w-[18px]" strokeWidth={1.75} />
+                </button>
+              ) : null}
+            </div>
+
+            {/* Footer — system + profile */}
+            <div className="shrink-0 border-t border-[var(--cv-sidebar-border)] px-3 py-3">
+              <div className="space-y-0.5">
+                <button
+                  type="button"
+                  title="Preferences"
+                  className={cn(
+                    'focus-ring cv-sidebar-item flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-[var(--cv-sidebar-muted)] transition hover:bg-[var(--cv-sidebar-hover)] hover:text-[var(--cv-sidebar-text)]',
+                    sidebarCollapsed && 'lg:justify-center lg:px-2',
+                  )}
+                  onClick={() => go('settings')}
+                >
+                  <Cog6ToothIcon className="h-[18px] w-[18px] shrink-0 opacity-70" strokeWidth={1.5} />
+                  <span className={cn('truncate', sidebarCollapsed && 'lg:hidden')}>Preferences</span>
+                </button>
+                <SidebarThemeToggle collapsed={sidebarCollapsed} />
+                <button
+                  type="button"
+                  title="Help"
+                  className={cn(
+                    'focus-ring cv-sidebar-item flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-[var(--cv-sidebar-muted)] transition hover:bg-[var(--cv-sidebar-hover)] hover:text-[var(--cv-sidebar-text)]',
+                    sidebarCollapsed && 'lg:justify-center lg:px-2',
+                  )}
+                  onClick={() => go('help')}
+                >
+                  <QuestionMarkCircleIcon className="h-[18px] w-[18px] shrink-0 opacity-70" strokeWidth={1.5} />
+                  <span className={cn('truncate', sidebarCollapsed && 'lg:hidden')}>Help</span>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                title="Account"
+                className={cn(
+                  'focus-ring mt-2 flex w-full items-center gap-3 rounded-xl border border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-search-bg)] px-2.5 py-2 text-left transition hover:bg-[var(--cv-sidebar-hover)]',
+                  sidebarCollapsed && 'lg:justify-center lg:px-2',
+                )}
+                onClick={() => go('profile')}
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--cv-sidebar-logo-bg)] text-sm font-bold text-[var(--cv-sidebar-logo-fg)]">
+                  {initial}
+                </span>
+                {!sidebarCollapsed ? (
+                  <>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[13px] font-semibold text-[var(--cv-sidebar-text)]">
+                        {firstName}
+                      </span>
+                      <span className="block truncate text-[11px] text-[var(--cv-sidebar-muted)]">
+                        {ROLE_LABELS[role]}
+                      </span>
+                    </span>
+                    <ChevronUpDownIcon className="h-4 w-4 shrink-0 text-[var(--cv-sidebar-muted)]" strokeWidth={1.5} />
+                  </>
+                ) : null}
+              </button>
+            </div>
+          </div>
+        </aside>
+      </div>
     </>
   )
 }
@@ -329,23 +500,23 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
   const kycPending = user?.kycStatus === 'pending'
 
   return (
-    <header className="cv-frost sticky top-0 z-30 border-b border-[var(--cv-border)] cv-mobile-header">
-      {/* Mobile app bar — logo + notifications */}
-      <div className="flex h-14 items-center justify-between gap-3 px-4 lg:hidden">
+    <header className="sticky top-0 z-30 bg-[var(--cv-bg)] cv-mobile-header lg:bg-transparent lg:pb-2">
+      {/* Mobile app bar */}
+      <div className="flex h-14 items-center justify-between gap-3 border-b border-[var(--cv-sidebar-border)] px-4 lg:hidden">
         <button
           type="button"
           aria-label="Open menu"
           className="flex items-center gap-2.5 rounded-xl text-left"
           onClick={() => setSidebarOpen(true)}
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--cv-btn-bg)] text-[var(--cv-btn-text)]">
-            <Squares2X2Icon className="h-4.5 w-4.5 h-[18px] w-[18px]" strokeWidth={2} />
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--cv-sidebar-logo-bg)] text-[var(--cv-sidebar-logo-fg)]">
+            <Squares2X2Icon className="h-[18px] w-[18px]" strokeWidth={2} />
           </span>
           <span>
-            <span className="block text-[15px] font-bold tracking-tight text-[var(--cv-text)]">
+            <span className="block text-[15px] font-semibold tracking-tight text-[var(--cv-sidebar-text)]">
               CropVibe
             </span>
-            <span className="block text-[11px] text-[var(--cv-muted)]">{ROLE_LABELS[role]}</span>
+            <span className="block text-[11px] text-[var(--cv-sidebar-muted)]">{ROLE_LABELS[role]}</span>
           </span>
         </button>
 
@@ -353,7 +524,7 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
           <ThemeToggle />
           <button
             aria-label="Messages"
-            className="cv-touch flex items-center justify-center rounded-2xl bg-[var(--cv-elevated)] text-[var(--cv-text)]"
+            className="cv-touch flex items-center justify-center rounded-xl border border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-bg)] text-[var(--cv-sidebar-text)]"
             type="button"
             onClick={() => onNavigate('messages')}
           >
@@ -372,24 +543,24 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
         </div>
       </div>
 
-      {/* Desktop header — unchanged structure */}
-      <div className="hidden h-16 items-center gap-3 px-4 lg:flex lg:px-8">
+      {/* Desktop header */}
+      <div className="hidden h-14 items-center gap-3 px-2 lg:flex">
         <div className="min-w-0 flex-1">
           {breadcrumbs.length > 1 ? (
-            <p className="truncate text-[13px] text-[var(--cv-muted)]">
+            <p className="truncate text-[13px] text-[var(--cv-sidebar-muted)]">
               {breadcrumbs.slice(0, -1).join(' / ')}
             </p>
           ) : null}
-          <h1 className="truncate text-base font-semibold tracking-tight text-[var(--cv-text)]">
+          <h1 className="truncate text-base font-semibold tracking-tight text-[var(--cv-sidebar-text)]">
             {breadcrumbs[breadcrumbs.length - 1]}
           </h1>
         </div>
 
-        <div className="relative mx-2 max-w-lg flex-1">
-          <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--cv-muted)]" />
+        <div className="relative mx-2 max-w-md flex-1">
+          <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--cv-sidebar-muted)]" />
           <input
             aria-label="Search"
-            className="focus-ring cv-input w-full rounded-xl py-2.5 pl-10 pr-3 text-sm"
+            className="focus-ring cv-input w-full py-2.5 pl-10 pr-3 text-sm"
             placeholder={searchPlaceholder}
             type="search"
           />
@@ -400,13 +571,13 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
 
           {kycPending ? (
             <span className="inline-flex">
-              <Badge status="pending">KYC Pending</Badge>
+              <Badge status="pending">KYC pending</Badge>
             </span>
           ) : null}
 
           <button
             aria-label="Help"
-            className="cv-touch flex items-center justify-center rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] text-[var(--cv-muted)] hover:text-[var(--cv-text)]"
+            className="cv-touch flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-bg)] text-[var(--cv-sidebar-muted)] hover:text-[var(--cv-sidebar-text)]"
             type="button"
             onClick={() => onNavigate('help')}
           >
@@ -415,17 +586,17 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
 
           <button
             aria-label="Notifications"
-            className="cv-touch relative flex items-center justify-center rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] text-[var(--cv-muted)] hover:text-[var(--cv-text)]"
+            className="cv-touch relative flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-bg)] text-[var(--cv-sidebar-muted)] hover:text-[var(--cv-sidebar-text)]"
             type="button"
             onClick={() => onNavigate('notifications')}
           >
             <BellIcon className="h-5 w-5" />
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[var(--cv-accent)]" />
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[var(--cv-sidebar-logo-bg)]" />
           </button>
 
           <button
             aria-label="Messages"
-            className="cv-touch inline-flex items-center justify-center rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] text-[var(--cv-muted)] hover:text-[var(--cv-text)]"
+            className="cv-touch inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-bg)] text-[var(--cv-sidebar-muted)] hover:text-[var(--cv-sidebar-text)]"
             type="button"
             onClick={() => onNavigate('messages')}
           >
@@ -454,13 +625,13 @@ export function MobileSearchBar({
         <input
           type="search"
           placeholder={placeholder}
-          className="cv-mobile-search focus-ring w-full border border-[var(--cv-border)] bg-[var(--cv-surface)] py-3 pl-10 pr-4 text-sm text-[var(--cv-text)] placeholder:text-[var(--cv-muted)] shadow-[0_2px_8px_rgba(15,23,42,0.04)]"
+          className="cv-mobile-search focus-ring w-full border border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-bg)] py-3 pl-10 pr-4 text-sm text-[var(--cv-sidebar-text)] placeholder:text-[var(--cv-sidebar-muted)] shadow-[var(--shadow-sm)]"
         />
       </label>
       <button
         type="button"
         aria-label="Filters"
-        className="cv-mobile-filter-btn cv-touch flex shrink-0 items-center justify-center border border-[var(--cv-border)] bg-[var(--cv-surface)] text-[var(--cv-text)] shadow-[0_2px_8px_rgba(15,23,42,0.04)]"
+        className="cv-mobile-filter-btn cv-touch flex shrink-0 items-center justify-center border border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-bg)] text-[var(--cv-sidebar-text)] shadow-[var(--shadow-sm)]"
         onClick={onFilterClick}
       >
         <FunnelIcon className="h-5 w-5" strokeWidth={1.75} />
@@ -509,7 +680,7 @@ export function MobileBottomNav({ onNavigate }: { onNavigate: (page: PageId) => 
   return (
     <nav
       aria-label="Bottom navigation"
-      className="cv-mobile-tabbar fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--cv-border)] bg-[var(--cv-surface)] px-2 pt-2 lg:hidden"
+      className="cv-mobile-tabbar fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-bg)] px-2 pt-2 lg:hidden"
     >
       <div className="relative mx-auto flex max-w-lg items-end">
         <div className="flex flex-1 items-center justify-around gap-0.5 pb-1">

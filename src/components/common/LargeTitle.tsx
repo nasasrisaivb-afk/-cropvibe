@@ -6,49 +6,44 @@ interface LargeTitleProps {
   subtitle?: string
   eyebrow?: string
   actions?: ReactNode
-  /** When true (header collapsed), large title is visually reduced / hidden for sticky compact title */
   collapsed?: boolean
   className?: string
 }
 
-/**
- * Apple-style large title for primary landing screens.
- * Pair with DashboardHeader compact title driven by scroll collapse.
- */
+/** Pointsale-style page hero panel */
 export function LargeTitle({
   title,
   subtitle,
   eyebrow,
   actions,
-  collapsed = false,
   className,
 }: LargeTitleProps) {
   return (
-    <div
+    <section
       className={cn(
-        'flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between',
-        'transition-[opacity,transform] duration-200 ease-out',
-        'transition-[opacity,transform] duration-200 ease-out',
-        collapsed && 'pointer-events-none -translate-y-1 opacity-0 sm:opacity-100 sm:translate-y-0',
+        'cv-dashboard-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6',
         className,
       )}
       data-large-title
     >
-      <div className="min-w-0 max-lg:hidden">
+      <div className="min-w-0">
         {eyebrow ? (
-          <p className="text-[13px] font-medium text-[var(--cv-muted)]">{eyebrow}</p>
+          <p className="text-[13px] font-medium text-[var(--cv-sidebar-muted)]">{eyebrow}</p>
         ) : null}
         <h1
           className={cn(
-            'mt-1 font-semibold tracking-[-0.02em] text-[var(--cv-text)]',
-            'text-[28px] leading-9 sm:text-[32px] sm:leading-10',
+            'font-semibold tracking-tight text-[var(--cv-sidebar-text)]',
+            eyebrow ? 'mt-1' : '',
+            'text-[26px] sm:text-[28px]',
           )}
         >
           {title}
         </h1>
-        {subtitle ? <p className="mt-2 max-w-xl text-sm text-[var(--cv-muted)]">{subtitle}</p> : null}
+        {subtitle ? (
+          <p className="mt-1.5 max-w-xl text-sm text-[var(--cv-sidebar-muted)]">{subtitle}</p>
+        ) : null}
       </div>
-      {actions ? <div className="flex flex-wrap gap-2 max-lg:w-full max-lg:justify-stretch">{actions}</div> : null}
-    </div>
+      {actions ? <div className="flex flex-wrap gap-2 max-lg:w-full">{actions}</div> : null}
+    </section>
   )
 }

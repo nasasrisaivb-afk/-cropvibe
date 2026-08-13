@@ -37,7 +37,7 @@ export function Sheet({ open, title, onClose, children, className }: SheetProps)
         aria-modal="true"
         aria-labelledby="cv-sheet-title"
         className={cn(
-          'cv-spring relative z-10 w-full max-w-lg border border-[var(--cv-border)] bg-[var(--cv-surface)] shadow-[var(--shadow-lg)]',
+          'cv-spring cv-dashboard-panel relative z-10 w-full max-w-lg shadow-[var(--shadow-lg)]',
           'rounded-t-[24px] sm:rounded-[24px]',
           'animate-[cv-sheet-up_420ms_cubic-bezier(0.32,0.72,0,1)]',
           className,

@@ -405,7 +405,7 @@ function DriverCard({
   const total = driver.jobs.reduce((s, j) => s + j.price * j.qty, 0)
 
   return (
-    <article className="flex flex-col rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-surface)] p-4 shadow-[0_4px_18px_rgba(15,23,42,0.05)] sm:p-5">
+    <article className="cv-dashboard-panel flex flex-col p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <div

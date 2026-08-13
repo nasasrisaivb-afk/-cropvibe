@@ -81,22 +81,20 @@ export function OverviewShell({
   className?: string
 }) {
   return (
-    <div className={cn('space-y-4', className)}>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <div className={cn('space-y-5 lg:space-y-6', className)}>
+      <section className="cv-dashboard-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
         <div className="min-w-0">
-          <h1 className="hidden text-2xl font-bold tracking-tight text-[var(--cv-text)] lg:block lg:text-[1.75rem]">
+          <h1 className="text-[26px] font-semibold tracking-tight text-[var(--cv-sidebar-text)] sm:text-[28px]">
             {title}
           </h1>
-          {subtitle ? (
-            <p className="mt-1 hidden text-sm text-[var(--cv-muted)] lg:block">{subtitle}</p>
-          ) : null}
+          {subtitle ? <p className="mt-1.5 text-sm text-[var(--cv-sidebar-muted)]">{subtitle}</p> : null}
         </div>
         {actions ? (
           <div className="flex flex-wrap items-center gap-2 shrink-0 max-lg:w-full max-lg:[&>button]:flex-1 max-lg:[&>a]:flex-1 max-lg:[&>div]:flex-1">
             {actions}
           </div>
         ) : null}
-      </div>
+      </section>
       {children}
     </div>
   )
@@ -110,12 +108,7 @@ export function OverviewPanel({
   className?: string
 }) {
   return (
-    <div
-      className={cn(
-        'cv-overview-panel overflow-hidden rounded-xl border border-[var(--cv-border)] bg-[var(--cv-surface)] shadow-[0_1px_2px_rgba(15,23,42,0.04)]',
-        className,
-      )}
-    >
+    <div className={cn('cv-dashboard-panel overflow-hidden', className)}>
       {children}
     </div>
   )

@@ -76,7 +76,7 @@ export function Button({
       <button
         className={cn(
           base,
-          'border border-[var(--cv-border)] bg-[var(--cv-surface)] text-[var(--cv-text)] hover:bg-[var(--cv-elevated)]',
+          'border border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-bg)] text-[var(--cv-sidebar-text)] hover:bg-[var(--cv-sidebar-hover)]',
         )}
         disabled={disabled || loading}
         style={style}

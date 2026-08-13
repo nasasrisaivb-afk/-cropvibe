@@ -76,6 +76,27 @@
   --cv-nav-active-bg: #121612;
   --cv-nav-active-fg: #ccff00;
 
+  --cv-sidebar-bg: #ffffff;
+  --cv-sidebar-border: rgba(18, 28, 16, 0.08);
+  --cv-sidebar-text: #121612;
+  --cv-sidebar-muted: #6b7280;
+  --cv-sidebar-hover: #eef1ec;
+  --cv-sidebar-active-bg: #ffffff;
+  --cv-sidebar-active-border: rgba(18, 28, 16, 0.06);
+  --cv-sidebar-active-shadow: 0 1px 2px rgba(18, 28, 16, 0.06), 0 2px 8px rgba(18, 28, 16, 0.06);
+  --cv-sidebar-search-bg: #eef1ec;
+  --cv-sidebar-promo-bg: #eef2ff;
+  --cv-sidebar-promo-border: rgba(99, 102, 241, 0.12);
+  --cv-sidebar-badge-bg: #eef1ec;
+  --cv-sidebar-logo-bg: #2563eb;
+  --cv-sidebar-logo-fg: #ffffff;
+
+  --cv-surface: var(--cv-sidebar-bg);
+  --cv-border: var(--cv-sidebar-border);
+  --cv-elevated: var(--cv-sidebar-search-bg);
+  --cv-muted: var(--cv-sidebar-muted);
+  --cv-text: var(--cv-sidebar-text);
+
   color-scheme: light;
 }
 
@@ -118,6 +139,27 @@
   --cv-surface-muted: #202020;
   --cv-nav-active-bg: #0f0f0f;
   --cv-nav-active-fg: #ccff00;
+
+  --cv-sidebar-bg: #242424;
+  --cv-sidebar-border: rgba(255, 255, 255, 0.08);
+  --cv-sidebar-text: #f5f5f3;
+  --cv-sidebar-muted: #9ca3af;
+  --cv-sidebar-hover: rgba(255, 255, 255, 0.05);
+  --cv-sidebar-active-bg: #2e2e2e;
+  --cv-sidebar-active-border: rgba(255, 255, 255, 0.1);
+  --cv-sidebar-active-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --cv-sidebar-search-bg: rgba(255, 255, 255, 0.06);
+  --cv-sidebar-promo-bg: rgba(99, 102, 241, 0.14);
+  --cv-sidebar-promo-border: rgba(129, 140, 248, 0.2);
+  --cv-sidebar-badge-bg: rgba(255, 255, 255, 0.08);
+  --cv-sidebar-logo-bg: #ccff00;
+  --cv-sidebar-logo-fg: #1a1a1a;
+
+  --cv-surface: var(--cv-sidebar-bg);
+  --cv-border: var(--cv-sidebar-border);
+  --cv-elevated: var(--cv-sidebar-search-bg);
+  --cv-muted: var(--cv-sidebar-muted);
+  --cv-text: var(--cv-sidebar-text);
 
   color-scheme: dark;
 }
@@ -249,6 +291,72 @@ body {
   .cv-mobile-main {
     padding-bottom: 1.5rem;
   }
+}
+
+/* Pointsale-style sidebar scroll + search */
+.cv-sidebar {
+  color: var(--cv-sidebar-text);
+  background: var(--cv-sidebar-bg);
+  border-color: var(--cv-sidebar-border);
+}
+
+.cv-sidebar input[type='search']::-webkit-search-cancel-button {
+  display: none;
+}
+
+.cv-sidebar input[type='search'] {
+  appearance: none;
+}
+
+.cv-sidebar ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cv-sidebar ::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--cv-sidebar-muted) 35%, transparent);
+  border-radius: 999px;
+}
+
+@media (min-width: 1024px) {
+  .cv-sidebar-shell {
+    padding: 0.75rem 0 0.75rem 0.75rem;
+  }
+
+  .cv-sidebar-panel {
+    border-radius: 20px;
+    border: 1px solid var(--cv-sidebar-border);
+    box-shadow: var(--shadow-md);
+    max-height: calc(100dvh - 1.5rem);
+  }
+
+  .cv-main-shell {
+    padding: 0.75rem 0.75rem 0.75rem 0;
+  }
+}
+
+/* Pointsale-style dashboard panels */
+.cv-dashboard-panel {
+  border-radius: 20px;
+  border: 1px solid var(--cv-sidebar-border);
+  background: var(--cv-sidebar-bg);
+  box-shadow: var(--shadow-sm);
+}
+
+.cv-stat-card {
+  border-radius: 16px;
+  border: 1px solid var(--cv-sidebar-border);
+  background: var(--cv-sidebar-bg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 150ms ease, transform 150ms ease;
+}
+
+.cv-stat-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.cv-stat-card--featured {
+  border-color: color-mix(in srgb, var(--cv-sidebar-logo-bg) 28%, var(--cv-sidebar-border));
+  box-shadow: var(--shadow-md);
 }
 
 /* ── Mobile-only chrome (lg breakpoint) ── */
@@ -545,12 +653,12 @@ body {
 }
 
 .cv-input {
-  background: var(--cv-elevated);
-  border: 1px solid var(--cv-border);
-  color: var(--cv-text);
-  border-radius: var(--cv-radius-control);
+  background: var(--cv-sidebar-search-bg);
+  border: 1px solid transparent;
+  color: var(--cv-sidebar-text);
+  border-radius: 12px;
   min-height: 44px;
-  transition: border-color var(--cv-ease-fast), box-shadow var(--cv-ease-fast);
+  transition: border-color var(--cv-ease-fast), box-shadow var(--cv-ease-fast), background-color var(--cv-ease-fast);
 }
 
 .cv-input::placeholder {
@@ -569,9 +677,9 @@ body {
 }
 
 .cv-card {
-  background: var(--cv-surface);
-  border: 1px solid var(--cv-border);
-  border-radius: var(--cv-radius);
+  background: var(--cv-sidebar-bg);
+  border: 1px solid var(--cv-sidebar-border);
+  border-radius: 20px;
   box-shadow: var(--shadow-sm);
   padding: 24px;
   transition: box-shadow var(--cv-ease-fast), transform var(--cv-ease-fast);

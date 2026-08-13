@@ -97,17 +97,19 @@ export function AuthShell({ headline, description, steps, activeStep, children }
       </aside>
 
       <main
-        className="relative flex min-h-[100dvh] items-center justify-center bg-[var(--cv-nav-active-bg)] px-6 py-10"
+        className="relative flex min-h-[100dvh] items-center justify-center bg-[var(--cv-bg)] px-6 py-10"
         style={panelVars}
       >
         <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
           <ThemeToggle />
         </div>
 
-        <div className="w-full max-w-[420px]">
-          <div className="mb-8 md:hidden">
-            <p className="cv-logo text-xl text-[var(--cv-nav-active-fg)]">CROPVIBE</p>
-            <p className="mt-0.5 text-[11px] tracking-[0.08em] text-white/75">Your Field, Your Fortune</p>
+        <div className="cv-dashboard-panel w-full max-w-[420px] p-6 sm:p-8">
+          <div className="mb-6 md:hidden">
+            <p className="cv-logo text-xl text-[var(--cv-sidebar-logo-bg)]">CropVibe</p>
+            <p className="mt-0.5 text-[11px] tracking-[0.08em] text-[var(--cv-sidebar-muted)]">
+              Your field, your fortune
+            </p>
           </div>
           {children}
         </div>

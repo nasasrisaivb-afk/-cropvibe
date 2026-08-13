@@ -76,9 +76,9 @@ export function DashboardLayout() {
         Skip to content
       </a>
 
-      <DashboardSidebar onNavigate={go} />
+      <DashboardSidebar onNavigate={go} searchPlaceholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'} />
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      <div className="cv-main-shell flex min-h-0 min-w-0 flex-1 flex-col">
         <DashboardHeader
           breadcrumbs={breadcrumbs}
           searchPlaceholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'}
@@ -89,12 +89,7 @@ export function DashboardLayout() {
           className="cv-mobile-main min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-3 sm:px-6 sm:py-5 lg:px-8 lg:py-6"
           id="main-content"
         >
-          <div className="mx-auto w-full max-w-[1280px]">
-            <div className="mb-2 lg:hidden">
-              <h1 className="truncate text-[24px] font-bold leading-8 tracking-tight text-[var(--cv-text)] sm:text-[28px] sm:leading-9">
-                {breadcrumbs[breadcrumbs.length - 1]}
-              </h1>
-            </div>
+          <div className="mx-auto w-full max-w-[1280px] space-y-5 lg:space-y-6">
             <MobileSearchBar
               placeholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'}
             />
