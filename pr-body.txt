@@ -1,0 +1,20 @@
+## Summary
+
+- App-wide responsive pass: tables stack as labeled cards on mobile, filter selects and action buttons stretch/wrap on small screens, main padding tightened, DashboardLayout title truncates gracefully on phones
+- Drivers page redesign (HCD/UCD): replaced table listing with a bitepoint-inspired card grid: status pill-tabs (All / Available / On Trip / Offline), rounded search bar, per-card trip/skill rows with totals, Book Driver / Track Trip primary action, See Details secondary
+- Driver profile create flow: profileSample pre-fills name, description, and all asset-specifics fields when Driver Profile category is selected; added Truck Driver and Commercial (Heavy Vehicle) options; improved placeholder copy
+
+## New files
+
+- src/components/rentals/DriversCardGrid.tsx — card grid component with 6 seed driver cards (incl. Ramesh Yadav, Karimnagar)
+- src/components/common/DataOverview.tsx — shared overview shell, responsive table helpers
+- src/components/auth/AuthShell.tsx — shared auth layout shell
+- src/components/listings/AgreementCreateFlow.tsx — rental agreement creation flow
+
+## Test plan
+
+- Visit /dashboard/drivers — card grid shows, tabs filter correctly, search narrows results
+- Click See Details on Ramesh Yadav — opens detail preview
+- Visit /dashboard/create and select Driver Profile — form pre-fills with Ramesh Yadav sample
+- Resize to 375px — metric cards scroll, tables stack, filters go full-width
+- Run npm run build — clean 0-error build

@@ -7,9 +7,24 @@ import { formatCurrency } from '../../utils/format'
 import { Badge, type BadgeStatus } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
-import { PageHeader } from '../common/PageHeader'
 import { FormInput } from '../common/FormInput'
 import { Select } from '../common/Select'
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableHead,
+  DataTableRow,
+  ExportButton,
+  FilterSelect,
+  OverviewFooter,
+  OverviewPanel,
+  OverviewSearch,
+  OverviewShell,
+  OverviewTabs,
+  OverviewToolbar,
+  PrimaryActionButton,
+} from '../common/DataOverview'
 
 type SellerStatus = 'pending' | 'accepted' | 'packed' | 'shipped' | 'delivered' | 'completed'
 type RentalStatus = 'pending' | 'confirmed' | 'rented' | 'return' | 'completed' | 'damage' | 'closed'
@@ -147,6 +162,15 @@ function SellerOrders() {
   }
 
   return (
+    <OverviewShell
+      title={`${ORDERS_LABEL.seller} overview`}
+      actions={
+        <>
+          <ExportButton onClick={() => undefined} />
+          <PrimaryActionButton onClick={() => undefined}>+ New order</PrimaryActionButton>
+        </>
+      }
+    >
     <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
       <Card title="Orders">
         <ul className="space-y-2">
@@ -155,13 +179,13 @@ function SellerOrders() {
               <button
                 type="button"
                 onClick={() => setSelected(o.id)}
-                className={`w-full rounded-md border px-3 py-2 text-left text-sm ${selected === o.id ? 'border-[var(--cv-primary)] bg-[var(--cv-primary-soft)]' : 'border-[var(--cv-border)]'}`}
+                className={`w-full rounded-lg border px-3 py-2 text-left text-sm ${selected === o.id ? 'border-[var(--cv-btn-bg)] bg-[var(--cv-primary-soft)]' : 'border-[var(--cv-border)]'}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium">{o.id}</span>
                   <Badge status={sellerBadge(o.status)} />
                 </div>
-                <p className="mt-1 text-xs text-[var(--cv-muted)]">{o.buyer} Â· {o.product}</p>
+                <p className="mt-1 text-xs text-[var(--cv-muted)]">{o.buyer} · {o.product}</p>
               </button>
             </li>
           ))}
@@ -236,6 +260,7 @@ function SellerOrders() {
         </div>
       </Card>
     </div>
+    </OverviewShell>
   )
 }
 
@@ -263,6 +288,15 @@ function RentalBookings() {
   const earnings = rentalTotal - fee
 
   return (
+    <OverviewShell
+      title={`${ORDERS_LABEL.rental} overview`}
+      actions={
+        <>
+          <ExportButton onClick={() => undefined} />
+          <PrimaryActionButton onClick={() => undefined}>+ New booking</PrimaryActionButton>
+        </>
+      }
+    >
     <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
       <Card title="Bookings">
         <ul className="space-y-2">
@@ -271,13 +305,13 @@ function RentalBookings() {
               <button
                 type="button"
                 onClick={() => setSelected(b.id)}
-                className={`w-full rounded-md border px-3 py-2 text-left text-sm ${selected === b.id ? 'border-[var(--cv-primary)] bg-[var(--cv-primary-soft)]' : 'border-[var(--cv-border)]'}`}
+                className={`w-full rounded-lg border px-3 py-2 text-left text-sm ${selected === b.id ? 'border-[var(--cv-btn-bg)] bg-[var(--cv-primary-soft)]' : 'border-[var(--cv-border)]'}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium">{b.id}</span>
                   <Badge status={badgeFor(b.status)} children={b.status} />
                 </div>
-                <p className="mt-1 text-xs text-[var(--cv-muted)]">{b.equipment} Â· {b.renter}</p>
+                <p className="mt-1 text-xs text-[var(--cv-muted)]">{b.equipment} · {b.renter}</p>
               </button>
             </li>
           ))}
@@ -331,7 +365,7 @@ function RentalBookings() {
           <div className="mt-4 rounded-lg bg-[var(--cv-elevated)] p-4 text-sm">
             <p>Rental: {formatCurrency(rentalTotal)}</p>
             <p>Platform Fee: {formatCurrency(fee)} (15%)</p>
-            <p className="font-semibold text-amber-900">Your Earnings: {formatCurrency(earnings)}</p>
+            <p className="font-semibold text-[var(--cv-success)]">Your Earnings: {formatCurrency(earnings)}</p>
             {booking.status === 'damage' && booking.damageCost ? (
               <>
                 <p className="mt-2">Damage Charge: {formatCurrency(booking.damageCost)}</p>
@@ -382,6 +416,7 @@ function RentalBookings() {
         </div>
       </Card>
     </div>
+    </OverviewShell>
   )
 }
 
@@ -413,29 +448,53 @@ function GenericOrders({ role }: { role: Role }) {
   }, [role])
 
   return (
-    <div className="space-y-4">
-      <PageHeader
-        title={label}
-        actions={
-          <Button roleColor={role} onClick={() => navigate(cta.path)}>
-            {cta.label}
-          </Button>
-        }
-      />
-      <div className="space-y-3">
-        {rows.map((r) => (
-          <Card key={r.id}>
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <p className="font-semibold">{r.id} Â· {r.party}</p>
-                <p className="text-sm text-[var(--cv-muted)]">{r.item} Â· {r.amount}</p>
-              </div>
-              <Badge status={r.status} />
-            </div>
-    </Card>
-        ))}
-      </div>
-    </div>
+    <OverviewShell
+      title={`${label} overview`}
+      actions={
+        <>
+          <ExportButton onClick={() => undefined} />
+          <PrimaryActionButton onClick={() => navigate(cta.path)}>{cta.label}</PrimaryActionButton>
+        </>
+      }
+    >
+      <OverviewPanel>
+        <OverviewTabs
+          tabs={[{ value: 'all', label: `All ${label.toLowerCase()}`, count: rows.length }]}
+          value="all"
+          onChange={() => undefined}
+        />
+        <OverviewToolbar>
+          <FilterSelect
+            label="Status"
+            value="all"
+            onChange={() => undefined}
+            options={[
+              { value: 'all', label: 'Status' },
+              { value: 'pending', label: 'Pending' },
+              { value: 'completed', label: 'Completed' },
+            ]}
+          />
+          <OverviewSearch placeholder="Search" />
+        </OverviewToolbar>
+        <DataTable>
+          <DataTableHead columns={['ID', 'Party', 'Item', 'Amount', 'Status']} />
+          <DataTableBody>
+            {rows.map((r) => (
+              <DataTableRow key={r.id}>
+                <DataTableCell mono>{r.id}</DataTableCell>
+                <DataTableCell strong>{r.party}</DataTableCell>
+                <DataTableCell className="text-[var(--cv-muted)]">{r.item}</DataTableCell>
+                <DataTableCell strong>{r.amount}</DataTableCell>
+                <DataTableCell>
+                  <Badge status={r.status} />
+                </DataTableCell>
+              </DataTableRow>
+            ))}
+          </DataTableBody>
+        </DataTable>
+        <OverviewFooter countLabel={`${rows.length} results`} disablePrev disableNext />
+      </OverviewPanel>
+    </OverviewShell>
   )
 }
 

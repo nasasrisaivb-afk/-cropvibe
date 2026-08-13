@@ -1,4 +1,5 @@
 import { cn } from '../../utils/format'
+import { StatusPill, type StatusTone } from './DataOverview'
 
 export type BadgeStatus =
   | 'approved'
@@ -16,91 +17,21 @@ export type BadgeStatus =
   | 'medium'
   | 'low'
 
-const CONFIG: Record<BadgeStatus, { bg: string; text: string; icon: string; label: string }> = {
-  approved: {
-    bg: 'bg-[rgba(74,222,128,0.12)]',
-    text: 'text-[var(--cv-success)]',
-    icon: '✓',
-    label: 'Approved',
-  },
-  pending: {
-    bg: 'bg-[rgba(251,191,36,0.12)]',
-    text: 'text-[var(--cv-warning)]',
-    icon: '⏱',
-    label: 'Pending',
-  },
-  rejected: {
-    bg: 'bg-[rgba(248,113,113,0.12)]',
-    text: 'text-[var(--cv-danger)]',
-    icon: '✗',
-    label: 'Rejected',
-  },
-  active: {
-    bg: 'bg-[var(--cv-primary-soft)]',
-    text: 'text-[var(--cv-primary)]',
-    icon: '●',
-    label: 'Active',
-  },
-  inactive: {
-    bg: 'bg-[var(--cv-elevated)]',
-    text: 'text-[var(--cv-muted)]',
-    icon: '○',
-    label: 'Inactive',
-  },
-  verified: {
-    bg: 'bg-[rgba(74,222,128,0.12)]',
-    text: 'text-[var(--cv-success)]',
-    icon: '✓',
-    label: 'Verified',
-  },
-  packed: {
-    bg: 'bg-[var(--cv-primary-soft)]',
-    text: 'text-[var(--cv-primary)]',
-    icon: '✓',
-    label: 'Packed',
-  },
-  shipped: {
-    bg: 'bg-[rgba(56,189,248,0.12)]',
-    text: 'text-[var(--cv-info)]',
-    icon: '→',
-    label: 'Shipped',
-  },
-  delivered: {
-    bg: 'bg-[rgba(74,222,128,0.12)]',
-    text: 'text-[var(--cv-success)]',
-    icon: '✓',
-    label: 'Delivered',
-  },
-  completed: {
-    bg: 'bg-[var(--cv-elevated)]',
-    text: 'text-[var(--cv-muted)]',
-    icon: '✓',
-    label: 'Completed',
-  },
-  accepted: {
-    bg: 'bg-[rgba(56,189,248,0.12)]',
-    text: 'text-[var(--cv-info)]',
-    icon: '●',
-    label: 'Accepted',
-  },
-  high: {
-    bg: 'bg-[rgba(248,113,113,0.12)]',
-    text: 'text-[var(--cv-danger)]',
-    icon: '!',
-    label: 'High',
-  },
-  medium: {
-    bg: 'bg-[rgba(251,191,36,0.12)]',
-    text: 'text-[var(--cv-warning)]',
-    icon: '!',
-    label: 'Medium',
-  },
-  low: {
-    bg: 'bg-[var(--cv-elevated)]',
-    text: 'text-[var(--cv-muted)]',
-    icon: '•',
-    label: 'Low',
-  },
+const CONFIG: Record<BadgeStatus, { tone: StatusTone; label: string }> = {
+  approved: { tone: 'success', label: 'Approved' },
+  pending: { tone: 'warning', label: 'Pending' },
+  rejected: { tone: 'danger', label: 'Rejected' },
+  active: { tone: 'primary', label: 'Active' },
+  inactive: { tone: 'neutral', label: 'Inactive' },
+  verified: { tone: 'success', label: 'Verified' },
+  packed: { tone: 'primary', label: 'Packed' },
+  shipped: { tone: 'info', label: 'Shipped' },
+  delivered: { tone: 'success', label: 'Delivered' },
+  completed: { tone: 'neutral', label: 'Completed' },
+  accepted: { tone: 'info', label: 'Accepted' },
+  high: { tone: 'danger', label: 'High' },
+  medium: { tone: 'warning', label: 'Medium' },
+  low: { tone: 'neutral', label: 'Low' },
 }
 
 interface BadgeProps {
@@ -112,17 +43,16 @@ interface BadgeProps {
 
 export function Badge({ status = 'pending', children, showIcon = true, className }: BadgeProps) {
   const config = CONFIG[status]
+  if (!showIcon) {
+    return (
+      <StatusPill tone={config.tone} className={cn('[&>svg]:hidden', className)}>
+        {children ?? config.label}
+      </StatusPill>
+    )
+  }
   return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[13px] font-medium',
-        config.bg,
-        config.text,
-        className,
-      )}
-    >
-      {showIcon ? <span aria-hidden>{config.icon}</span> : null}
-      <span>{children ?? config.label}</span>
-    </span>
+    <StatusPill tone={config.tone} className={className}>
+      {children ?? config.label}
+    </StatusPill>
   )
 }

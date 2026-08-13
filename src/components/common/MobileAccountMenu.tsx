@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChevronDownIcon, Cog6ToothIcon, UserCircleIcon } from '@heroicons/react/24/outline'
+import { ChevronDownIcon, Cog6ToothIcon, StarIcon, UserCircleIcon } from '@heroicons/react/24/outline'
 import { ROLE_LABELS } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
 import type { PageId } from '../../types/roles'
@@ -147,6 +147,18 @@ export function HeaderAccountMenu({ onNavigate }: HeaderAccountMenuProps) {
                 className="flex min-h-10 w-full items-center gap-2.5 rounded-[8px] px-2.5 text-left text-sm text-[var(--cv-text)] hover:bg-[var(--cv-elevated)]"
                 onClick={() => {
                   setMenuOpen(false)
+                  onNavigate('reviews')
+                }}
+              >
+                <StarIcon className="h-4 w-4 text-[var(--cv-muted)]" strokeWidth={1.5} />
+                Reviews
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="flex min-h-10 w-full items-center gap-2.5 rounded-[8px] px-2.5 text-left text-sm text-[var(--cv-text)] hover:bg-[var(--cv-elevated)]"
+                onClick={() => {
+                  setMenuOpen(false)
                   onNavigate('settings')
                 }}
               >
@@ -190,6 +202,17 @@ export function HeaderAccountMenu({ onNavigate }: HeaderAccountMenuProps) {
             >
               <UserCircleIcon className="h-5 w-5 text-[var(--cv-muted)]" strokeWidth={1.5} />
               View profile
+            </button>
+            <button
+              type="button"
+              className="focus-ring flex min-h-12 items-center gap-3 rounded-[12px] border border-[var(--cv-border)] bg-[var(--cv-surface)] px-3 text-left text-sm font-semibold text-[var(--cv-text)]"
+              onClick={() => {
+                setSheetOpen(false)
+                onNavigate('reviews')
+              }}
+            >
+              <StarIcon className="h-5 w-5 text-[var(--cv-muted)]" strokeWidth={1.5} />
+              Reviews
             </button>
             <button
               type="button"

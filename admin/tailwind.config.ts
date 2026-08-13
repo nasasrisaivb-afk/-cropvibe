@@ -37,8 +37,8 @@ const config: Config = {
           success: '#4ADE80',
           warning: '#FBBF24',
           error: '#F87171',
-          info: '#3B82F6',
-          pending: '#A78BFA',
+          info: '#38BDF8',
+          pending: '#FBBF24',
         },
       },
       spacing: {

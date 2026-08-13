@@ -6,9 +6,8 @@ import {
   SEARCH_PLACEHOLDERS,
 } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
-import { ROLE_PALETTE } from '../../theme/colors'
 import type { PageId } from '../../types/roles'
-import { DashboardHeader, DashboardSidebar, MobileBottomNav, MobileCreateFab } from '../common/Navigation'
+import { DashboardHeader, DashboardSidebar, MobileBottomNav, MobileCreateFab, MobileSearchBar } from '../common/Navigation'
 import { BuyerDashboard } from './BuyerDashboard'
 import { EducatorDashboard } from './EducatorDashboard'
 import { RentalDashboard } from './RentalDashboard'
@@ -39,16 +38,6 @@ export function DashboardLayout() {
   const user = useAppStore((state) => state.user)
   const location = useLocation()
   const navigate = useNavigate()
-  const role = user?.activeRole ?? 'seller'
-
-  useEffect(() => {
-    const palette = ROLE_PALETTE[role]
-    const root = document.documentElement
-    root.style.setProperty('--cv-primary', palette.solid)
-    root.style.setProperty('--cv-primary-strong', palette.muted)
-    root.style.setProperty('--cv-primary-soft', palette.soft)
-    root.style.setProperty('--cv-btn-bg', palette.solid)
-  }, [role])
 
   useEffect(() => {
     const mapped = routeToPage[location.pathname]
@@ -87,9 +76,9 @@ export function DashboardLayout() {
         Skip to content
       </a>
 
-      <DashboardSidebar onNavigate={go} />
+      <DashboardSidebar onNavigate={go} searchPlaceholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'} />
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      <div className="cv-main-shell flex min-h-0 min-w-0 flex-1 flex-col">
         <DashboardHeader
           breadcrumbs={breadcrumbs}
           searchPlaceholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'}
@@ -97,10 +86,13 @@ export function DashboardLayout() {
         />
 
         <main
-          className="cv-mobile-main min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-4 sm:p-6 sm:pb-6 lg:px-8 lg:py-6"
+          className="cv-mobile-main min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-3 sm:px-6 sm:py-5 lg:px-8 lg:py-6"
           id="main-content"
         >
-          <div className="mx-auto max-w-[1280px]">
+          <div className="mx-auto w-full max-w-[1280px] space-y-5 lg:space-y-6">
+            <MobileSearchBar
+              placeholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'}
+            />
             {currentPage === 'dashboard' ? <DashboardHome /> : <Outlet />}
           </div>
         </main>

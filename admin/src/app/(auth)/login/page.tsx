@@ -63,7 +63,7 @@ function LoginFormInner() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-[#0A0A0A] p-10 lg:flex">
+      <div className="relative hidden flex-col justify-between overflow-hidden bg-bg-base p-10 lg:flex">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(204,255,0,0.12),_transparent_50%)]" />
         <div className="relative">
           <p className="text-2xl font-bold text-brand-lime">CropVibe</p>
@@ -100,7 +100,7 @@ function LoginFormInner() {
                 {...form.register('emailOrPhone')}
                 disabled={form.formState.isSubmitting}
                 placeholder="Email or phone number"
-                className="flex h-10 w-full rounded-lg border border-neutral-300 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-[#B8E600] focus:ring-2 focus:ring-[#CCFF00]"
+                className="flex h-10 w-full rounded-lg border border-neutral-300 bg-white px-3 text-sm text-neutral-900 outline-none focus:border-brand-limeAlt focus:ring-2 focus:ring-brand-lime"
               />
               {form.formState.errors.emailOrPhone ? (
                 <p className="text-xs text-red-600">{form.formState.errors.emailOrPhone.message}</p>
@@ -122,7 +122,7 @@ function LoginFormInner() {
                   {...form.register('password')}
                   type={showPassword ? 'text' : 'password'}
                   disabled={form.formState.isSubmitting}
-                  className="flex h-10 w-full rounded-lg border border-neutral-300 bg-white px-3 pr-10 text-sm text-neutral-900 outline-none focus:border-[#B8E600] focus:ring-2 focus:ring-[#CCFF00]"
+                  className="flex h-10 w-full rounded-lg border border-neutral-300 bg-white px-3 pr-10 text-sm text-neutral-900 outline-none focus:border-brand-limeAlt focus:ring-2 focus:ring-brand-lime"
                 />
                 <button
                   type="button"

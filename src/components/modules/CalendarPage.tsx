@@ -8,11 +8,11 @@ import { cn } from '../../utils/format'
 
 type DayStatus = 'available' | 'booked' | 'blocked' | 'maintenance'
 
-const STATUS_STYLE: Record<DayStatus, string> = {
-  available: 'cv-cal-available border',
-  booked: 'cv-cal-booked border',
-  blocked: 'cv-cal-blocked border',
-  maintenance: 'cv-cal-maintenance border',
+const EVENT_CHIP: Record<DayStatus, string> = {
+  available: '',
+  booked: 'bg-[var(--color-info-soft)] text-[var(--cv-info)]',
+  blocked: 'bg-[var(--cv-elevated)] text-[var(--cv-muted)]',
+  maintenance: 'bg-[var(--color-warning-soft)] text-[var(--cv-warning)]',
 }
 
 function buildMonth(year: number, month: number) {
@@ -81,67 +81,120 @@ export function CalendarPage() {
         }
       />
 
-      <Card className="!rounded-[12px]">
-        <div className="mb-4 flex items-center justify-between">
+      <Card className="!rounded-[24px] !border-[var(--cv-border)] !p-5 sm:!p-6 !shadow-none">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label="Previous month"
+              className="focus-ring flex h-9 w-9 items-center justify-center rounded-full border border-[var(--cv-border)] text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)]"
+              onClick={() =>
+                setCursor((c) => {
+                  const d = new Date(c.y, c.m - 1, 1)
+                  return { y: d.getFullYear(), m: d.getMonth() }
+                })
+              }
+            >
+              ←
+            </button>
+            <h2 className="min-w-[10rem] text-center text-lg font-semibold tracking-tight text-[var(--cv-text)] sm:text-xl">
+              {title}
+            </h2>
+            <button
+              type="button"
+              aria-label="Next month"
+              className="focus-ring flex h-9 w-9 items-center justify-center rounded-full border border-[var(--cv-border)] text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)]"
+              onClick={() =>
+                setCursor((c) => {
+                  const d = new Date(c.y, c.m + 1, 1)
+                  return { y: d.getFullYear(), m: d.getMonth() }
+                })
+              }
+            >
+              →
+            </button>
+          </div>
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
-            onClick={() =>
-              setCursor((c) => {
-                const d = new Date(c.y, c.m - 1, 1)
-                return { y: d.getFullYear(), m: d.getMonth() }
-              })
-            }
+            className="!rounded-full"
+            onClick={() => setCursor({ y: now.getFullYear(), m: now.getMonth() })}
           >
-            ← Prev
-          </Button>
-          <h2 className="text-lg font-semibold">{title}</h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() =>
-              setCursor((c) => {
-                const d = new Date(c.y, c.m + 1, 1)
-                return { y: d.getFullYear(), m: d.getMonth() }
-              })
-            }
-          >
-            Next →
+            Today
           </Button>
         </div>
 
-        <div className="mb-2 grid grid-cols-7 gap-1 text-center text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">
+        <div className="mb-1 grid grid-cols-7 gap-px text-center text-[11px] font-medium text-[var(--cv-muted)]">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
             <div key={d} className="py-2">
               {d}
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-7 gap-1">
-          {cells.map((cell, idx) =>
-            cell.day == null ? (
-              <div key={`e-${idx}`} className="min-h-16 rounded-[10px] bg-transparent" />
-            ) : (
-              <button
-                key={cell.day}
-                type="button"
-                title={cell.note}
-                className={cn(
-                  'min-h-16 rounded-[10px] border p-2 text-left transition hover:brightness-95',
-                  STATUS_STYLE[cell.status ?? 'available'],
-                )}
-              >
-                <span className="text-sm font-semibold">{cell.day}</span>
-                {cell.note ? (
-                  <span className="mt-1 block truncate text-[10px] opacity-80">{cell.note}</span>
-                ) : null}
-              </button>
-            ),
-          )}
+
+        <div className="overflow-hidden rounded-[16px] border border-[var(--cv-border)] bg-[var(--cv-border)]">
+          <div className="grid grid-cols-7 gap-px">
+            {cells.map((cell, idx) => {
+              const status = cell.status ?? 'available'
+              const isToday =
+                cell.day != null &&
+                cell.day === now.getDate() &&
+                cursor.m === now.getMonth() &&
+                cursor.y === now.getFullYear()
+
+              if (cell.day == null) {
+                return (
+                  <div
+                    key={`e-${idx}`}
+                    className="min-h-[4.75rem] bg-[var(--cv-surface)] sm:min-h-[5.5rem]"
+                  />
+                )
+              }
+
+              return (
+                <button
+                  key={cell.day}
+                  type="button"
+                  title={cell.note}
+                  className="focus-ring flex min-h-[4.75rem] flex-col gap-1 bg-[var(--cv-surface)] p-2 text-left transition hover:bg-[var(--cv-elevated)]/60 sm:min-h-[5.5rem] sm:p-2.5"
+                >
+                  <span
+                    className={cn(
+                      'inline-flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold',
+                      isToday ? 'bg-[var(--cv-nav-active-fg)] text-[var(--cv-nav-active-bg)]' : 'text-[var(--cv-text)]',
+                    )}
+                  >
+                    {cell.day}
+                  </span>
+                  {cell.note ? (
+                    <span
+                      className={cn(
+                        'mt-auto truncate rounded-lg px-1.5 py-1 text-[10px] font-medium leading-tight',
+                        EVENT_CHIP[status] || 'bg-[var(--cv-elevated)] text-[var(--cv-muted)]',
+                      )}
+                    >
+                      {cell.note}
+                    </span>
+                  ) : status !== 'available' ? (
+                    <span
+                      className={cn(
+                        'mt-auto h-1.5 w-full rounded-full',
+                        status === 'booked' && 'bg-[var(--cv-info)]',
+                        status === 'maintenance' && 'bg-[var(--cv-warning)]',
+                        status === 'blocked' && 'bg-[var(--cv-muted)]',
+                        status === 'blocked' && 'bg-[var(--cv-muted)]/35',
+                      )}
+                      aria-hidden
+                    />
+                  ) : null}
+                </button>
+              )
+            })}
+          </div>
         </div>
       </Card>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="flex flex-wrap gap-2">
         {(
           [
             ['available', 'Available'],
@@ -150,12 +203,17 @@ export function CalendarPage() {
             ['blocked', 'Blocked'],
           ] as const
         ).map(([key, label]) => (
-          <div
+          <span
             key={key}
-            className={cn('rounded-[12px] border px-3 py-2 text-sm font-medium', STATUS_STYLE[key])}
+            className={cn(
+              'inline-flex items-center rounded-full px-3 py-1 text-xs font-medium',
+              key === 'available'
+                ? 'bg-[var(--cv-elevated)] text-[var(--cv-muted)]'
+                : EVENT_CHIP[key],
+            )}
           >
             {label}
-          </div>
+          </span>
         ))}
       </div>
     </div>

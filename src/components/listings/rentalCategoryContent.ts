@@ -32,6 +32,12 @@ export interface RentalCategory {
   pricing: MarketPricing
   nameLabel: string
   namePlaceholder: string
+  descriptionPlaceholder?: string
+  profileSample?: {
+    name: string
+    description: string
+    fields: Record<string, string>
+  }
   adaptiveFields: AdaptiveField[]
 }
 
@@ -359,13 +365,13 @@ export const RENTAL_CATEGORIES: RentalCategory[] = [
   },
   {
     id: 'driver-services',
-    title: 'Driver & Transport Services',
-    tagline: 'Professional drivers & logistics services',
+    title: 'Driver Profile',
+    tagline: 'Truck, tractor & farm transport operators',
     description:
-      'Offer driving for crop transport, market runs, or logistics — with or without a vehicle. Steady work, flexible routes, repeat clients.',
+      'List yourself as a licensed driver for crop transport, mandi runs, tractor-trailer haulage, or on-field equipment moves. Steady work, flexible routes, repeat clients.',
     color: '#72243E',
     softBg: 'rgba(114, 36, 62, 0.1)',
-    examples: ['Vehicle + driver', 'Driver only (licensed)', 'Logistics coordination', 'Cold chain / specialized'],
+    examples: ['Truck driver', 'Tractor operator', 'Farm-to-mandi haulage', 'Field logistics'],
     minPhotos: 2,
     photoGuidance: 'Include: professional portrait and driving license (visible)',
     hasConditionChecklist: true,
@@ -385,7 +391,22 @@ export const RENTAL_CATEGORIES: RentalCategory[] = [
       unit: 'day',
     },
     nameLabel: 'Your name',
-    namePlaceholder: 'e.g., Suresh Reddy',
+    namePlaceholder: 'Ramesh Yadav – Truck & Tractor Driver, Karimnagar',
+    descriptionPlaceholder:
+      '10 years of experience driving farm trucks and tractor-trailers for produce transport and field logistics. Familiar with local mandi routes. Available for both farm-to-market runs and on-field equipment operation.',
+    profileSample: {
+      name: 'Ramesh Yadav – Truck & Tractor Driver, Karimnagar',
+      description:
+        '10 years of experience driving farm trucks and tractor-trailers for produce transport and field logistics. Familiar with local mandi routes. Available for both farm-to-market runs and on-field equipment operation.',
+      fields: {
+        serviceType: 'truck-driver',
+        licenseType: 'commercial-hv',
+        vehicleTypes: 'Truck, Tractor+Trailer',
+        experience: '10',
+        availability: 'full-time',
+        languages: 'Telugu, Hindi, English',
+      },
+    },
     adaptiveFields: [
       {
         id: 'serviceType',
@@ -393,10 +414,11 @@ export const RENTAL_CATEGORIES: RentalCategory[] = [
         type: 'select',
         required: true,
         options: [
+          { value: 'truck-driver', label: 'Truck Driver' },
+          { value: 'tractor-operator', label: 'Tractor Operator' },
           { value: 'vehicle-driver', label: 'Vehicle + driver' },
           { value: 'driver-only', label: 'Driver only (no vehicle)' },
           { value: 'logistics', label: 'Logistics & coordination' },
-          { value: 'specialized', label: 'Specialized (cold chain, heavy)' },
         ],
       },
       {
@@ -405,6 +427,7 @@ export const RENTAL_CATEGORIES: RentalCategory[] = [
         type: 'select',
         required: true,
         options: [
+          { value: 'commercial-hv', label: 'Commercial (Heavy Vehicle)' },
           { value: 'lmv', label: 'LMV (light motor vehicle)' },
           { value: 'hmv', label: 'HMV (heavy motor vehicle)' },
           { value: 'both', label: 'Both LMV & HMV' },
@@ -415,14 +438,14 @@ export const RENTAL_CATEGORIES: RentalCategory[] = [
         id: 'vehicleTypes',
         label: 'Vehicles you can operate',
         type: 'text',
-        placeholder: 'e.g., Truck, tractor+trailer, auto',
+        placeholder: 'Truck, Tractor+Trailer',
         required: true,
       },
       {
         id: 'experience',
         label: 'Years of driving experience',
         type: 'number',
-        placeholder: 'e.g., 8',
+        placeholder: '10',
         required: true,
       },
       {
@@ -441,7 +464,7 @@ export const RENTAL_CATEGORIES: RentalCategory[] = [
         id: 'languages',
         label: 'Languages spoken',
         type: 'text',
-        placeholder: 'e.g., Telugu, Hindi, English',
+        placeholder: 'Telugu, Hindi, English',
       },
     ],
   },

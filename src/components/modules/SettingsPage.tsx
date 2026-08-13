@@ -7,7 +7,6 @@ import { FormInput } from '../common/FormInput'
 import { LargeTitle } from '../common/LargeTitle'
 import { Select } from '../common/Select'
 import { Switch } from '../common/Switch'
-import { useScrollCollapse } from '../../hooks/useScrollCollapse'
 
 export function SettingsPage() {
   const theme = useAppStore((s) => s.theme)
@@ -15,7 +14,6 @@ export function SettingsPage() {
   const themeExplicit = useAppStore((s) => s.themeExplicit)
   const resetThemeToRoleDefault = useAppStore((s) => s.resetThemeToRoleDefault)
   const role = useAppStore((s) => s.user?.activeRole ?? 'seller')
-  const collapsed = useScrollCollapse()
   const [quietStart, setQuietStart] = useState('22:00')
   const [quietEnd, setQuietEnd] = useState('06:00')
   const [channels, setChannels] = useState({
@@ -28,9 +26,8 @@ export function SettingsPage() {
   const roleDefault = defaultThemeForRole(role)
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 lg:space-y-6">
       <LargeTitle
-        collapsed={collapsed}
         title="Settings"
         subtitle="Appearance, notifications, security, and device sessions."
         actions={

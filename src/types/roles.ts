@@ -56,19 +56,19 @@ export interface User {
 }
 
 export const ROLE_COLORS: Record<Role, string> = {
-  seller: '#CCFF00',
-  buyer: '#CCFF00',
-  rental: '#CCFF00',
-  service: '#CCFF00',
-  educator: '#CCFF00',
+  seller: 'var(--cv-nav-active-fg)',
+  buyer: 'var(--cv-nav-active-fg)',
+  rental: 'var(--cv-nav-active-fg)',
+  service: 'var(--cv-nav-active-fg)',
+  educator: 'var(--cv-nav-active-fg)',
 }
 
 export const ROLE_SOFT: Record<Role, string> = {
-  seller: 'rgba(204,255,0,0.12)',
-  buyer: 'rgba(204,255,0,0.12)',
-  rental: 'rgba(204,255,0,0.12)',
-  service: 'rgba(204,255,0,0.12)',
-  educator: 'rgba(204,255,0,0.12)',
+  seller: 'color-mix(in srgb, var(--cv-nav-active-fg) 12%, transparent)',
+  buyer: 'color-mix(in srgb, var(--cv-nav-active-fg) 12%, transparent)',
+  rental: 'color-mix(in srgb, var(--cv-nav-active-fg) 12%, transparent)',
+  service: 'color-mix(in srgb, var(--cv-nav-active-fg) 12%, transparent)',
+  educator: 'color-mix(in srgb, var(--cv-nav-active-fg) 12%, transparent)',
 }
 
 export const ROLE_ICONS: Record<Role, string> = {

@@ -11,6 +11,7 @@ interface MetricCardProps {
   icon?: ReactNode
   roleColor?: Role
   className?: string
+  featured?: boolean
 }
 
 export function MetricCard({
@@ -21,37 +22,33 @@ export function MetricCard({
   subtitle,
   icon,
   className = '',
+  featured,
 }: MetricCardProps) {
   const trendColor =
     deltaPositive === true
       ? 'text-[var(--cv-success)]'
       : deltaPositive === false
         ? 'text-[var(--cv-danger)]'
-        : 'text-[var(--cv-muted)]'
+        : 'text-[var(--cv-sidebar-muted)]'
 
   return (
-    <section
-      className={cn(
-        'rounded-[12px] border border-[var(--cv-border)] bg-[var(--cv-surface)] p-6 shadow-[var(--shadow-sm)] transition-shadow duration-150 ease-out hover:shadow-[var(--shadow-md)]',
-        className,
-      )}
-    >
+    <section className={cn('cv-stat-card p-6', featured && 'cv-stat-card--featured', className)}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] text-[var(--cv-muted)]">{title}</p>
-          <p className="mt-2 truncate text-2xl font-semibold tracking-tight text-[var(--cv-text)]">
+          <p className="text-[13px] font-medium text-[var(--cv-sidebar-muted)]">{title}</p>
+          <p className="mt-2 truncate text-2xl font-semibold tracking-tight text-[var(--cv-sidebar-text)]">
             {value}
           </p>
-          {subtitle ? <p className="mt-1 text-[13px] text-[var(--cv-muted)]">{subtitle}</p> : null}
+          {subtitle ? <p className="mt-1 text-[13px] text-[var(--cv-sidebar-muted)]">{subtitle}</p> : null}
           {delta ? (
-            <p className={cn('mt-2 text-[13px]', trendColor)}>
+            <p className={cn('mt-2 text-[13px] font-medium', trendColor)}>
               {deltaPositive === true ? '↑ ' : deltaPositive === false ? '↓ ' : ''}
               {delta}
             </p>
           ) : null}
         </div>
         {icon ? (
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[var(--cv-primary-soft)] text-[var(--cv-primary)]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--cv-sidebar-search-bg)] text-[var(--cv-sidebar-muted)]">
             {icon}
           </span>
         ) : null}

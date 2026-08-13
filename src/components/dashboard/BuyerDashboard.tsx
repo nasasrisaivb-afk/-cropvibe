@@ -23,12 +23,12 @@ import {
 import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { DashboardStatCard } from '../common/DashboardStatCard'
 import { LargeTitle } from '../common/LargeTitle'
 import { SegmentedControl } from '../common/SegmentedControl'
-import { useScrollCollapse } from '../../hooks/useScrollCollapse'
 import { useAppStore } from '../../store/appStore'
 import { CHART_THEME } from '../../theme/chartTheme'
-import { formatCurrency, cn } from '../../utils/format'
+import { formatCurrency } from '../../utils/format'
 
 const PURCHASES = [
   { id: 'PO-7821', date: '25 Jul', supplier: 'Green Valley', product: 'Tomatoes', qty: '100 kg', price: 8450, status: 'delivered' as const },
@@ -58,52 +58,9 @@ const ACTIVITY = [
   { time: 'Yesterday', text: 'New supplier added: Organic Roots' },
 ]
 
-function StatCard({
-  title,
-  value,
-  hint,
-  positive,
-  icon: Icon,
-  emphasize,
-}: {
-  title: string
-  value: string
-  hint?: string
-  positive?: boolean
-  icon: typeof CurrencyRupeeIcon
-  emphasize?: boolean
-}) {
-  return (
-    <div
-      className={cn(
-        'rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-surface)] p-4 transition hover:border-[var(--cv-primary)]/25',
-        emphasize && 'ring-1 ring-[var(--cv-primary)]/20',
-      )}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">{title}</p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--cv-text)]">{value}</p>
-          {hint ? (
-            <p
-              className={cn(
-                'mt-1.5 text-xs font-medium',
-                positive === true && 'text-[var(--cv-primary)]',
-                positive === false && 'text-[var(--cv-danger)]',
-                positive === undefined && 'text-[var(--cv-muted)]',
-              )}
-            >
-              {positive === true ? '↑ ' : positive === false ? '↓ ' : ''}
-              {hint}
-            </p>
-          ) : null}
-        </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--cv-primary-soft)] text-[var(--cv-primary)]">
-          <Icon className="h-5 w-5" />
-        </span>
-      </div>
-    </div>
-  )
+function StatCard(props: Parameters<typeof DashboardStatCard>[0] & { emphasize?: boolean }) {
+  const { emphasize, ...rest } = props
+  return <DashboardStatCard featured={emphasize} {...rest} />
 }
 
 export function BuyerDashboard() {
@@ -111,16 +68,14 @@ export function BuyerDashboard() {
   const user = useAppStore((s) => s.user)
   const theme = useAppStore((s) => s.theme)
   const chart = CHART_THEME[theme]
-  const collapsed = useScrollCollapse()
   const name = user?.profile.name?.split(' ')[0] ?? 'Priya'
   const [product, setProduct] = useState<'tomatoes' | 'potatoes' | 'carrots'>('tomatoes')
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening'
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 lg:space-y-6">
       <LargeTitle
-        collapsed={collapsed}
         eyebrow="Buyer"
         title={`${greeting}, ${name}`}
         subtitle={`Last login: 3 hours ago · ${user?.profile.location ?? 'Mumbai, India'}`}
@@ -200,9 +155,9 @@ export function BuyerDashboard() {
         </Card>
 
         <div className="space-y-6">
-          <Card className="!rounded-2xl border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.08)]">
+          <Card className="!rounded-2xl border-[var(--cv-warning)]/30 bg-[var(--color-warning-soft)]">
             <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[rgba(245,185,66,0.15)] text-[var(--cv-warning)]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-warning-soft)] text-[var(--cv-warning)]">
                 <DocumentTextIcon className="h-5 w-5" />
               </span>
               <div className="min-w-0 flex-1">

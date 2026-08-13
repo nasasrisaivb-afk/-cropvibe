@@ -60,7 +60,7 @@ export function Button({
       <button
         className={cn(
           base,
-          'bg-[rgba(248,113,113,0.14)] text-[var(--cv-danger)] hover:bg-[rgba(248,113,113,0.22)]',
+          'bg-[color-mix(in_srgb,var(--cv-danger)_14%,transparent)] text-[var(--cv-danger)] hover:bg-[color-mix(in_srgb,var(--cv-danger)_22%,transparent)]',
         )}
         disabled={disabled || loading}
         style={style}
@@ -76,7 +76,7 @@ export function Button({
       <button
         className={cn(
           base,
-          'border border-[var(--cv-border)] bg-[var(--cv-surface)] text-[var(--cv-text)] hover:bg-[var(--cv-elevated)]',
+          'border border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-bg)] text-[var(--cv-sidebar-text)] hover:bg-[var(--cv-sidebar-hover)]',
         )}
         disabled={disabled || loading}
         style={style}

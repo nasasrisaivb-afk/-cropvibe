@@ -19,15 +19,6 @@ export interface NavSection {
   items: NavItem[]
 }
 
-/** Rental account / inbox (profile lives in header account menu) */
-const RENTAL_ACCOUNT_ITEMS: NavItem[] = [
-  { id: 'messages', label: 'Messages', path: '/dashboard/messages' },
-  { id: 'notifications', label: 'Notifications', path: '/dashboard/notifications' },
-  { id: 'reviews', label: 'Reviews', path: '/dashboard/reviews' },
-  { id: 'help', label: 'Help', path: '/dashboard/help' },
-  { id: 'settings', label: 'Settings', path: '/dashboard/settings' },
-]
-
 export const SELLER_NAV_SECTIONS: NavSection[] = [
   {
     title: 'Home',
@@ -45,20 +36,8 @@ export const SELLER_NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: 'Inbox',
-    items: [
-      { id: 'messages', label: 'Messages', path: '/dashboard/messages' },
-      { id: 'notifications', label: 'Notifications', path: '/dashboard/notifications' },
-      { id: 'reviews', label: 'Reviews', path: '/dashboard/reviews' },
-    ],
-  },
-  {
-    title: 'Account',
-    items: [
-      { id: 'wallet', label: 'Settlements', path: '/dashboard/wallet' },
-      { id: 'settings', label: 'Settings', path: '/dashboard/settings' },
-      { id: 'help', label: 'Help', path: '/dashboard/help' },
-    ],
+    title: 'Money',
+    items: [{ id: 'wallet', label: 'Settlements', path: '/dashboard/wallet' }],
   },
 ]
 
@@ -79,26 +58,14 @@ export const BUYER_NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: 'Inbox',
-    items: [
-      { id: 'messages', label: 'Messages', path: '/dashboard/messages' },
-      { id: 'notifications', label: 'Notifications', path: '/dashboard/notifications' },
-      { id: 'reviews', label: 'Reviews', path: '/dashboard/reviews' },
-    ],
-  },
-  {
-    title: 'Account',
-    items: [
-      { id: 'wallet', label: 'Wallet', path: '/dashboard/wallet' },
-      { id: 'settings', label: 'Settings', path: '/dashboard/settings' },
-      { id: 'help', label: 'Help', path: '/dashboard/help' },
-    ],
+    title: 'Money',
+    items: [{ id: 'wallet', label: 'Wallet', path: '/dashboard/wallet' }],
   },
 ]
 
 /**
- * Rental IA — fewer groups, task-first labels.
- * Inventory is collapsible in the sidebar UI (see Navigation).
+ * Rental IA — operational groups only.
+ * Messages / notifications / help live in the top bar; reviews & settings via Profile / account menu.
  */
 export const RENTAL_NAV_SECTIONS: NavSection[] = [
   {
@@ -121,29 +88,26 @@ export const RENTAL_NAV_SECTIONS: NavSection[] = [
   },
   {
     title: 'Bookings',
+    items: [{ id: 'scheduling', label: 'Schedule', path: '/dashboard/scheduling' }],
+  },
+  {
+    title: 'Reports & issues',
     items: [
-      { id: 'scheduling', label: 'Schedule', path: '/dashboard/scheduling' },
+      { id: 'damage', label: 'Reports', path: '/dashboard/damage' },
       { id: 'overdue', label: 'Overdue', path: '/dashboard/overdue' },
+      { id: 'disputes', label: 'Issues', path: '/dashboard/disputes' },
     ],
   },
   {
     title: 'Documents',
-    items: [
-      { id: 'agreements', label: 'Agreements', path: '/dashboard/agreements' },
-      { id: 'damage', label: 'Damage reports', path: '/dashboard/damage' },
-    ],
+    items: [{ id: 'agreements', label: 'Agreements', path: '/dashboard/agreements' }],
   },
   {
     title: 'Money',
     items: [
       { id: 'finance', label: 'Earnings', path: '/dashboard/finance' },
       { id: 'payouts', label: 'Payouts', path: '/dashboard/payouts' },
-      { id: 'disputes', label: 'Issues', path: '/dashboard/disputes' },
     ],
-  },
-  {
-    title: 'Account',
-    items: RENTAL_ACCOUNT_ITEMS,
   },
 ]
 
@@ -173,19 +137,8 @@ export const SERVICE_NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: 'Inbox',
-    items: [
-      { id: 'messages', label: 'Messages', path: '/dashboard/messages' },
-      { id: 'reviews', label: 'Reviews', path: '/dashboard/reviews' },
-    ],
-  },
-  {
-    title: 'Account',
-    items: [
-      { id: 'wallet', label: 'Settlements', path: '/dashboard/wallet' },
-      { id: 'settings', label: 'Settings', path: '/dashboard/settings' },
-      { id: 'help', label: 'Help', path: '/dashboard/help' },
-    ],
+    title: 'Money',
+    items: [{ id: 'wallet', label: 'Settlements', path: '/dashboard/wallet' }],
   },
 ]
 
@@ -213,19 +166,8 @@ export const EDUCATOR_NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    title: 'Inbox',
-    items: [
-      { id: 'messages', label: 'Messages', path: '/dashboard/messages' },
-      { id: 'reviews', label: 'Reviews', path: '/dashboard/reviews' },
-    ],
-  },
-  {
-    title: 'Account',
-    items: [
-      { id: 'wallet', label: 'Settlements', path: '/dashboard/wallet' },
-      { id: 'settings', label: 'Settings', path: '/dashboard/settings' },
-      { id: 'help', label: 'Help', path: '/dashboard/help' },
-    ],
+    title: 'Money',
+    items: [{ id: 'wallet', label: 'Settlements', path: '/dashboard/wallet' }],
   },
 ]
 
@@ -268,13 +210,12 @@ export function getNavItems(role: Role): NavItem[] {
   return getNavSections(role).flatMap((section) => section.items)
 }
 
-export const MOBILE_TABS: PageId[] = ['dashboard', 'listings', 'orders', 'messages', 'profile']
+export const MOBILE_TABS: PageId[] = ['dashboard', 'listings', 'orders', 'profile']
 
 export const RENTAL_MOBILE_TABS: PageId[] = [
   'dashboard',
   'equipment',
   'scheduling',
-  'messages',
   'profile',
 ]
 
@@ -282,7 +223,6 @@ export const SERVICE_MOBILE_TABS: PageId[] = [
   'dashboard',
   'consultancy',
   'orders',
-  'messages',
   'profile',
 ]
 
@@ -290,7 +230,6 @@ export const EDUCATOR_MOBILE_TABS: PageId[] = [
   'dashboard',
   'selfpaced',
   'orders',
-  'messages',
   'profile',
 ]
 
@@ -350,10 +289,10 @@ const baseCrumbs: Partial<Record<PageId, string[]>> = {
   dashboard: ['Home', 'Overview'],
   listings: ['Sell', 'Listings'],
   orders: ['Sell', 'Orders'],
-  wallet: ['Account', 'Settlements'],
-  messages: ['Account', 'Messages'],
-  notifications: ['Account', 'Notifications'],
-  reviews: ['Account', 'Reviews'],
+  wallet: ['Money', 'Settlements'],
+  messages: ['Inbox', 'Messages'],
+  notifications: ['Inbox', 'Notifications'],
+  reviews: ['Profile', 'Reviews'],
   analytics: ['Home', 'Analytics'],
   profile: ['Account', 'Profile'],
   settings: ['Account', 'Settings'],
@@ -368,13 +307,13 @@ const baseCrumbs: Partial<Record<PageId, string[]>> = {
   scheduling: ['Bookings', 'Schedule'],
   calendar: ['Bookings', 'Calendar'],
   agreements: ['Documents', 'Agreements'],
-  damage: ['Documents', 'Damage reports'],
-  overdue: ['Bookings', 'Overdue'],
+  damage: ['Reports & issues', 'Reports'],
+  overdue: ['Reports & issues', 'Overdue'],
   finance: ['Money', 'Earnings'],
   payouts: ['Money', 'Payouts'],
-  disputes: ['Money', 'Issues'],
-  settlements: ['Account', 'Settlements'],
-  help: ['Account', 'Help'],
+  disputes: ['Reports & issues', 'Issues'],
+  settlements: ['Money', 'Settlements'],
+  help: ['Help', 'Help Desk'],
   consultancy: ['Services', 'Consultancy'],
   testing: ['Services', 'Testing'],
   repair: ['Services', 'Repair'],

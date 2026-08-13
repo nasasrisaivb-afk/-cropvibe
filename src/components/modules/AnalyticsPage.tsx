@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Area,
   AreaChart,
@@ -149,8 +149,8 @@ export function AnalyticsPage() {
               <AreaChart data={TREND}>
                 <defs>
                   <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#CCFF00" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#CCFF00" stopOpacity={0.02} />
+                    <stop offset="0%" stopColor={chart.accent} stopOpacity={0.35} />
+                    <stop offset="100%" stopColor={chart.accent} stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid stroke={chart.grid} vertical={false} />

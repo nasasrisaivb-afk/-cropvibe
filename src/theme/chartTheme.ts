@@ -1,4 +1,5 @@
 import type { ColorMode } from './tokens'
+import { TOKENS } from './tokens'
 
 export const CHART_THEME: Record<
   ColorMode,
@@ -12,19 +13,19 @@ export const CHART_THEME: Record<
   }
 > = {
   light: {
-    grid: 'rgba(0, 0, 0, 0.06)',
-    tick: '#6b6b6b',
-    tooltipBg: '#ffffff',
-    tooltipBorder: 'rgba(0, 0, 0, 0.06)',
-    accent: '#CCFF00',
-    secondary: '#6b6b6b',
+    grid: TOKENS.light.border,
+    tick: TOKENS.light.textSecondary,
+    tooltipBg: TOKENS.light.surface1,
+    tooltipBorder: TOKENS.light.border,
+    accent: TOKENS.light.textPrimary,
+    secondary: TOKENS.light.textSecondary,
   },
   dark: {
-    grid: 'rgba(255, 255, 255, 0.06)',
-    tick: '#a0a0a0',
-    tooltipBg: '#242424',
-    tooltipBorder: 'rgba(255, 255, 255, 0.08)',
-    accent: '#CCFF00',
-    secondary: '#9ca3af',
+    grid: TOKENS.dark.border,
+    tick: TOKENS.dark.textSecondary,
+    tooltipBg: TOKENS.dark.surface1,
+    tooltipBorder: TOKENS.dark.border,
+    accent: TOKENS.accent.solid,
+    secondary: TOKENS.dark.textSecondary,
   },
 }

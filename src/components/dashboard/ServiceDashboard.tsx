@@ -17,8 +17,8 @@ import {
 import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
+import { DashboardStatCard } from '../common/DashboardStatCard'
 import { LargeTitle } from '../common/LargeTitle'
-import { useScrollCollapse } from '../../hooks/useScrollCollapse'
 import { useAppStore } from '../../store/appStore'
 import { formatCurrency, cn } from '../../utils/format'
 
@@ -91,7 +91,7 @@ const ALERTS = [
 
 const statusMeta = {
   open: { label: 'Open', className: 'bg-[var(--cv-primary-soft)] text-[var(--cv-primary)]' },
-  booked: { label: 'Booked', className: 'bg-[rgba(56,189,248,0.14)] text-[var(--cv-info)]' },
+  booked: { label: 'Booked', className: 'bg-[var(--color-info-soft)] text-[var(--cv-info)]' },
   paused: { label: 'Paused', className: 'bg-[var(--cv-elevated)] text-[var(--cv-muted)]' },
 }
 
@@ -105,58 +105,14 @@ const categoryIcon = {
   'Crop Inspection': ClipboardDocumentCheckIcon,
 } as const
 
-function StatCard({
-  title,
-  value,
-  hint,
-  positive,
-  icon: Icon,
-  emphasize,
-}: {
-  title: string
-  value: string
-  hint?: string
-  positive?: boolean
-  icon: typeof CurrencyRupeeIcon
-  emphasize?: boolean
-}) {
-  return (
-    <div
-      className={cn(
-        'rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-surface)] p-4 transition hover:border-[var(--cv-primary)]/25',
-        emphasize && 'ring-1 ring-[var(--cv-primary)]/20',
-      )}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">{title}</p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-[var(--cv-text)]">{value}</p>
-          {hint ? (
-            <p
-              className={cn(
-                'mt-1.5 text-xs font-medium',
-                positive === true && 'text-[var(--cv-primary)]',
-                positive === false && 'text-[var(--cv-danger)]',
-                positive === undefined && 'text-[var(--cv-muted)]',
-              )}
-            >
-              {positive === true ? '↑ ' : positive === false ? '↓ ' : ''}
-              {hint}
-            </p>
-          ) : null}
-        </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--cv-primary-soft)] text-[var(--cv-primary)]">
-          <Icon className="h-5 w-5" />
-        </span>
-      </div>
-    </div>
-  )
+function StatCard(props: Parameters<typeof DashboardStatCard>[0] & { emphasize?: boolean }) {
+  const { emphasize, ...rest } = props
+  return <DashboardStatCard featured={emphasize} {...rest} />
 }
 
 export function ServiceDashboard() {
   const navigate = useNavigate()
   const user = useAppStore((s) => s.user)
-  const collapsed = useScrollCollapse()
   const kycPending = user?.kycStatus === 'pending'
   const name = user?.profile.name?.split(' ')[0] ?? 'Dr. Sharma'
   const hour = new Date().getHours()
@@ -165,9 +121,9 @@ export function ServiceDashboard() {
   const booked = OFFERINGS.filter((o) => o.status === 'booked').length
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 lg:space-y-6">
       {kycPending ? (
-        <div className="flex items-start gap-3 rounded-[16px] border border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.12)] px-4 py-3 text-sm text-[var(--cv-warning)]">
+        <div className="flex items-start gap-3 rounded-[16px] border border-[var(--cv-warning)]/30 bg-[var(--color-warning-soft)] px-4 py-3 text-sm text-[var(--cv-warning)]">
           <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={1.5} />
           <div>
             <strong>KYC Pending — Review status.</strong> Offering services stays locked until approval.
@@ -176,8 +132,7 @@ export function ServiceDashboard() {
       ) : null}
 
       <LargeTitle
-        collapsed={collapsed}
-        eyebrow="Service Provider"
+        eyebrow="Service provider"
         title={`${greeting}, ${name}`}
         subtitle={`Last login: 30 min ago · ${user?.profile.location ?? 'Bangalore, India'}`}
         actions={
@@ -286,9 +241,9 @@ export function ServiceDashboard() {
         </Card>
 
         <div className="space-y-6">
-          <Card className="!rounded-2xl border-[var(--cv-warning)]/30 bg-[rgba(245,185,66,0.08)]">
+          <Card className="!rounded-2xl border-[var(--cv-warning)]/30 bg-[var(--color-warning-soft)]">
             <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[rgba(245,185,66,0.15)] text-[var(--cv-warning)]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-warning-soft)] text-[var(--cv-warning)]">
                 <ClockIcon className="h-5 w-5" />
               </span>
               <div className="min-w-0 flex-1">

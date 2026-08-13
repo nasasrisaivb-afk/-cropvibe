@@ -37,8 +37,8 @@ export function Sheet({ open, title, onClose, children, className }: SheetProps)
         aria-modal="true"
         aria-labelledby="cv-sheet-title"
         className={cn(
-          'cv-spring relative z-10 w-full max-w-lg border border-[var(--cv-border)] bg-[var(--cv-elevated)] shadow-[var(--shadow-lg)]',
-          'rounded-t-[20px] sm:rounded-[20px]',
+          'cv-spring cv-dashboard-panel relative z-10 w-full max-w-lg shadow-[var(--shadow-lg)]',
+          'rounded-t-[24px] sm:rounded-[24px]',
           'animate-[cv-sheet-up_420ms_cubic-bezier(0.32,0.72,0,1)]',
           className,
         )}
@@ -70,7 +70,7 @@ export function Sheet({ open, title, onClose, children, className }: SheetProps)
             Done
           </button>
         </div>
-        <div className="max-h-[min(70dvh,560px)] overflow-y-auto px-6 pb-[max(1.5rem,var(--cv-safe-bottom))]">
+        <div className="max-h-[min(85dvh,720px)] overflow-y-auto px-6 pb-[max(1.5rem,var(--cv-safe-bottom))]">
           {children}
         </div>
       </div>
