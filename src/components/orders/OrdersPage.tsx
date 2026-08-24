@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom'
 import { ORDERS_LABEL, PRIMARY_CTA } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
+import { useServiceBookingStore } from '../../store/serviceBookingStore'
 import type { Role } from '../../types/roles'
 import { formatCurrency } from '../../utils/format'
 import { Badge, type BadgeStatus } from '../common/Badge'
@@ -424,28 +425,44 @@ function GenericOrders({ role }: { role: Role }) {
   const navigate = useNavigate()
   const cta = PRIMARY_CTA[role]
   const label = ORDERS_LABEL[role]
+  const serviceBookings = useServiceBookingStore((s) => s.bookings)
 
   const rows = useMemo(() => {
+    const stored =
+      role === 'service' || role === 'buyer'
+        ? serviceBookings.map((b) => ({
+            id: b.confirmationCode,
+            party: role === 'service' ? 'New client' : b.provider,
+            item: `${b.serviceTitle} · ${b.date}`,
+            amount: formatCurrency(b.amount),
+            status: 'accepted' as BadgeStatus,
+          }))
+        : []
+
     if (role === 'buyer') {
-      return [
-        { id: 'PO-8801', party: 'Green Valley', item: 'Tomatoes 100kg', amount: 'â‚¹8,450', status: 'delivered' as BadgeStatus },
-        { id: 'PO-8800', party: 'Fresh Farm', item: 'Potatoes 200kg', amount: 'â‚¹14,200', status: 'shipped' as BadgeStatus },
-        { id: 'PO-8795', party: 'Organic Roots', item: 'Lettuce 40kg', amount: 'â‚¹3,200', status: 'pending' as BadgeStatus },
+      const staticRows = [
+        { id: 'PO-8801', party: 'Green Valley', item: 'Tomatoes 100kg', amount: formatCurrency(8450), status: 'delivered' as BadgeStatus },
+        { id: 'PO-8800', party: 'Fresh Farm', item: 'Potatoes 200kg', amount: formatCurrency(14200), status: 'shipped' as BadgeStatus },
+        { id: 'PO-8795', party: 'Organic Roots', item: 'Lettuce 40kg', amount: formatCurrency(3200), status: 'pending' as BadgeStatus },
       ]
+      return [...stored, ...staticRows]
     }
     if (role === 'service') {
-      return [
-        { id: 'AP-220', party: 'Farmer ABC', item: 'Farm Consultancy', amount: 'â‚¹1,500', status: 'accepted' as BadgeStatus },
-        { id: 'AP-219', party: 'Village A', item: 'Soil Testing', amount: 'â‚¹800', status: 'pending' as BadgeStatus },
-        { id: 'AP-218', party: 'Workshop DEF', item: 'Equipment Repair', amount: 'â‚¹2,400', status: 'completed' as BadgeStatus },
+      const staticRows = [
+        { id: 'AP-219', party: 'Village A', item: 'Soil Testing', amount: formatCurrency(800), status: 'pending' as BadgeStatus },
+        { id: 'AP-218', party: 'Workshop DEF', item: 'Equipment Repair', amount: formatCurrency(2400), status: 'completed' as BadgeStatus },
+      ]
+      return stored.length > 0 ? [...stored, ...staticRows] : [
+        { id: 'AP-220', party: 'Farmer ABC', item: 'Farm Consultancy', amount: formatCurrency(1500), status: 'accepted' as BadgeStatus },
+        ...staticRows,
       ]
     }
     return [
-      { id: 'EN-101', party: 'Student A', item: 'Organic Farming 101', amount: 'â‚¹999', status: 'active' as BadgeStatus },
-      { id: 'EN-100', party: 'Student B', item: 'IPM Techniques', amount: 'â‚¹799', status: 'completed' as BadgeStatus },
-      { id: 'EN-099', party: 'Student C', item: 'Soil Health Mastery', amount: 'â‚¹1,299', status: 'pending' as BadgeStatus },
+      { id: 'EN-101', party: 'Student A', item: 'Organic Farming 101', amount: formatCurrency(999), status: 'active' as BadgeStatus },
+      { id: 'EN-100', party: 'Student B', item: 'IPM Techniques', amount: formatCurrency(799), status: 'completed' as BadgeStatus },
+      { id: 'EN-099', party: 'Student C', item: 'Soil Health Mastery', amount: formatCurrency(1299), status: 'pending' as BadgeStatus },
     ]
-  }, [role])
+  }, [role, serviceBookings])
 
   return (
     <OverviewShell

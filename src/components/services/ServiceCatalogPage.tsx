@@ -1,62 +1,93 @@
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
-import { FormInput } from '../common/FormInput'
 import { PageHeader } from '../common/PageHeader'
-import { Select } from '../common/Select'
-import { formatCurrency } from '../../utils/format'
+import { useToast } from '../common/Toast'
+import { useAppStore } from '../../store/appStore'
+import { useServiceBookingStore } from '../../store/serviceBookingStore'
+import { ServiceCard } from './ServiceCard'
+import { ServiceCatalogSkeleton } from './ServiceCatalogSkeleton'
+import { ServiceFilters } from './ServiceFilters'
+import { statusLabel } from './serviceCatalogData'
+import { DEFAULT_FILTERS, filterAndSortServices } from './serviceCatalogUtils'
+import type { ServiceCategory, ServiceFiltersState, ServiceItem } from './serviceCatalogTypes'
+import { serviceDetailPath } from './serviceCatalogTypes'
 
-export type ServiceCategory = 'consultancy' | 'testing' | 'repair' | 'aerial' | 'irrigation'
+const ServiceBookingSheet = lazy(() =>
+  import('./ServiceBookingSheet').then((m) => ({ default: m.ServiceBookingSheet })),
+)
 
-type ServiceStatus = 'open' | 'booked' | 'paused'
+export type { ServiceCategory }
 
-interface ServiceItem {
-  id: string
-  name: string
-  meta: string
-  rate: number
-  unit: string
-  status: ServiceStatus
-  location: string
-}
-
-const DATA: Record<ServiceCategory, ServiceItem[]> = {
-  consultancy: [
-    { id: 'S-101', name: 'Farm consultancy · crop planning', meta: '1:1 advisory', rate: 2500, unit: 'session', status: 'open', location: 'Pune' },
-    { id: 'S-102', name: 'Soil health advisory', meta: 'Lab analysis + plan', rate: 4200, unit: 'session', status: 'booked', location: 'Nashik' },
-  ],
-  testing: [
-    { id: 'T-201', name: 'Soil testing pack', meta: 'NPK + moisture', rate: 1800, unit: 'sample', status: 'open', location: 'Ahmednagar' },
-    { id: 'T-202', name: 'Water quality check', meta: 'pH + EC + TDS', rate: 1200, unit: 'sample', status: 'paused', location: 'Satara' },
-  ],
-  repair: [
-    { id: 'R-301', name: 'Irrigation pump repair', meta: 'On-site diagnostics', rate: 3000, unit: 'visit', status: 'open', location: 'Kolhapur' },
-    { id: 'R-302', name: 'Sprayer maintenance', meta: 'Annual service', rate: 4500, unit: 'visit', status: 'booked', location: 'Pune' },
-  ],
-  aerial: [
-    { id: 'A-401', name: 'Drone spraying slot', meta: '5 acre minimum', rate: 6500, unit: 'acre', status: 'open', location: 'Baramati' },
-    { id: 'A-402', name: 'Crop imaging survey', meta: 'NDVI mapping', rate: 2800, unit: 'plot', status: 'booked', location: 'Solapur' },
-  ],
-  irrigation: [
-    { id: 'I-501', name: 'Drip layout setup', meta: 'Design + install', rate: 9000, unit: 'plot', status: 'open', location: 'Bangalore' },
-    { id: 'I-502', name: 'Pump installation', meta: 'Submersible systems', rate: 15000, unit: 'unit', status: 'open', location: 'Mysuru' },
-  ],
-}
-
-const TITLES: Record<ServiceCategory, { title: string; description: string }> = {
-  consultancy: { title: 'Consultancy', description: 'Advisory services for crop planning and farm operations.' },
-  testing: { title: 'Testing', description: 'Soil, water, and crop testing packages.' },
-  repair: { title: 'Repair', description: 'On-site maintenance and repair services for farm equipment.' },
-  aerial: { title: 'Aerial', description: 'Drone-based spraying and scouting services.' },
-  irrigation: { title: 'Irrigation', description: 'Installation and setup services for irrigation systems.' },
-}
-
-function statusBadge(status: ServiceStatus) {
-  if (status === 'open') return 'active'
-  if (status === 'booked') return 'accepted'
-  return 'pending'
+const PAGE_COPY: Record<
+  ServiceCategory,
+  {
+    buyer: { eyebrow: string; title: string; subtitle: string }
+    provider: { eyebrow: string; title: string; subtitle: string }
+  }
+> = {
+  consultancy: {
+    buyer: {
+      eyebrow: 'Services / Consultancy',
+      title: 'Find expert consultants',
+      subtitle:
+        'Connect with certified farm advisors for crop planning, soil health, and farm operations.',
+    },
+    provider: {
+      eyebrow: 'My account / My services / Consultancy',
+      title: 'My consultancy services',
+      subtitle: 'View, manage, and promote your consultancy offerings and bookings.',
+    },
+  },
+  testing: {
+    buyer: {
+      eyebrow: 'Services / Testing',
+      title: 'Find testing services',
+      subtitle: 'Book soil, water, and crop testing packages from verified labs.',
+    },
+    provider: {
+      eyebrow: 'My account / My services / Testing',
+      title: 'My testing services',
+      subtitle: 'Manage lab packages, sample slots, and customer bookings.',
+    },
+  },
+  repair: {
+    buyer: {
+      eyebrow: 'Services / Repair',
+      title: 'Find repair services',
+      subtitle: 'On-site maintenance and repair for farm equipment.',
+    },
+    provider: {
+      eyebrow: 'My account / My services / Repair',
+      title: 'My repair services',
+      subtitle: 'Manage visit slots, diagnostics, and service requests.',
+    },
+  },
+  aerial: {
+    buyer: {
+      eyebrow: 'Services / Aerial',
+      title: 'Find aerial services',
+      subtitle: 'Drone spraying, imaging, and scouting for your fields.',
+    },
+    provider: {
+      eyebrow: 'My account / My services / Aerial',
+      title: 'My aerial services',
+      subtitle: 'Manage drone slots, coverage areas, and bookings.',
+    },
+  },
+  irrigation: {
+    buyer: {
+      eyebrow: 'Services / Irrigation',
+      title: 'Find irrigation services',
+      subtitle: 'Installation and setup for drip, pump, and irrigation systems.',
+    },
+    provider: {
+      eyebrow: 'My account / My services / Irrigation',
+      title: 'My irrigation services',
+      subtitle: 'Manage installation offers, site visits, and project bookings.',
+    },
+  },
 }
 
 interface Props {
@@ -65,71 +96,127 @@ interface Props {
 
 export function ServiceCatalogPage({ category }: Props) {
   const navigate = useNavigate()
-  const copy = TITLES[category]
-  const [q, setQ] = useState('')
-  const [status, setStatus] = useState('all')
+  const user = useAppStore((s) => s.user)
+  const isProviderView = user?.activeRole === 'service'
+  const copy = PAGE_COPY[category][isProviderView ? 'provider' : 'buyer']
+  const { showToast, ToastStack } = useToast()
+  const addBooking = useServiceBookingStore((s) => s.addBooking)
 
-  const items = useMemo(() => {
-    return DATA[category].filter((item) => {
-      const matchQ = !q || item.name.toLowerCase().includes(q.toLowerCase()) || item.id.toLowerCase().includes(q.toLowerCase())
-      const matchS = status === 'all' || item.status === status
-      return matchQ && matchS
+  const [filters, setFilters] = useState<ServiceFiltersState>(DEFAULT_FILTERS)
+  const [loading, setLoading] = useState(true)
+  const [bookingItem, setBookingItem] = useState<ServiceItem | null>(null)
+
+  useEffect(() => {
+    setLoading(true)
+    const t = window.setTimeout(() => setLoading(false), 400)
+    return () => window.clearTimeout(t)
+  }, [category, filters])
+
+  const items = useMemo(() => filterAndSortServices(category, filters), [category, filters])
+
+  const openBooking = (item: ServiceItem) => {
+    if (item.status !== 'open') {
+      showToast({
+        type: 'warning',
+        title: 'Not available to book',
+        message: `${item.title} is ${statusLabel(item.status).toLowerCase()}.`,
+        duration: 4000,
+      })
+      return
+    }
+    setBookingItem(item)
+  }
+
+  const handleConfirmBooking = (payload: { date: string; time: string; notes: string }) => {
+    if (!bookingItem) return
+    const record = addBooking({
+      serviceId: bookingItem.id,
+      category,
+      serviceTitle: bookingItem.title,
+      provider: bookingItem.provider,
+      date: payload.date,
+      time: payload.time,
+      notes: payload.notes,
+      amount: bookingItem.rate,
     })
-  }, [category, q, status])
+    showToast({
+      type: 'success',
+      title: 'Booking confirmed',
+      message: `${record.confirmationCode} · ${bookingItem.title} on ${payload.date} at ${payload.time}`,
+      actionLabel: 'View bookings',
+      onAction: () => navigate('/dashboard/orders'),
+      duration: 8000,
+    })
+    setBookingItem(null)
+  }
 
   return (
     <div className="space-y-6">
+      <ToastStack />
+
       <PageHeader
+        eyebrow={copy.eyebrow}
         title={copy.title}
-        subtitle={copy.description}
-        actions={<Button onClick={() => navigate('/dashboard/create')}>+ Add service slot</Button>}
+        subtitle={copy.subtitle}
+        actions={
+          isProviderView ? (
+            <Button onClick={() => navigate('/dashboard/create')}>+ Add service slot</Button>
+          ) : undefined
+        }
       />
 
-      <div className="flex flex-col gap-3 rounded-[12px] border border-[var(--cv-border)] bg-[var(--cv-surface)] p-4 sm:flex-row sm:items-end">
-        <FormInput label="Search" placeholder="Service name or ID" value={q} onChange={(e) => setQ(e.target.value)} />
-        <Select
-          label="Status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          options={[
-            { value: 'all', label: 'All statuses' },
-            { value: 'open', label: 'Open' },
-            { value: 'booked', label: 'Booked' },
-            { value: 'paused', label: 'Paused' },
-          ]}
-        />
-      </div>
+      <ServiceFilters category={category} filters={filters} onChange={setFilters} />
 
-      {items.length === 0 ? (
-        <Card className="!rounded-[12px] py-12 text-center">
-          <p className="text-lg font-semibold">No services match</p>
-          <p className="mt-1 text-sm text-[var(--cv-muted)]">Try a different filter or add a new offer.</p>
+      {loading ? (
+        <ServiceCatalogSkeleton />
+      ) : items.length === 0 ? (
+        <Card className="py-12 text-center">
+          <p className="text-lg font-semibold">
+            {filters.q ? `No results for "${filters.q}"` : 'No services match'}
+          </p>
+          <p className="mt-1 text-sm text-[var(--cv-muted)]">
+            Try different keywords or clear your filters.
+          </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <Button variant="secondary" onClick={() => setFilters(DEFAULT_FILTERS)}>
+              Clear filters
+            </Button>
+            {isProviderView ? (
+              <Button onClick={() => navigate('/dashboard/create')}>+ Create your first service</Button>
+            ) : null}
+          </div>
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {items.map((item) => (
-            <Card key={item.id} className="!rounded-[12px]">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-xs font-medium text-[var(--cv-muted)]">{item.id}</p>
-                  <h3 className="mt-1 font-semibold text-[var(--cv-text)]">{item.name}</h3>
-                  <p className="mt-1 text-sm text-[var(--cv-muted)]">{item.meta}</p>
-                </div>
-                <Badge status={statusBadge(item.status)} />
-              </div>
-              <p className="mt-3 text-sm text-[var(--cv-muted)]">{item.location}</p>
-              <p className="mt-1 text-lg font-bold text-[var(--cv-primary)]">
-                {formatCurrency(item.rate)}
-                <span className="text-sm font-medium text-[var(--cv-muted)]"> / {item.unit}</span>
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/orders')}>Appointments</Button>
-                <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/calendar')}>Calendar</Button>
-              </div>
-            </Card>
+            <ServiceCard
+              key={item.id}
+              item={item}
+              isProviderView={isProviderView}
+              onBook={() => openBooking(item)}
+              onDetails={() => navigate(serviceDetailPath(category, item.id))}
+              onManageBookings={() => navigate('/dashboard/orders')}
+            />
           ))}
         </div>
       )}
+
+      {isProviderView && !loading ? (
+        <div className="flex justify-center pt-2">
+          <Button variant="secondary" onClick={() => navigate('/dashboard/create')}>
+            + Add new service
+          </Button>
+        </div>
+      ) : null}
+
+      <Suspense fallback={null}>
+        <ServiceBookingSheet
+          open={bookingItem != null}
+          service={bookingItem}
+          onClose={() => setBookingItem(null)}
+          onConfirm={handleConfirmBooking}
+        />
+      </Suspense>
     </div>
   )
 }
