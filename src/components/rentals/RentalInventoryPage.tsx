@@ -15,6 +15,8 @@ import {
   type StatusTone,
 } from '../common/DataOverview'
 import { DRIVER_CARDS, DriversCardGrid, type DriverCardItem } from './DriversCardGrid'
+import { useAppStore } from '../../store/appStore'
+import { useToast } from '../common/Toast'
 import { cn, formatCurrency } from '../../utils/format'
 
 export type RentalCategory = 'machinery' | 'labours' | 'drivers' | 'land' | 'warehouses'
@@ -224,36 +226,56 @@ const PAYMENTS: Record<string, PaymentRow[]> = {
   ],
 }
 
-const TITLES: Record<RentalCategory, { title: string; description: string; cta: string; noun: string }> = {
+const TITLES: Record<RentalCategory, { ownerTitle: string; renterTitle: string; description: string; renterDescription: string; cta: string; noun: string; eyebrow: string; renterEyebrow: string }> = {
   machinery: {
-    title: 'Machinery',
-    description: 'Tractors, harvesters, and implements with live availability.',
+    ownerTitle: 'My machinery',
+    renterTitle: 'Find machinery to rent',
+    description: 'Manage tractors, harvesters, and implements with live availability.',
+    renterDescription: 'Book tractors, harvesters, and implements by the day. See what is free now.',
     cta: '+ Add Machinery',
     noun: 'machine',
+    eyebrow: 'Inventory / Machinery',
+    renterEyebrow: 'Rent / Machinery',
   },
   labours: {
-    title: 'Labours',
-    description: 'Field crews and seasonal labour packages for hire.',
+    ownerTitle: 'My labour crews',
+    renterTitle: 'Hire field crews',
+    description: 'Field crews and seasonal labour packages you list for hire.',
+    renterDescription: 'Book harvest, transplanting, and packing crews for your plots.',
     cta: '+ Add Labour Listing',
     noun: 'crew',
+    eyebrow: 'Inventory / Labour',
+    renterEyebrow: 'Rent / Labour',
   },
   drivers: {
-    title: 'Drivers',
+    ownerTitle: 'My drivers',
+    renterTitle: 'Find a driver',
     description: 'Operators and transport drivers for equipment and haulage.',
+    renterDescription: 'Book licensed drivers for tractors, harvest, and produce haulage.',
     cta: '+ Add Driver Service',
     noun: 'driver',
+    eyebrow: 'Inventory / Drivers',
+    renterEyebrow: 'Rent / Drivers',
   },
   land: {
-    title: 'Land',
+    ownerTitle: 'My land listings',
+    renterTitle: 'Lease farmland',
     description: 'Agricultural parcels listed for seasonal or annual lease.',
+    renterDescription: 'Find irrigated plots, polyhouses, and dryland parcels to lease.',
     cta: '+ Add Land Listing',
     noun: 'parcel',
+    eyebrow: 'Inventory / Land',
+    renterEyebrow: 'Rent / Land',
   },
   warehouses: {
-    title: 'Warehouses',
+    ownerTitle: 'My warehouses',
+    renterTitle: 'Rent storage space',
     description: 'Cold storage, silos, and godown capacity you can rent out.',
+    renterDescription: 'Book cold rooms, silos, and godowns by the month or day.',
     cta: '+ Add Warehouse',
     noun: 'space',
+    eyebrow: 'Inventory / Warehouses',
+    renterEyebrow: 'Rent / Warehouses',
   },
 }
 
@@ -415,12 +437,14 @@ function SoftSelect({
 function ItemPreview({
   item,
   categoryLabel,
+  isOwner,
   onBack,
   onEdit,
   onBook,
 }: {
   item: RentalItem
   categoryLabel: string
+  isOwner: boolean
   onBack: () => void
   onEdit: () => void
   onBook: () => void
@@ -461,9 +485,15 @@ function ItemPreview({
           </button>
           <div className="flex w-full items-center gap-2 sm:w-auto">
             <ExportButton className="flex-1 sm:flex-none" onClick={() => undefined} />
-            <div className="flex-1 sm:flex-none [&_button]:w-full">
-              <PrimaryActionButton onClick={onEdit}>Edit listing</PrimaryActionButton>
-            </div>
+            {isOwner ? (
+              <div className="flex-1 sm:flex-none [&_button]:w-full">
+                <PrimaryActionButton onClick={onEdit}>Edit listing</PrimaryActionButton>
+              </div>
+            ) : (
+              <div className="flex-1 sm:flex-none [&_button]:w-full">
+                <PrimaryActionButton onClick={onBook}>Book now</PrimaryActionButton>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -486,17 +516,27 @@ function ItemPreview({
               <button
                 type="button"
                 onClick={onBook}
-                className="cv-touch rounded-lg border border-[var(--cv-primary)] px-3 py-2 text-sm font-semibold text-[var(--cv-primary)] hover:bg-[var(--cv-primary-soft)]"
+                className="cv-touch min-h-[44px] rounded-lg bg-[var(--cv-btn-bg)] px-3 py-2 text-sm font-semibold text-[var(--cv-btn-text)] hover:opacity-90"
               >
-                New booking
+                Book now
               </button>
-              <button
-                type="button"
-                onClick={onEdit}
-                className="cv-touch rounded-lg bg-[var(--cv-btn-bg)] px-3 py-2 text-sm font-semibold text-[var(--cv-btn-text)] hover:opacity-90"
-              >
-                Update listing
-              </button>
+              {isOwner ? (
+                <button
+                  type="button"
+                  onClick={onEdit}
+                  className="cv-touch min-h-[44px] rounded-lg border border-[var(--cv-border)] px-3 py-2 text-sm font-semibold text-[var(--cv-text)]"
+                >
+                  Update listing
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="cv-touch min-h-[44px] rounded-lg border border-[var(--cv-border)] px-3 py-2 text-sm font-semibold text-[var(--cv-text)]"
+                >
+                  View similar
+                </button>
+              )}
               <button
                 type="button"
                 className="cv-touch col-span-2 inline-flex items-center justify-center gap-1 rounded-lg border border-[var(--cv-border)] px-3 py-2 text-sm font-medium text-[var(--cv-text)] sm:col-span-1"
@@ -705,7 +745,12 @@ function ItemPreview({
 
 export function RentalInventoryPage({ category }: Props) {
   const navigate = useNavigate()
+  const isOwner = useAppStore((s) => s.user?.activeRole === 'rental')
+  const { showToast } = useToast()
   const copy = TITLES[category]
+  const pageTitle = isOwner ? copy.ownerTitle : copy.renterTitle
+  const pageSubtitle = isOwner ? copy.description : copy.renterDescription
+  const eyebrow = isOwner ? copy.eyebrow : copy.renterEyebrow
   const [statusFilter, setStatusFilter] = useState('all')
   const [q, setQ] = useState('')
   const [locationFilter, setLocationFilter] = useState('all')
@@ -748,14 +793,35 @@ export function RentalInventoryPage({ category }: Props) {
     return { revenue, outstanding, collected, available, total: allItems.length }
   }, [allItems])
 
+  const startBooking = (item: RentalItem) => {
+    if (item.status !== 'available') {
+      showToast({
+        type: 'warning',
+        title: 'Not available to book',
+        message: `${item.name} is ${STATUS_LABEL[item.status].toLowerCase()}.`,
+      })
+      return
+    }
+    showToast({
+      type: 'success',
+      title: 'Booking started',
+      message: `Pick dates for ${item.name} on the schedule.`,
+      actionLabel: 'Open schedule',
+      onAction: () => navigate('/dashboard/scheduling'),
+      duration: 6000,
+    })
+    navigate('/dashboard/scheduling')
+  }
+
   if (previewItem) {
     return (
       <ItemPreview
         item={previewItem}
-        categoryLabel={copy.title}
+        categoryLabel={pageTitle}
+        isOwner={isOwner}
         onBack={() => setPreviewId(null)}
         onEdit={() => navigate('/dashboard/create')}
-        onBook={() => navigate('/dashboard/calendar')}
+        onBook={() => startBooking(previewItem)}
       />
     )
   }
@@ -764,8 +830,15 @@ export function RentalInventoryPage({ category }: Props) {
     return (
       <DriversCardGrid
         items={DRIVER_CARDS}
+        title={pageTitle}
+        subtitle={pageSubtitle}
+        eyebrow={eyebrow}
+        isOwner={isOwner}
         onView={(id) => setPreviewId(id)}
-        onBook={() => navigate('/dashboard/calendar')}
+        onBook={(id) => {
+          const item = allItems.find((i) => i.id === id)
+          if (item) startBooking(item)
+        }}
         onAdd={() => navigate('/dashboard/create')}
       />
     )
@@ -785,11 +858,12 @@ export function RentalInventoryPage({ category }: Props) {
               setQ(e.target.value)
               setPage(0)
             }}
-            placeholder={`Search by ${copy.noun}, ID, location…`}
+            placeholder={`Search by ${copy.noun}, location, or specs`}
             className="w-full rounded-xl border border-[var(--cv-border)] bg-[var(--cv-surface)] py-2.5 pl-10 pr-3 text-sm text-[var(--cv-text)] placeholder:text-[var(--cv-muted)] shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
           />
         </label>
         <div className="flex items-center gap-2 max-lg:w-full">
+        {isOwner ? (
           <button
             type="button"
             onClick={() => navigate('/dashboard/create')}
@@ -797,6 +871,7 @@ export function RentalInventoryPage({ category }: Props) {
           >
             {copy.cta}
           </button>
+        ) : null}
           <button
             type="button"
             className="cv-touch flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--cv-btn-bg)] text-[var(--cv-btn-text)] shadow-[0_1px_2px_rgba(15,23,42,0.08)]"
@@ -808,12 +883,13 @@ export function RentalInventoryPage({ category }: Props) {
       </div>
 
       <div className="hidden lg:block">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--cv-text)]">{copy.title} overview</h1>
-        <p className="mt-1 text-sm text-[var(--cv-muted)]">{copy.description}</p>
+        <p className="text-[13px] font-medium text-[var(--cv-sidebar-muted)]">{eyebrow}</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-[var(--cv-text)]">{pageTitle}</h1>
+        <p className="mt-1 text-sm text-[var(--cv-muted)]">{pageSubtitle}</p>
       </div>
 
       <div className="cv-metric-scroll lg:grid lg:grid-cols-4 lg:gap-3 lg:overflow-visible">
-        <MetricCard tone="blue" value={String(summary.total)} label={`Total ${copy.title.toLowerCase()}`} />
+        <MetricCard tone="blue" value={String(summary.total)} label={`Total ${copy.noun}s`} />
         <MetricCard tone="teal" value={String(summary.available)} label="Available now" />
         <MetricCard tone="amber" value={formatCurrency(summary.revenue)} label="Revenue MTD" />
         <MetricCard tone="rose" value={formatCurrency(summary.outstanding)} label="Outstanding dues" />
@@ -821,7 +897,7 @@ export function RentalInventoryPage({ category }: Props) {
 
       <section className="overflow-hidden rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-surface)] shadow-[0_1px_2px_rgba(15,23,42,0.04)] max-lg:border-0 max-lg:bg-transparent max-lg:shadow-none">
         <div className="flex flex-col gap-3 border-b border-[var(--cv-border)] px-3 py-3 sm:px-4 sm:flex-row sm:items-center sm:justify-between max-lg:mb-3 max-lg:rounded-2xl max-lg:border max-lg:bg-[var(--cv-surface)]">
-          <h2 className="text-base font-semibold text-[var(--cv-text)]">{copy.title} listings</h2>
+          <h2 className="text-base font-semibold text-[var(--cv-text)]">{pageTitle}</h2>
           <div className="flex w-full flex-wrap gap-2 sm:w-auto">
             <FilterSelect
               label="Status"
@@ -869,7 +945,7 @@ export function RentalInventoryPage({ category }: Props) {
             <table className="cv-responsive-table min-w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-[var(--cv-border)] bg-[var(--cv-elevated)]/40">
-                  {['Listing', 'ID', 'Location', 'Rate', 'Schedule', 'Status', 'Action'].map((h) => (
+                  {['Listing', 'Location', 'Rate', 'Schedule', 'Status', 'Action'].map((h) => (
                     <th
                       key={h}
                       className="px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--cv-muted)]"
@@ -896,7 +972,6 @@ export function RentalInventoryPage({ category }: Props) {
                         </div>
                       </div>
                     </td>
-                    <td data-label="ID" className="px-4 py-3.5 font-mono text-[13px]">{item.id}</td>
                     <td data-label="Location" className="px-4 py-3.5 text-[var(--cv-muted)]">{item.location}</td>
                     <td data-label="Rate" className="px-4 py-3.5 font-semibold">
                       {formatCurrency(item.rate)}
@@ -907,20 +982,21 @@ export function RentalInventoryPage({ category }: Props) {
                       <StatusPill tone={STATUS_TONE[item.status]}>{STATUS_LABEL[item.status]}</StatusPill>
                     </td>
                     <td data-label="Action" className="px-4 py-3.5">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <button
                           type="button"
-                          className="cv-touch text-sm font-semibold text-[var(--cv-primary)] hover:underline"
-                          onClick={() => setPreviewId(item.id)}
+                          className="cv-touch min-h-[44px] rounded-lg bg-[var(--cv-btn-bg)] px-3 py-2 text-sm font-semibold text-[var(--cv-btn-text)] disabled:opacity-40"
+                          disabled={item.status !== 'available'}
+                          onClick={() => startBooking(item)}
                         >
-                          View
+                          Book now
                         </button>
                         <button
                           type="button"
-                          className="cv-touch rounded p-1 text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)]"
-                          aria-label="More actions"
+                          className="cv-touch min-h-[44px] text-sm font-semibold text-[var(--cv-primary)] hover:underline"
+                          onClick={() => setPreviewId(item.id)}
                         >
-                          <EllipsisVerticalIcon className="h-4 w-4" />
+                          View details
                         </button>
                       </div>
                     </td>

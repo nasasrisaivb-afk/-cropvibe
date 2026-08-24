@@ -1,6 +1,6 @@
 ﻿import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ORDERS_LABEL, PRIMARY_CTA } from '../../config/navigation'
+import { ORDERS_LABEL, ORDERS_PAGE_COPY, PRIMARY_CTA } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
 import { useServiceBookings } from '../../hooks/useServiceBookings'
 import type { ServiceBookingRecord } from '../services/serviceCatalogTypes'
@@ -165,7 +165,9 @@ function SellerOrders() {
 
   return (
     <OverviewShell
-      title={`${ORDERS_LABEL.seller} overview`}
+      eyebrow={ORDERS_PAGE_COPY.seller.eyebrow}
+      title={ORDERS_PAGE_COPY.seller.title}
+      subtitle={ORDERS_PAGE_COPY.seller.subtitle}
       actions={
         <>
           <ExportButton onClick={() => undefined} />
@@ -291,7 +293,9 @@ function RentalBookings() {
 
   return (
     <OverviewShell
-      title={`${ORDERS_LABEL.rental} overview`}
+      eyebrow={ORDERS_PAGE_COPY.rental.eyebrow}
+      title={ORDERS_PAGE_COPY.rental.title}
+      subtitle={ORDERS_PAGE_COPY.rental.subtitle}
       actions={
         <>
           <ExportButton onClick={() => undefined} />
@@ -465,9 +469,13 @@ function GenericOrders({ role }: { role: Role }) {
     ]
   }, [role, serviceBookings])
 
+  const copy = ORDERS_PAGE_COPY[role]
+
   return (
     <OverviewShell
-      title={`${label} overview`}
+      eyebrow={copy.eyebrow}
+      title={copy.title}
+      subtitle={copy.subtitle}
       actions={
         <>
           <ExportButton onClick={() => undefined} />

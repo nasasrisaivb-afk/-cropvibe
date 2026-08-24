@@ -198,6 +198,63 @@ export const PRIMARY_CTA: Record<Role, { label: string; path: string }> = {
   educator: { label: '+ Create Course', path: '/dashboard/create' },
 }
 
+/** Role-aware page purpose copy (consultancy UX pattern, app-wide). */
+export const LISTINGS_PAGE_COPY: Record<Role, { eyebrow: string; title: string; subtitle: string }> = {
+  seller: {
+    eyebrow: 'Sell / Listings',
+    title: 'My product listings',
+    subtitle: 'View, update, and promote the produce you sell. Track stock and incoming orders.',
+  },
+  buyer: {
+    eyebrow: 'Buy / Suppliers',
+    title: 'Find verified suppliers',
+    subtitle: 'Compare produce, MOQ, and delivery times. Request a quote when you are ready to buy.',
+  },
+  rental: {
+    eyebrow: 'Inventory / Equipment',
+    title: 'My rental inventory',
+    subtitle: 'Manage machinery, crews, and spaces. Track availability and bookings.',
+  },
+  service: {
+    eyebrow: 'Services',
+    title: 'My service offerings',
+    subtitle: 'Manage consultancy and farm services. Track bookings and ratings.',
+  },
+  educator: {
+    eyebrow: 'Courses',
+    title: 'My courses',
+    subtitle: 'Manage enrollments, completion, and ratings for the programmes you teach.',
+  },
+}
+
+export const ORDERS_PAGE_COPY: Record<Role, { eyebrow: string; title: string; subtitle: string }> = {
+  seller: {
+    eyebrow: 'Sell / Orders',
+    title: 'Incoming orders',
+    subtitle: 'Accept, pack, and ship purchase orders from buyers.',
+  },
+  buyer: {
+    eyebrow: 'Buy / Purchase orders',
+    title: 'My purchase orders',
+    subtitle: 'Track quotes, deliveries, and payment status.',
+  },
+  rental: {
+    eyebrow: 'Bookings / Schedule',
+    title: 'Rental bookings',
+    subtitle: 'Confirm pickups, returns, and deposits for hired equipment.',
+  },
+  service: {
+    eyebrow: 'Services / Appointments',
+    title: 'My bookings',
+    subtitle: 'Upcoming consultations and completed sessions.',
+  },
+  educator: {
+    eyebrow: 'Courses / Enrollments',
+    title: 'Course enrollments',
+    subtitle: 'See who enrolled and follow completion progress.',
+  },
+}
+
 export function getNavSections(role: Role): NavSection[] {
   if (role === 'buyer') return BUYER_NAV_SECTIONS
   if (role === 'rental') return RENTAL_NAV_SECTIONS

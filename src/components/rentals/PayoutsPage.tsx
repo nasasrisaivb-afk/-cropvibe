@@ -750,11 +750,11 @@ export function PayoutsPage() {
           </p>
         </div>
         <div className="w-full sm:max-w-xs">
-          <Select
-            label="Filter status"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            options={[
+        <Select
+          label="Filter status"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          options={[
               { value: 'all', label: 'All settlements' },
               { value: 'in_use', label: 'In use' },
               { value: 'processing', label: 'Processing' },
@@ -781,7 +781,7 @@ export function PayoutsPage() {
             />
           ))
         )}
-      </div>
+        </div>
 
       <Sheet
         open={Boolean(confirmTarget)}
@@ -806,16 +806,16 @@ export function PayoutsPage() {
                 Action: {confirmTarget.action}. After confirmation, status will update and the card
                 timeline will sync automatically.
               </p>
-            </div>
+                </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
               <Button variant="ghost" onClick={() => setConfirmTarget(null)}>
                 Cancel
-              </Button>
+                    </Button>
               <Button variant="danger" onClick={() => setConfirmTarget(null)}>
                 Confirm {confirmTarget.action.toLowerCase()}
-              </Button>
-            </div>
-          </div>
+                    </Button>
+                </div>
+              </div>
         ) : null}
       </Sheet>
     </div>

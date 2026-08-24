@@ -5,6 +5,7 @@ import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
 import { FormInput } from '../common/FormInput'
+import { useToast } from '../common/Toast'
 import { PageHeader } from '../common/PageHeader'
 
 const TXNS = [
@@ -17,6 +18,7 @@ const TXNS = [
 
 export function WalletPage() {
   const role = useAppStore((s) => s.user?.activeRole ?? 'seller')
+  const { showToast } = useToast()
   const [payoutOpen, setPayoutOpen] = useState(false)
   const [amount, setAmount] = useState('10000')
   const balance = 68420
@@ -28,13 +30,29 @@ export function WalletPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Wallet & payments"
-        subtitle="Escrow-aware ledger, payouts, and GST-ready invoices."
+        eyebrow="Money"
+        title={canPayout ? 'Settlements & payouts' : 'My wallet'}
+        subtitle={
+          canPayout
+            ? 'See collected earnings, outstanding dues, and request a payout.'
+            : 'Track payments for orders and bookings. Add balance when you need to pay.'
+        }
         actions={
           canPayout ? (
             <Button onClick={() => setPayoutOpen(true)}>Request payout</Button>
           ) : (
-            <Button variant="secondary">Add wallet balance</Button>
+            <Button
+              variant="secondary"
+              onClick={() =>
+                showToast({
+                  type: 'info',
+                  title: 'Add balance',
+                  message: 'UPI and net-banking options will open here.',
+                })
+              }
+            >
+              Add wallet balance
+            </Button>
           )
         }
       />
@@ -71,6 +89,11 @@ export function WalletPage() {
               <Button
                 onClick={() => {
                   setPayoutOpen(false)
+                  showToast({
+                    type: 'success',
+                    title: 'Payout requested',
+                    message: `₹${amount} will be sent to your verified bank account.`,
+                  })
                 }}
               >
                 Submit request

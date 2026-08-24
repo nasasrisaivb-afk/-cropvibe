@@ -9,6 +9,7 @@ import { useAppStore } from '../../store/appStore'
 import type { PageId } from '../../types/roles'
 import { getServiceById } from '../services/serviceCatalogUtils'
 import type { ServiceCategory } from '../services/serviceCatalogTypes'
+import { ToastProvider } from '../common/Toast'
 import { DashboardHeader, DashboardSidebar, MobileBottomNav, MobileCreateFab, MobileSearchBar } from '../common/Navigation'
 import { BuyerDashboard } from './BuyerDashboard'
 import { EducatorDashboard } from './EducatorDashboard'
@@ -98,6 +99,7 @@ export function DashboardLayout() {
   }
 
   return (
+    <ToastProvider>
     <div className="flex min-h-[100dvh] bg-[var(--cv-bg)] text-[var(--cv-text)]">
       <a className="skip-link focus-ring" href="#main-content">
         Skip to content
@@ -134,5 +136,6 @@ export function DashboardLayout() {
         </div>
       ) : null}
     </div>
+    </ToastProvider>
   )
 }

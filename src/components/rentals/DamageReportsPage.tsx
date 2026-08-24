@@ -1159,7 +1159,7 @@ export function DamageReportsPage() {
             />
           ))
         )}
-      </div>
+            </div>
 
       <Sheet
         open={Boolean(chargeTarget)}
@@ -1187,7 +1187,7 @@ export function DamageReportsPage() {
               <Button variant="ghost" onClick={() => setChargeTarget(null)}>
                 Cancel
               </Button>
-              <Button
+                  <Button
                 variant="danger"
                 onClick={() => {
                   patchReport(chargeTarget.id, { status: 'charged' })
@@ -1196,9 +1196,9 @@ export function DamageReportsPage() {
                 }}
               >
                 Confirm charge
-              </Button>
+                </Button>
             </div>
-          </div>
+      </div>
         ) : null}
       </Sheet>
     </div>

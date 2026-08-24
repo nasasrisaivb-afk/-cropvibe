@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { cn } from '../../utils/format'
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'
@@ -19,6 +19,13 @@ const BORDER: Record<ToastType, string> = {
   info: 'border-l-[var(--cv-primary,#2563eb)]',
   warning: 'border-l-[var(--cv-warning,#ff9800)]',
 }
+
+interface ToastApi {
+  showToast: (item: Omit<ToastItem, 'id'>) => string
+  dismiss: (id: string) => void
+}
+
+const ToastContext = createContext<ToastApi | null>(null)
 
 interface ToastStackProps {
   toasts: ToastItem[]
@@ -91,18 +98,46 @@ function ToastCard({
   )
 }
 
-export function useToast() {
+function useToastState(): ToastApi & { toasts: ToastItem[] } {
   const [toasts, setToasts] = useState<ToastItem[]>([])
 
-  const dismiss = (id: string) => {
+  const dismiss = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))
-  }
+  }, [])
 
-  const showToast = (item: Omit<ToastItem, 'id'>) => {
+  const showToast = useCallback((item: Omit<ToastItem, 'id'>) => {
     const id = crypto.randomUUID()
     setToasts((prev) => [...prev, { ...item, id }])
     return id
+  }, [])
+
+  return { toasts, showToast, dismiss }
+}
+
+export function ToastProvider({ children }: { children: ReactNode }) {
+  const { toasts, showToast, dismiss } = useToastState()
+  const api = useMemo(() => ({ showToast, dismiss }), [showToast, dismiss])
+
+  return (
+    <ToastContext.Provider value={api}>
+      {children}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
+    </ToastContext.Provider>
+  )
+}
+
+export function useToast() {
+  const ctx = useContext(ToastContext)
+  const local = useToastState()
+
+  if (ctx) {
+    return { showToast: ctx.showToast, dismiss: ctx.dismiss, ToastStack: () => null }
   }
 
-  return { toasts, showToast, dismiss, ToastStack: () => <ToastStack toasts={toasts} onDismiss={dismiss} /> }
+  return {
+    toasts: local.toasts,
+    showToast: local.showToast,
+    dismiss: local.dismiss,
+    ToastStack: () => <ToastStack toasts={local.toasts} onDismiss={local.dismiss} />,
+  }
 }

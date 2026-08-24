@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LISTINGS_LABEL, PRIMARY_CTA } from '../../config/navigation'
+import { LISTINGS_PAGE_COPY, PRIMARY_CTA } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
 import type { Role } from '../../types/roles'
 import { formatCurrency } from '../../utils/format'
+import { useToast } from '../common/Toast'
 import { Button } from '../common/Button'
 import {
   DataTable,
@@ -79,11 +80,13 @@ const EQUIPMENT_TONE: Record<string, StatusTone> = {
 function useListingChrome(role: Role) {
   const navigate = useNavigate()
   const cta = PRIMARY_CTA[role]
+  const copy = LISTINGS_PAGE_COPY[role]
   const kycPending = useAppStore((s) => s.user?.kycStatus === 'pending')
   const locked = Boolean(kycPending && role !== 'buyer')
   return {
-    title: `${LISTINGS_LABEL[role]} overview`,
-    subtitle: `Manage and discover offerings for your ${role} workspace.`,
+    eyebrow: copy.eyebrow,
+    title: copy.title,
+    subtitle: copy.subtitle,
     actions: (
       <>
         <ExportButton onClick={() => undefined} />
@@ -98,6 +101,7 @@ function useListingChrome(role: Role) {
 function RentalEquipmentView() {
   const navigate = useNavigate()
   const chrome = useListingChrome('rental')
+  const { showToast } = useToast()
   const [tab, setTab] = useState('all')
   const [query, setQuery] = useState('')
 
@@ -130,7 +134,7 @@ function RentalEquipmentView() {
   }, [query, tab])
 
   return (
-    <OverviewShell title={chrome.title} subtitle={chrome.subtitle} actions={chrome.actions}>
+    <OverviewShell title={chrome.title} subtitle={chrome.subtitle} eyebrow={chrome.eyebrow} actions={chrome.actions}>
       <div className="mb-3 flex flex-wrap gap-2">
         {RENTAL_CATEGORY_LINKS.map((link) => (
           <button
@@ -178,7 +182,7 @@ function RentalEquipmentView() {
         </OverviewToolbar>
 
         <DataTable>
-          <DataTableHead columns={['Equipment', 'Schedule', 'Rate', 'Status']} />
+          <DataTableHead columns={['Equipment', 'Schedule', 'Rate', 'Status', '']} />
           <DataTableBody>
             {items.map((item) => (
               <DataTableRow key={item.name}>
@@ -192,6 +196,38 @@ function RentalEquipmentView() {
                   <StatusPill tone={EQUIPMENT_TONE[item.status] ?? 'neutral'}>
                     {item.status}
                   </StatusPill>
+                </DataTableCell>
+                <DataTableCell>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      className="cv-touch min-h-[44px]"
+                      disabled={item.status !== 'Available'}
+                      onClick={() => {
+                        if (item.status !== 'Available') {
+                          showToast({
+                            type: 'warning',
+                            title: 'Not available',
+                            message: `${item.name} is ${item.status.toLowerCase()}.`,
+                          })
+                          return
+                        }
+                        showToast({
+                          type: 'success',
+                          title: 'Booking started',
+                          message: `Continue on the calendar for ${item.name}.`,
+                          actionLabel: 'Open calendar',
+                          onAction: () => navigate('/dashboard/calendar'),
+                        })
+                        navigate('/dashboard/machinery')
+                      }}
+                    >
+                      Book now
+                    </Button>
+                    <Button size="sm" variant="secondary" className="cv-touch min-h-[44px]" onClick={() => navigate('/dashboard/machinery')}>
+                      View details
+                    </Button>
+                  </div>
                 </DataTableCell>
               </DataTableRow>
             ))}
@@ -215,6 +251,7 @@ export function ListingsPage() {
   const [sellerTab, setSellerTab] = useState('all')
   const [saved, setSaved] = useState<string[]>(['Organic Roots'])
   const chrome = useListingChrome(role)
+  const { showToast } = useToast()
 
   const suppliers = useMemo(
     () =>
@@ -239,7 +276,7 @@ export function ListingsPage() {
 
   if (role === 'seller') {
     return (
-      <OverviewShell title={chrome.title} subtitle={chrome.subtitle} actions={chrome.actions}>
+      <OverviewShell title={chrome.title} subtitle={chrome.subtitle} eyebrow={chrome.eyebrow} actions={chrome.actions}>
         <OverviewPanel>
           <OverviewTabs
             tabs={[
@@ -287,11 +324,11 @@ export function ListingsPage() {
                   </DataTableCell>
                   <DataTableCell>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/create')}>
+                      <Button size="sm" variant="secondary" className="cv-touch min-h-[44px]" onClick={() => navigate('/dashboard/create')}>
                         Edit
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/orders')}>
-                        Orders
+                      <Button size="sm" className="cv-touch min-h-[44px]" onClick={() => navigate('/dashboard/orders')}>
+                        View orders
                       </Button>
                     </div>
                   </DataTableCell>
@@ -307,7 +344,7 @@ export function ListingsPage() {
 
   if (role === 'buyer') {
     return (
-      <OverviewShell title={chrome.title} subtitle={chrome.subtitle} actions={chrome.actions}>
+      <OverviewShell title={chrome.title} subtitle={chrome.subtitle} eyebrow={chrome.eyebrow} actions={chrome.actions}>
         <OverviewPanel>
           <OverviewTabs
             tabs={[{ value: 'all', label: 'All suppliers', count: BUYER_SUPPLIERS.length }]}
@@ -355,15 +392,33 @@ export function ListingsPage() {
                         <Button
                           size="sm"
                           variant="secondary"
-                          onClick={() =>
+                          className="cv-touch min-h-[44px]"
+                          onClick={() => {
                             setSaved((prev) =>
                               isSaved ? prev.filter((n) => n !== s.name) : [...prev, s.name],
                             )
-                          }
+                            showToast({
+                              type: 'success',
+                              title: isSaved ? 'Removed from saved' : 'Supplier saved',
+                              message: isSaved ? `${s.name} was removed.` : `${s.name} is in your saved list.`,
+                            })
+                          }}
                         >
                           {isSaved ? 'Saved' : 'Save'}
                         </Button>
-                        <Button size="sm" onClick={() => navigate('/dashboard/create')}>
+                        <Button
+                          size="sm"
+                          className="cv-touch min-h-[44px]"
+                          onClick={() => {
+                            showToast({
+                              type: 'success',
+                              title: 'Quote requested',
+                              message: `${s.name} will send pricing for ${s.product}.`,
+                              actionLabel: 'View orders',
+                              onAction: () => navigate('/dashboard/orders'),
+                            })
+                          }}
+                        >
                           Request quote
                         </Button>
                       </div>
@@ -381,7 +436,7 @@ export function ListingsPage() {
 
   if (role === 'service') {
     return (
-      <OverviewShell title={chrome.title} subtitle={chrome.subtitle} actions={chrome.actions}>
+      <OverviewShell title={chrome.title} subtitle={chrome.subtitle} eyebrow={chrome.eyebrow} actions={chrome.actions}>
         <OverviewPanel>
           <OverviewTabs
             tabs={[{ value: 'all', label: 'All services', count: SERVICES.length }]}
@@ -411,10 +466,10 @@ export function ListingsPage() {
                   <DataTableCell strong>{formatCurrency(s.revenue)}</DataTableCell>
                   <DataTableCell>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/calendar')}>
-                        Calendar
+                      <Button size="sm" className="cv-touch min-h-[44px]" onClick={() => navigate('/dashboard/consultancy')}>
+                        Manage bookings
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => navigate('/dashboard/create')}>
+                      <Button size="sm" variant="secondary" className="cv-touch min-h-[44px]" onClick={() => navigate('/dashboard/create')}>
                         Edit
                       </Button>
                     </div>
@@ -430,7 +485,7 @@ export function ListingsPage() {
   }
 
   return (
-    <OverviewShell title={chrome.title} subtitle={chrome.subtitle} actions={chrome.actions}>
+    <OverviewShell title={chrome.title} subtitle={chrome.subtitle} eyebrow={chrome.eyebrow} actions={chrome.actions}>
       <OverviewPanel>
         <OverviewTabs
           tabs={[{ value: 'all', label: 'All courses', count: COURSES.length }]}
@@ -459,9 +514,27 @@ export function ListingsPage() {
                 <DataTableCell>{c.completion}%</DataTableCell>
                 <DataTableCell>{c.rating}★</DataTableCell>
                 <DataTableCell>
-                  <Button size="sm" variant="secondary">
-                    View
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      className="cv-touch min-h-[44px]"
+                      onClick={() => {
+                        showToast({
+                          type: 'success',
+                          title: 'Enrollment started',
+                          message: `Continue to enroll in ${c.name}.`,
+                          actionLabel: 'Open courses',
+                          onAction: () => navigate('/dashboard/selfpaced'),
+                        })
+                        navigate('/dashboard/selfpaced')
+                      }}
+                    >
+                      Enroll now
+                    </Button>
+                    <Button size="sm" variant="secondary" className="cv-touch min-h-[44px]" onClick={() => navigate('/dashboard/selfpaced')}>
+                      View details
+                    </Button>
+                  </div>
                 </DataTableCell>
               </DataTableRow>
             ))}

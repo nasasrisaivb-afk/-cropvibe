@@ -53,8 +53,9 @@ export function ReviewsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow="Profile"
         title="Reviews & ratings"
-        subtitle="Reputation center — respond to feedback and track rating mix."
+        subtitle="Read verified feedback and reply so the next customer can trust you."
         actions={
           <Select
             label="Filter by stars"

@@ -259,12 +259,25 @@ function todayLabel() {
 
 interface Props {
   items: DriverCardItem[]
+  title?: string
+  subtitle?: string
+  eyebrow?: string
+  isOwner?: boolean
   onView: (id: string) => void
   onBook: (id: string) => void
   onAdd: () => void
 }
 
-export function DriversCardGrid({ items, onView, onBook, onAdd }: Props) {
+export function DriversCardGrid({
+  items,
+  title = 'Drivers',
+  subtitle,
+  eyebrow,
+  isOwner = true,
+  onView,
+  onBook,
+  onAdd,
+}: Props) {
   const [tab, setTab] = useState('all')
   const [q, setQ] = useState('')
 
@@ -287,9 +300,11 @@ export function DriversCardGrid({ items, onView, onBook, onAdd }: Props) {
     <div className="space-y-5 sm:space-y-6">
       <header className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0 max-lg:hidden">
+          {eyebrow ? <p className="text-[13px] font-medium text-[var(--cv-muted)]">{eyebrow}</p> : null}
           <h1 className="text-[28px] font-bold leading-9 tracking-tight text-[var(--cv-text)] sm:text-[32px] sm:leading-10">
-            Drivers
+            {title}
           </h1>
+          {subtitle ? <p className="mt-1 max-w-xl text-sm text-[var(--cv-muted)]">{subtitle}</p> : null}
         </div>
         <p className="text-sm font-medium text-[var(--cv-muted)] sm:ml-auto">{todayLabel()}</p>
       </header>
@@ -341,13 +356,15 @@ export function DriversCardGrid({ items, onView, onBook, onAdd }: Props) {
               className="w-full rounded-full border border-[var(--cv-border)] bg-[var(--cv-surface)] py-2.5 pl-10 pr-4 text-sm text-[var(--cv-text)] placeholder:text-[var(--cv-muted)] shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
             />
           </label>
-          <button
-            type="button"
-            onClick={onAdd}
-            className="cv-touch hidden shrink-0 rounded-full bg-[var(--cv-btn-bg)] px-4 py-2.5 text-sm font-semibold text-[var(--cv-btn-text)] sm:inline-flex"
-          >
-            + Add Driver
-          </button>
+          {isOwner ? (
+            <button
+              type="button"
+              onClick={onAdd}
+              className="cv-touch hidden shrink-0 rounded-full bg-[var(--cv-btn-bg)] px-4 py-2.5 text-sm font-semibold text-[var(--cv-btn-text)] sm:inline-flex"
+            >
+              + Add Driver
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -355,13 +372,15 @@ export function DriversCardGrid({ items, onView, onBook, onAdd }: Props) {
         <div className="rounded-2xl border border-[var(--cv-border)] bg-[var(--cv-surface)] px-6 py-16 text-center">
           <p className="text-base font-semibold text-[var(--cv-text)]">No drivers match</p>
           <p className="mt-1 text-sm text-[var(--cv-muted)]">Try another tab or clear your search.</p>
-          <button
-            type="button"
-            onClick={onAdd}
-            className="cv-touch mt-4 inline-flex rounded-full bg-[var(--cv-btn-bg)] px-4 py-2.5 text-sm font-semibold text-[var(--cv-btn-text)]"
-          >
-            + Add Driver
-          </button>
+            {isOwner ? (
+              <button
+                type="button"
+                onClick={onAdd}
+                className="cv-touch mt-4 inline-flex rounded-full bg-[var(--cv-btn-bg)] px-4 py-2.5 text-sm font-semibold text-[var(--cv-btn-text)]"
+              >
+                + Add Driver
+              </button>
+            ) : null}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -376,15 +395,17 @@ export function DriversCardGrid({ items, onView, onBook, onAdd }: Props) {
         </div>
       )}
 
-      <div className="sm:hidden">
-        <button
-          type="button"
-          onClick={onAdd}
-          className="cv-touch w-full rounded-full bg-[var(--cv-btn-bg)] px-4 py-3 text-sm font-semibold text-[var(--cv-btn-text)]"
-        >
-          + Add Driver
-        </button>
-      </div>
+      {isOwner ? (
+        <div className="sm:hidden">
+          <button
+            type="button"
+            onClick={onAdd}
+            className="cv-touch w-full rounded-full bg-[var(--cv-btn-bg)] px-4 py-3 text-sm font-semibold text-[var(--cv-btn-text)]"
+          >
+            + Add Driver
+          </button>
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -420,7 +441,7 @@ function DriverCard({
           <div className="min-w-0">
             <h2 className="truncate text-base font-bold text-[var(--cv-text)]">{driver.name}</h2>
             <p className="mt-0.5 truncate text-sm text-[var(--cv-muted)]">
-              #{driver.id.replace(/^D-/, '')} / {driver.role}
+              {driver.role} · {driver.location}
             </p>
           </div>
         </div>
@@ -478,7 +499,7 @@ function DriverCard({
           onClick={onView}
           className="cv-touch rounded-xl bg-[var(--cv-elevated)] px-3 py-2.5 text-sm font-semibold text-[var(--cv-text)] transition hover:opacity-90"
         >
-          See Details
+          See details
         </button>
         <button
           type="button"
@@ -486,7 +507,7 @@ function DriverCard({
           disabled={driver.status === 'inactive' || driver.status === 'maintenance'}
           className="cv-touch rounded-xl bg-[var(--cv-btn-bg)] px-3 py-2.5 text-sm font-semibold text-[var(--cv-btn-text)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {driver.status === 'booked' ? 'Track Trip' : 'Book Driver'}
+          {driver.status === 'booked' ? 'Track trip' : 'Book now'}
         </button>
       </div>
     </article>

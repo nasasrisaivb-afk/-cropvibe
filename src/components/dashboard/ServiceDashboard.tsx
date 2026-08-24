@@ -256,8 +256,8 @@ export function ServiceDashboard() {
                   <Button size="sm" onClick={() => navigate('/dashboard/orders')}>
                     Review requests
                   </Button>
-                  <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/calendar')}>
-                    Calendar
+                  <Button size="sm" variant="secondary" onClick={() => navigate('/dashboard/orders')}>
+                    Manage bookings
                   </Button>
                 </div>
               </div>
@@ -340,8 +340,8 @@ export function ServiceDashboard() {
       </Card>
 
       <div className="flex flex-wrap gap-2">
-        <Button variant="secondary" onClick={() => navigate('/dashboard/calendar')}>
-          Availability Calendar
+        <Button variant="secondary" onClick={() => navigate('/dashboard/consultancy')}>
+          Find consultants / manage services
         </Button>
         <Button variant="secondary" onClick={() => navigate('/dashboard/create')}>
           + New Offering

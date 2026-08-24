@@ -28,6 +28,7 @@ export function SettingsPage() {
   return (
     <div className="space-y-5 lg:space-y-6">
       <LargeTitle
+        eyebrow="Account"
         title="Settings"
         subtitle="Appearance, notifications, security, and device sessions."
         actions={

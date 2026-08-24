@@ -37,8 +37,9 @@ export function HelpDeskPage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow="Help"
         title="Help desk"
-        subtitle="FAQ, tickets, and live support for rental providers."
+        subtitle="Find answers fast or raise a support ticket."
       />
 
       <div className="grid gap-6 lg:grid-cols-2">

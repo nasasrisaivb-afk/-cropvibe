@@ -70,12 +70,14 @@ export function StatusPill({
 export function OverviewShell({
   title,
   subtitle,
+  eyebrow,
   actions,
   children,
   className,
 }: {
   title: string
   subtitle?: string
+  eyebrow?: string
   actions?: ReactNode
   children: ReactNode
   className?: string
@@ -84,7 +86,15 @@ export function OverviewShell({
     <div className={cn('space-y-5 lg:space-y-6', className)}>
       <section className="cv-dashboard-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
         <div className="min-w-0">
-          <h1 className="text-[26px] font-semibold tracking-tight text-[var(--cv-sidebar-text)] sm:text-[28px]">
+          {eyebrow ? (
+            <p className="text-[13px] font-medium text-[var(--cv-sidebar-muted)]">{eyebrow}</p>
+          ) : null}
+          <h1
+            className={cn(
+              'font-semibold tracking-tight text-[var(--cv-sidebar-text)] text-[26px] sm:text-[28px]',
+              eyebrow ? 'mt-1' : '',
+            )}
+          >
             {title}
           </h1>
           {subtitle ? <p className="mt-1.5 text-sm text-[var(--cv-sidebar-muted)]">{subtitle}</p> : null}

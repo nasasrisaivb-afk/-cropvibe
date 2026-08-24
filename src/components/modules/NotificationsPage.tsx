@@ -66,8 +66,9 @@ export function NotificationsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow="Inbox"
         title="Notifications"
-        subtitle="Push, SMS, email, and in-app alerts with quiet hours support."
+        subtitle="Stay on top of bookings, payments, and KYC — without missing a confirmation."
         actions={
           <Button
             variant="secondary"

@@ -69,8 +69,9 @@ export function MessagesPage() {
   return (
     <div className="space-y-4">
       <PageHeader
+        eyebrow="Inbox"
         title="Messages"
-        subtitle="Order-linked chats with read receipts. Attachments supported."
+        subtitle="Chat with buyers, renters, and consultants about live orders and bookings."
       />
 
       <div className="grid h-[min(calc(100dvh-12rem),720px)] overflow-hidden rounded-[12px] border border-[var(--cv-border)] bg-[var(--cv-surface)] max-lg:h-[min(calc(100dvh-10rem),640px)] lg:grid-cols-[320px_1fr]">

@@ -25,6 +25,7 @@ export function ProfilePage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow="Account"
         title="Profile"
         subtitle={`Personal and business identity for ${ROLE_LABELS[user?.activeRole ?? 'seller']}.`}
         actions={

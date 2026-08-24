@@ -56,6 +56,9 @@ export function CalendarPage() {
   return (
     <div className="space-y-6">
       <PageHeader
+        eyebrow={
+          isService ? 'Services / Calendar' : isEducator ? 'Courses / Schedule' : 'Bookings / Calendar'
+        }
         title={
           isService ? 'Appointment calendar' : isEducator ? 'Course schedule' : 'Availability calendar'
         }
