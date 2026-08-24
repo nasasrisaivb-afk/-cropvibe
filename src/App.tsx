@@ -27,6 +27,7 @@ import { PayoutsPage } from './components/rentals/PayoutsPage'
 import { RentalInventoryPage } from './components/rentals/RentalInventoryPage'
 import { SchedulingPage } from './components/rentals/SchedulingPage'
 import { ServiceCatalogPage } from './components/services/ServiceCatalogPage'
+import { ServiceDetailsPage } from './components/services/ServiceDetailsPage'
 
 function App() {
   return (
@@ -50,10 +51,15 @@ function App() {
         <Route element={<Navigate replace to="/dashboard/scheduling" />} path="bookings" />
         <Route element={<SchedulingPage />} path="scheduling" />
         <Route element={<ServiceCatalogPage category="consultancy" />} path="consultancy" />
+        <Route element={<ServiceDetailsPage category="consultancy" />} path="consultancy/:serviceId" />
         <Route element={<ServiceCatalogPage category="testing" />} path="testing" />
+        <Route element={<ServiceDetailsPage category="testing" />} path="testing/:serviceId" />
         <Route element={<ServiceCatalogPage category="repair" />} path="repair" />
+        <Route element={<ServiceDetailsPage category="repair" />} path="repair/:serviceId" />
         <Route element={<ServiceCatalogPage category="aerial" />} path="aerial" />
+        <Route element={<ServiceDetailsPage category="aerial" />} path="aerial/:serviceId" />
         <Route element={<ServiceCatalogPage category="irrigation" />} path="irrigation" />
+        <Route element={<ServiceDetailsPage category="irrigation" />} path="irrigation/:serviceId" />
         <Route element={<CourseCatalogPage category="selfpaced" />} path="selfpaced" />
         <Route element={<CourseCatalogPage category="live" />} path="live" />
         <Route element={<CourseCatalogPage category="certifications" />} path="certifications" />

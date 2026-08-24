@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   BREADCRUMB_TITLES,
@@ -7,6 +7,8 @@ import {
 } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
 import type { PageId } from '../../types/roles'
+import { getServiceById } from '../services/serviceCatalogUtils'
+import type { ServiceCategory } from '../services/serviceCatalogTypes'
 import { DashboardHeader, DashboardSidebar, MobileBottomNav, MobileCreateFab, MobileSearchBar } from '../common/Navigation'
 import { BuyerDashboard } from './BuyerDashboard'
 import { EducatorDashboard } from './EducatorDashboard'
@@ -19,6 +21,25 @@ const pageToPath = getAllNavPaths()
 const routeToPage = Object.fromEntries(
   Object.entries(pageToPath).map(([page, path]) => [path, page]),
 ) as Record<string, PageId>
+
+function resolvePageFromPath(pathname: string): PageId | null {
+  if (routeToPage[pathname]) return routeToPage[pathname]
+  for (const [path, page] of Object.entries(routeToPage)) {
+    if (pathname.startsWith(`${path}/`)) return page
+  }
+  return null
+}
+
+function buildBreadcrumbs(pathname: string, currentPage: PageId): string[] {
+  const base = BREADCRUMB_TITLES[currentPage] ?? ['Dashboard']
+  const match = pathname.match(/^\/dashboard\/(consultancy|testing|repair|aerial|irrigation)\/([^/]+)/)
+  if (match) {
+    const category = match[1] as ServiceCategory
+    const service = getServiceById(category, match[2])
+    if (service) return [...base, service.title]
+  }
+  return base
+}
 
 function DashboardHome() {
   const role = useAppStore((state) => state.user?.activeRole ?? 'seller')
@@ -40,7 +61,7 @@ export function DashboardLayout() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const mapped = routeToPage[location.pathname]
+    const mapped = resolvePageFromPath(location.pathname)
     if (mapped && mapped !== currentPage) {
       setCurrentPage(mapped)
     }
@@ -48,7 +69,10 @@ export function DashboardLayout() {
 
   useEffect(() => {
     const expectedPath = pageToPath[currentPage]
-    if (expectedPath && location.pathname !== expectedPath) {
+    if (!expectedPath) return
+    const onSection =
+      location.pathname === expectedPath || location.pathname.startsWith(`${expectedPath}/`)
+    if (!onSection) {
       navigate(expectedPath, { replace: true })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,7 +88,10 @@ export function DashboardLayout() {
     return <Navigate replace to="/login" />
   }
 
-  const breadcrumbs = BREADCRUMB_TITLES[currentPage] ?? ['Dashboard']
+  const breadcrumbs = useMemo(
+    () => buildBreadcrumbs(location.pathname, currentPage),
+    [location.pathname, currentPage],
+  )
   const go = (page: PageId) => {
     setCurrentPage(page)
     navigate(pageToPath[page] ?? '/dashboard')
