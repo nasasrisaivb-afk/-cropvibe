@@ -83,6 +83,7 @@ export interface ServiceBookingRecord {
   amount: number
   createdAt: string
   confirmationCode: string
+  status?: 'confirmed' | 'cancelled'
 }
 
 export const CATEGORY_LABELS: Record<ServiceCategory, string> = {

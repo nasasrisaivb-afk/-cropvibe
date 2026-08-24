@@ -33,6 +33,7 @@ export const useServiceBookingStore = create<ServiceBookingState>()(
           ...payload,
           createdAt: new Date().toISOString(),
           confirmationCode: makeConfirmationCode(),
+          status: 'confirmed',
         }
         set({ bookings: [record, ...get().bookings] })
         return record

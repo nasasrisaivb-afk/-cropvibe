@@ -23,11 +23,23 @@
 | Skeleton loading states | Done |
 | Empty / not-found states | Done |
 | Sticky mobile Book now CTA | Done |
-| Bookings persist (localStorage) → Orders page | Done |
+| Bookings persist → Orders page | Done (Convex + local fallback) |
 | Lazy-loaded booking sheet (code split) | Done |
 | Dynamic breadcrumbs on detail pages | Done |
 
-**Not yet wired:** Real Convex/backend API, payments, email/calendar export, automated tests.
+**Not yet wired:** Payments, email/calendar export, Convex Auth (uses app user id for now), automated tests.
+
+### Convex setup
+
+```bash
+# Terminal 1 — backend (creates .env.local with VITE_CONVEX_URL)
+npx convex dev
+
+# Terminal 2 — frontend
+npm run dev
+```
+
+Bookings are stored in the `serviceBookings` Convex table and sync in real time on `/dashboard/orders`.
 
 ---
 

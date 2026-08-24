@@ -2,7 +2,8 @@
 import { useNavigate } from 'react-router-dom'
 import { ORDERS_LABEL, PRIMARY_CTA } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
-import { useServiceBookingStore } from '../../store/serviceBookingStore'
+import { useServiceBookings } from '../../hooks/useServiceBookings'
+import type { ServiceBookingRecord } from '../services/serviceCatalogTypes'
 import type { Role } from '../../types/roles'
 import { formatCurrency } from '../../utils/format'
 import { Badge, type BadgeStatus } from '../common/Badge'
@@ -425,12 +426,12 @@ function GenericOrders({ role }: { role: Role }) {
   const navigate = useNavigate()
   const cta = PRIMARY_CTA[role]
   const label = ORDERS_LABEL[role]
-  const serviceBookings = useServiceBookingStore((s) => s.bookings)
+  const serviceBookings = useServiceBookings().bookings
 
   const rows = useMemo(() => {
     const stored =
       role === 'service' || role === 'buyer'
-        ? serviceBookings.map((b) => ({
+        ? serviceBookings.map((b: ServiceBookingRecord) => ({
             id: b.confirmationCode,
             party: role === 'service' ? 'New client' : b.provider,
             item: `${b.serviceTitle} · ${b.date}`,

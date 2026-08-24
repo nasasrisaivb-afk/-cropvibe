@@ -5,7 +5,7 @@ import { Card } from '../common/Card'
 import { PageHeader } from '../common/PageHeader'
 import { useToast } from '../common/Toast'
 import { useAppStore } from '../../store/appStore'
-import { useServiceBookingStore } from '../../store/serviceBookingStore'
+import { useServiceBookings } from '../../hooks/useServiceBookings'
 import { ServiceCard } from './ServiceCard'
 import { ServiceCatalogSkeleton } from './ServiceCatalogSkeleton'
 import { ServiceFilters } from './ServiceFilters'
@@ -100,7 +100,7 @@ export function ServiceCatalogPage({ category }: Props) {
   const isProviderView = user?.activeRole === 'service'
   const copy = PAGE_COPY[category][isProviderView ? 'provider' : 'buyer']
   const { showToast, ToastStack } = useToast()
-  const addBooking = useServiceBookingStore((s) => s.addBooking)
+  const { addBooking } = useServiceBookings()
 
   const [filters, setFilters] = useState<ServiceFiltersState>(DEFAULT_FILTERS)
   const [loading, setLoading] = useState(true)
@@ -127,27 +127,37 @@ export function ServiceCatalogPage({ category }: Props) {
     setBookingItem(item)
   }
 
-  const handleConfirmBooking = (payload: { date: string; time: string; notes: string }) => {
+  const handleConfirmBooking = async (payload: { date: string; time: string; notes: string }) => {
     if (!bookingItem) return
-    const record = addBooking({
-      serviceId: bookingItem.id,
-      category,
-      serviceTitle: bookingItem.title,
-      provider: bookingItem.provider,
-      date: payload.date,
-      time: payload.time,
-      notes: payload.notes,
-      amount: bookingItem.rate,
-    })
-    showToast({
-      type: 'success',
-      title: 'Booking confirmed',
-      message: `${record.confirmationCode} · ${bookingItem.title} on ${payload.date} at ${payload.time}`,
-      actionLabel: 'View bookings',
-      onAction: () => navigate('/dashboard/orders'),
-      duration: 8000,
-    })
-    setBookingItem(null)
+    try {
+      const record = await addBooking({
+        serviceId: bookingItem.id,
+        category,
+        serviceTitle: bookingItem.title,
+        provider: bookingItem.provider,
+        date: payload.date,
+        time: payload.time,
+        notes: payload.notes,
+        amount: bookingItem.rate,
+      })
+      showToast({
+        type: 'success',
+        title: 'Booking confirmed',
+        message: `${record.confirmationCode} · ${bookingItem.title} on ${payload.date} at ${payload.time}`,
+        actionLabel: 'View bookings',
+        onAction: () => navigate('/dashboard/orders'),
+        duration: 8000,
+      })
+      setBookingItem(null)
+    } catch (err) {
+      showToast({
+        type: 'error',
+        title: 'Booking failed',
+        message: err instanceof Error ? err.message : 'Please try again.',
+        duration: null,
+      })
+      throw err
+    }
   }
 
   return (

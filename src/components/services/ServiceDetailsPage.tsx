@@ -5,7 +5,7 @@ import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { useToast } from '../common/Toast'
 import { useAppStore } from '../../store/appStore'
-import { useServiceBookingStore } from '../../store/serviceBookingStore'
+import { useServiceBookings } from '../../hooks/useServiceBookings'
 import { formatCurrency } from '../../utils/format'
 import { ServiceAvailabilityCalendar } from './ServiceAvailabilityCalendar'
 import { ServiceProviderSection } from './ServiceProviderSection'
@@ -31,7 +31,7 @@ export function ServiceDetailsPage({ category }: Props) {
   const user = useAppStore((s) => s.user)
   const isProviderView = user?.activeRole === 'service'
   const { showToast, ToastStack } = useToast()
-  const addBooking = useServiceBookingStore((s) => s.addBooking)
+  const { addBooking } = useServiceBookings()
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -110,26 +110,36 @@ export function ServiceDetailsPage({ category }: Props) {
     setBookingOpen(false)
   }
 
-  const handleConfirm = (payload: { date: string; time: string; notes: string }) => {
-    const record = addBooking({
-      serviceId: service.id,
-      category,
-      serviceTitle: service.title,
-      provider: service.provider,
-      date: payload.date,
-      time: payload.time,
-      notes: payload.notes,
-      amount: service.rate,
-    })
-    showToast({
-      type: 'success',
-      title: 'Booking confirmed',
-      message: `Confirmation ${record.confirmationCode} · ${payload.date} at ${payload.time}`,
-      actionLabel: 'View bookings',
-      onAction: () => navigate('/dashboard/orders'),
-      duration: 8000,
-    })
-    closeBooking()
+  const handleConfirm = async (payload: { date: string; time: string; notes: string }) => {
+    try {
+      const record = await addBooking({
+        serviceId: service.id,
+        category,
+        serviceTitle: service.title,
+        provider: service.provider,
+        date: payload.date,
+        time: payload.time,
+        notes: payload.notes,
+        amount: service.rate,
+      })
+      showToast({
+        type: 'success',
+        title: 'Booking confirmed',
+        message: `Confirmation ${record.confirmationCode} · ${payload.date} at ${payload.time}`,
+        actionLabel: 'View bookings',
+        onAction: () => navigate('/dashboard/orders'),
+        duration: 8000,
+      })
+      closeBooking()
+    } catch (err) {
+      showToast({
+        type: 'error',
+        title: 'Booking failed',
+        message: err instanceof Error ? err.message : 'Please try again.',
+        duration: null,
+      })
+      throw err
+    }
   }
 
   const share = async () => {
