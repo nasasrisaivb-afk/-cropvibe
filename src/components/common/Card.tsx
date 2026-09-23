@@ -28,8 +28,8 @@ export function Card({
     >
       {title ? (
         <div className={subtitle ? 'mb-4' : 'mb-4'}>
-          <h3 className="text-[15px] font-semibold text-[var(--cv-sidebar-text)]">{title}</h3>
-          {subtitle ? <p className="mt-1 text-sm text-[var(--cv-sidebar-muted)]">{subtitle}</p> : null}
+          <h3 className="text-[15px] font-semibold text-[var(--cv-text)]">{title}</h3>
+          {subtitle ? <p className="mt-1 text-sm text-[var(--cv-muted)]">{subtitle}</p> : null}
         </div>
       ) : null}
       {children}

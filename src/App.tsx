@@ -4,9 +4,14 @@ import { KYCStatusScreen } from './components/auth/KYCStatusScreen'
 import { LoginScreen } from './components/auth/LoginScreen'
 import { OtpScreen } from './components/auth/OtpScreen'
 import { RegisterScreen } from './components/auth/RegisterScreen'
+import { DiscoverPage } from './components/buyer/DiscoverPage'
 import { DashboardLayout } from './components/dashboard/DashboardLayout'
+import { CourseCatalogPage } from './components/educators/CourseCatalogPage'
 import { CreateWorkflowPage } from './components/listings/CreateWorkflowPage'
 import { ListingsPage } from './components/listings/ListingsPage'
+import { MandiPricesPage } from './components/intel/MandiPricesPage'
+import { SchemesPage } from './components/intel/SchemesPage'
+import { WeatherPage } from './components/intel/WeatherPage'
 import { AnalyticsPage } from './components/modules/AnalyticsPage'
 import { CalendarPage } from './components/modules/CalendarPage'
 import { MessagesPage } from './components/modules/MessagesPage'
@@ -16,7 +21,6 @@ import { ReviewsPage } from './components/modules/ReviewsPage'
 import { SettingsPage } from './components/modules/SettingsPage'
 import { WalletPage } from './components/modules/WalletPage'
 import { OrdersPage } from './components/orders/OrdersPage'
-import { CourseCatalogPage } from './components/educators/CourseCatalogPage'
 import { AgreementsPage } from './components/rentals/AgreementsPage'
 import { DamageReportsPage } from './components/rentals/DamageReportsPage'
 import { DisputesPage } from './components/rentals/DisputesPage'
@@ -28,6 +32,23 @@ import { RentalInventoryPage } from './components/rentals/RentalInventoryPage'
 import { SchedulingPage } from './components/rentals/SchedulingPage'
 import { ServiceCatalogPage } from './components/services/ServiceCatalogPage'
 import { ServiceDetailsPage } from './components/services/ServiceDetailsPage'
+import { InsightsPage } from './components/workspace/InsightsPage'
+import {
+  AppointmentsPage,
+  AssessmentsPage,
+  CoursesPage,
+  LearnersPage,
+  MaintenancePage,
+  OperatorsPage,
+  PortfolioPage,
+  QnaPage,
+  QuotesPage,
+  ReportsPage,
+  RfqsPage,
+  ServicesPage,
+  SessionsPage,
+  SuppliersPage,
+} from './components/workspace/RolePages'
 
 function App() {
   return (
@@ -78,6 +99,25 @@ function App() {
         <Route element={<AnalyticsPage />} path="analytics" />
         <Route element={<ProfilePage />} path="profile" />
         <Route element={<SettingsPage />} path="settings" />
+        <Route element={<DiscoverPage />} path="discover" />
+        <Route element={<QuotesPage />} path="quotes" />
+        <Route element={<RfqsPage />} path="rfqs" />
+        <Route element={<SuppliersPage />} path="suppliers" />
+        <Route element={<InsightsPage />} path="insights" />
+        <Route element={<OperatorsPage />} path="operators" />
+        <Route element={<MaintenancePage />} path="maintenance" />
+        <Route element={<ServicesPage />} path="services" />
+        <Route element={<AppointmentsPage />} path="appointments" />
+        <Route element={<ReportsPage />} path="reports" />
+        <Route element={<PortfolioPage />} path="portfolio" />
+        <Route element={<CoursesPage />} path="courses" />
+        <Route element={<LearnersPage />} path="learners" />
+        <Route element={<SessionsPage />} path="sessions" />
+        <Route element={<AssessmentsPage />} path="assessments" />
+        <Route element={<QnaPage />} path="qna" />
+        <Route element={<MandiPricesPage />} path="mandi" />
+        <Route element={<WeatherPage />} path="weather" />
+        <Route element={<SchemesPage />} path="schemes" />
       </Route>
       <Route element={<Navigate replace to="/login" />} path="*" />
     </Routes>

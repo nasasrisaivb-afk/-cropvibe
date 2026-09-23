@@ -54,7 +54,7 @@ export function StatusPill({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide max-lg:tracking-wider',
+        'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold',
         wrap,
         className,
       )}
@@ -82,13 +82,18 @@ export function OverviewShell({
 }) {
   return (
     <div className={cn('space-y-5 lg:space-y-6', className)}>
-      <section className="cv-dashboard-panel flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
-        <div className="min-w-0">
-          <h1 className="text-[26px] font-semibold tracking-tight text-[var(--cv-sidebar-text)] sm:text-[28px]">
+      <section className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0 lg:hidden">
+          <h1 className="text-[26px] font-semibold tracking-tight text-[var(--cv-text)] sm:text-[28px]">
             {title}
           </h1>
-          {subtitle ? <p className="mt-1.5 text-sm text-[var(--cv-sidebar-muted)]">{subtitle}</p> : null}
+          {subtitle ? <p className="mt-1.5 text-sm text-[var(--cv-muted)]">{subtitle}</p> : null}
         </div>
+        {subtitle ? (
+          <p className="hidden text-sm text-[var(--cv-muted)] lg:block">{subtitle}</p>
+        ) : (
+          <span className="hidden lg:block" />
+        )}
         {actions ? (
           <div className="flex flex-wrap items-center gap-2 shrink-0 max-lg:w-full max-lg:[&>button]:flex-1 max-lg:[&>a]:flex-1 max-lg:[&>div]:flex-1">
             {actions}
@@ -137,7 +142,7 @@ export function OverviewTabs({
             className={cn(
               'relative shrink-0 px-4 py-3 text-sm font-medium transition',
               active
-                ? 'text-[var(--cv-text)]'
+                ? 'text-[var(--cv-primary)]'
                 : 'text-[var(--cv-muted)] hover:text-[var(--cv-text)]',
             )}
           >
@@ -146,7 +151,7 @@ export function OverviewTabs({
               <span className="ml-1.5 text-[var(--cv-muted)]">{tab.count}</span>
             ) : null}
             {active ? (
-              <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--cv-nav-active-fg)]" />
+              <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-[var(--cv-primary)]" />
             ) : null}
           </button>
         )
@@ -176,7 +181,7 @@ export function FilterSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="focus-ring w-full appearance-none rounded-lg border border-[var(--cv-border)] bg-[var(--cv-surface)] py-2.5 pl-3 pr-8 text-sm font-medium text-[var(--cv-text)] sm:w-auto sm:py-2"
+        className="focus-ring w-full appearance-none rounded-xl border-0 bg-[var(--cv-elevated)] py-2.5 pl-3 pr-8 text-sm font-medium text-[var(--cv-text)] sm:w-auto sm:py-2"
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
@@ -197,7 +202,7 @@ export function OverviewSearch(props: InputHTMLAttributes<HTMLInputElement>) {
       <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--cv-muted)]" />
       <input
         type="search"
-        className="focus-ring w-full rounded-lg border border-[var(--cv-border)] bg-[var(--cv-surface)] py-2 pl-9 pr-3 text-sm text-[var(--cv-text)] placeholder:text-[var(--cv-muted)]"
+        className="focus-ring w-full rounded-xl border-0 bg-[var(--cv-elevated)] py-2 pl-9 pr-3 text-sm text-[var(--cv-text)] placeholder:text-[var(--cv-muted)]"
         {...rest}
       />
     </label>

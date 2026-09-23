@@ -16,7 +16,7 @@ export function ForgotPasswordScreen() {
       ]}
     >
       <div className="text-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-white">Forgot password</h1>
+        <h1 className="text-3xl font-semibold tracking-tight text-[var(--cv-text)]">Forgot password</h1>
         <p className="mt-2 text-sm text-[var(--cv-muted)]">
           Enter your email and we will send reset instructions.
         </p>
@@ -36,7 +36,7 @@ export function ForgotPasswordScreen() {
 
       <p className="mt-8 text-center text-sm text-[var(--cv-muted)]">
         Remembered it?{' '}
-        <Link className="font-semibold text-white hover:underline" to="/login">
+        <Link className="font-semibold text-[var(--cv-text)] hover:underline" to="/login">
           Log in
         </Link>
       </p>

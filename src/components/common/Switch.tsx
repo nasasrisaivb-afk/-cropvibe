@@ -39,15 +39,15 @@ export function Switch({
         aria-label={name}
         disabled={disabled}
         className={cn(
-          'focus-ring relative h-8 w-[52px] shrink-0 rounded-full transition-[background-color] duration-200 ease-out',
-          checked ? 'bg-[var(--cv-btn-bg)]' : 'bg-[var(--cv-elevated)] ring-1 ring-[var(--cv-border)]',
+          'focus-ring relative h-7 w-12 shrink-0 rounded-full transition-[background-color] duration-200 ease-out',
+          checked ? 'bg-[var(--cv-btn-bg)]' : 'bg-[#d7dbe8]',
         )}
         onClick={() => !disabled && onChange(!checked)}
       >
         <span
           aria-hidden
           className={cn(
-            'absolute top-1 left-1 h-6 w-6 rounded-full bg-[var(--color-switch-thumb)] shadow-[var(--shadow-sm)] transition-transform duration-500 ease-[cubic-bezier(0.34,1.3,0.64,1)]',
+            'absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-[var(--color-switch-thumb)] shadow-[var(--shadow-sm)] transition-transform duration-500 ease-[cubic-bezier(0.34,1.3,0.64,1)]',
             checked && 'translate-x-5',
           )}
           style={checked ? { backgroundColor: 'var(--cv-btn-text)' } : undefined}

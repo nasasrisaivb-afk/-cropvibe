@@ -83,7 +83,7 @@ export function EmptyState({
   action?: ReactNode
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[var(--cv-border)] bg-[var(--cv-surface)] px-6 py-12 text-center">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--cv-primary)]/30 bg-[var(--cv-primary-soft)]/40 px-6 py-12 text-center">
       <span className="text-4xl">{icon}</span>
       <h3 className="mt-4 text-lg font-semibold text-[var(--cv-text)]">{title}</h3>
       <p className="mt-2 max-w-sm text-sm text-[var(--cv-muted)]">{description}</p>

@@ -1,9 +1,14 @@
-﻿export type Role = 'seller' | 'buyer' | 'rental' | 'service' | 'educator'
+export type Role = 'seller' | 'buyer' | 'rental' | 'service' | 'educator'
 
 export type PageId =
   | 'dashboard'
   | 'listings'
   | 'orders'
+  | 'quotes'
+  | 'insights'
+  | 'discover'
+  | 'rfqs'
+  | 'suppliers'
   | 'wallet'
   | 'messages'
   | 'notifications'
@@ -21,6 +26,8 @@ export type PageId =
   | 'bookings'
   | 'scheduling'
   | 'calendar'
+  | 'operators'
+  | 'maintenance'
   | 'agreements'
   | 'damage'
   | 'overdue'
@@ -29,14 +36,27 @@ export type PageId =
   | 'disputes'
   | 'settlements'
   | 'help'
+  | 'services'
+  | 'appointments'
+  | 'reports'
+  | 'portfolio'
   | 'consultancy'
   | 'testing'
   | 'repair'
   | 'aerial'
   | 'irrigation'
+  | 'courses'
+  | 'learners'
+  | 'sessions'
+  | 'assessments'
+  | 'qna'
   | 'selfpaced'
   | 'live'
   | 'certifications'
+  | 'mandi'
+  | 'weather'
+  | 'schemes'
+  | 'more'
 
 export type KycStatus = 'none' | 'pending' | 'approved' | 'rejected' | 'resubmit'
 
@@ -56,19 +76,28 @@ export interface User {
 }
 
 export const ROLE_COLORS: Record<Role, string> = {
-  seller: 'var(--cv-nav-active-fg)',
-  buyer: 'var(--cv-nav-active-fg)',
-  rental: 'var(--cv-nav-active-fg)',
-  service: 'var(--cv-nav-active-fg)',
-  educator: 'var(--cv-nav-active-fg)',
+  seller: 'var(--cv-role-seller)',
+  buyer: 'var(--cv-role-buyer)',
+  rental: 'var(--cv-role-rental)',
+  service: 'var(--cv-role-service)',
+  educator: 'var(--cv-role-educator)',
+}
+
+/** Pill fill + readable text — never colour-only; always pair with icon + label */
+export const ROLE_PILL: Record<Role, { bg: string; fg: string }> = {
+  seller: { bg: 'var(--cv-blue, #5b5ce2)', fg: '#ffffff' },
+  buyer: { bg: 'color-mix(in srgb, var(--cv-blue, #5b5ce2) 70%, var(--cv-grey, #8b90a7))', fg: '#ffffff' },
+  rental: { bg: 'color-mix(in srgb, var(--cv-blue, #5b5ce2) 55%, #ffffff)', fg: '#4a4fd4' },
+  service: { bg: 'color-mix(in srgb, var(--cv-blue, #5b5ce2) 82%, var(--cv-grey, #8b90a7))', fg: '#ffffff' },
+  educator: { bg: 'color-mix(in srgb, var(--cv-blue, #5b5ce2) 45%, var(--cv-grey, #8b90a7))', fg: '#ffffff' },
 }
 
 export const ROLE_SOFT: Record<Role, string> = {
-  seller: 'color-mix(in srgb, var(--cv-nav-active-fg) 12%, transparent)',
-  buyer: 'color-mix(in srgb, var(--cv-nav-active-fg) 12%, transparent)',
-  rental: 'color-mix(in srgb, var(--cv-nav-active-fg) 12%, transparent)',
-  service: 'color-mix(in srgb, var(--cv-nav-active-fg) 12%, transparent)',
-  educator: 'color-mix(in srgb, var(--cv-nav-active-fg) 12%, transparent)',
+  seller: 'color-mix(in srgb, var(--cv-blue) 12%, transparent)',
+  buyer: 'color-mix(in srgb, var(--cv-blue) 12%, transparent)',
+  rental: 'color-mix(in srgb, var(--cv-blue) 12%, transparent)',
+  service: 'color-mix(in srgb, var(--cv-blue) 12%, transparent)',
+  educator: 'color-mix(in srgb, var(--cv-blue) 12%, transparent)',
 }
 
 export const ROLE_ICONS: Record<Role, string> = {

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { ChevronDownIcon, Cog6ToothIcon, StarIcon, UserCircleIcon } from '@heroicons/react/24/outline'
+import { useNavigate } from 'react-router-dom'
+import { ChevronDownIcon, Cog6ToothIcon, QuestionMarkCircleIcon, StarIcon, UserCircleIcon } from '@heroicons/react/24/outline'
 import { ROLE_LABELS } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
 import type { PageId } from '../../types/roles'
@@ -18,6 +19,8 @@ interface HeaderAccountMenuProps {
 export function HeaderAccountMenu({ onNavigate }: HeaderAccountMenuProps) {
   const user = useAppStore((s) => s.user)
   const switchRole = useAppStore((s) => s.switchRole)
+  const logout = useAppStore((s) => s.logout)
+  const navigate = useNavigate()
   const [sheetOpen, setSheetOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -65,7 +68,7 @@ export function HeaderAccountMenu({ onNavigate }: HeaderAccountMenuProps) {
           aria-haspopup="menu"
           aria-expanded={menuOpen}
           aria-label="Account menu"
-          className="focus-ring flex max-w-[220px] items-center gap-2 rounded-full border border-[var(--cv-border)] bg-[var(--cv-elevated)] py-1 pl-1 pr-2.5 text-left transition hover:border-[var(--cv-muted)]/30"
+          className="focus-ring flex max-w-[220px] items-center gap-2 rounded-full py-1 pl-1 pr-2.5 text-left transition hover:bg-[var(--cv-elevated)]"
           onClick={() => setMenuOpen((o) => !o)}
         >
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--cv-btn-bg)] text-sm font-bold text-[var(--cv-btn-text)]">
@@ -165,6 +168,30 @@ export function HeaderAccountMenu({ onNavigate }: HeaderAccountMenuProps) {
                 <Cog6ToothIcon className="h-4 w-4 text-[var(--cv-muted)]" strokeWidth={1.5} />
                 Settings
               </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="flex min-h-10 w-full items-center gap-2.5 rounded-[8px] px-2.5 text-left text-sm text-[var(--cv-text)] hover:bg-[var(--cv-elevated)]"
+                onClick={() => {
+                  setMenuOpen(false)
+                  onNavigate('help')
+                }}
+              >
+                <QuestionMarkCircleIcon className="h-4 w-4 text-[var(--cv-muted)]" strokeWidth={1.5} />
+                Help
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="flex min-h-10 w-full items-center gap-2.5 rounded-[8px] px-2.5 text-left text-sm text-[var(--cv-danger)] hover:bg-[var(--cv-elevated)]"
+                onClick={() => {
+                  setMenuOpen(false)
+                  logout()
+                  navigate('/login')
+                }}
+              >
+                Log out
+              </button>
             </div>
           </div>
         ) : null}
@@ -222,9 +249,31 @@ export function HeaderAccountMenu({ onNavigate }: HeaderAccountMenuProps) {
                 onNavigate('settings')
               }}
             >
-              <Cog6ToothIcon className="h-5 w-5 text-[var(--cv-muted)]" strokeWidth={1.5} />
-              Settings
-            </button>
+                <Cog6ToothIcon className="h-5 w-5 text-[var(--cv-muted)]" strokeWidth={1.5} />
+                Settings
+              </button>
+              <button
+                type="button"
+                className="focus-ring flex min-h-12 items-center gap-3 rounded-[12px] border border-[var(--cv-border)] bg-[var(--cv-surface)] px-3 text-left text-sm font-semibold text-[var(--cv-text)]"
+                onClick={() => {
+                  setSheetOpen(false)
+                  onNavigate('help')
+                }}
+              >
+                <QuestionMarkCircleIcon className="h-5 w-5 text-[var(--cv-muted)]" strokeWidth={1.5} />
+                Help
+              </button>
+              <button
+                type="button"
+                className="focus-ring flex min-h-12 items-center gap-3 rounded-[12px] border border-[var(--cv-border)] bg-[var(--cv-surface)] px-3 text-left text-sm font-semibold text-[var(--cv-danger)]"
+                onClick={() => {
+                  setSheetOpen(false)
+                  logout()
+                  navigate('/login')
+                }}
+              >
+                Log out
+              </button>
           </div>
         </div>
       </Sheet>

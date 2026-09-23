@@ -16,7 +16,7 @@ export interface ToastItem {
 const BORDER: Record<ToastType, string> = {
   success: 'border-l-[var(--cv-success,#4CAF50)]',
   error: 'border-l-[var(--cv-danger,#f44336)]',
-  info: 'border-l-[var(--cv-primary,#2563eb)]',
+  info: 'border-l-[var(--cv-blue)]',
   warning: 'border-l-[var(--cv-warning,#ff9800)]',
 }
 

@@ -8,10 +8,19 @@ export const ROLE_LABELS: Record<Role, string> = {
   educator: 'Educator',
 }
 
+export const ROLE_SHORT: Record<Role, string> = {
+  seller: 'Seller',
+  buyer: 'Buyer',
+  rental: 'Rental',
+  service: 'Service',
+  educator: 'Educator',
+}
+
 export interface NavItem {
   id: PageId
   label: string
   path: string
+  count?: number
 }
 
 export interface NavSection {
@@ -171,6 +180,54 @@ export const EDUCATOR_NAV_SECTIONS: NavSection[] = [
   },
 ]
 
+export const SHARED_NAV: NavItem[] = [
+  { id: 'messages', label: 'Messages', path: '/dashboard/messages', count: 3 },
+  { id: 'wallet', label: 'Wallet', path: '/dashboard/wallet' },
+  { id: 'reviews', label: 'Reviews', path: '/dashboard/reviews' },
+]
+
+export const ACCOUNT_NAV: NavItem[] = [
+  { id: 'settings', label: 'Settings', path: '/dashboard/settings' },
+  { id: 'help', label: 'Help', path: '/dashboard/help' },
+]
+
+export const FARM_INTEL_ITEMS: Record<'mandi' | 'weather' | 'schemes', NavItem> = {
+  mandi: { id: 'mandi', label: 'Mandi Prices', path: '/dashboard/mandi' },
+  weather: { id: 'weather', label: 'Weather', path: '/dashboard/weather' },
+  schemes: { id: 'schemes', label: 'Schemes & Support', path: '/dashboard/schemes' },
+}
+
+export function getFarmIntelItems(role: Role): NavItem[] {
+  if (role === 'educator') return []
+  if (role === 'rental') return [FARM_INTEL_ITEMS.weather, FARM_INTEL_ITEMS.schemes]
+  if (role === 'buyer') return [FARM_INTEL_ITEMS.mandi, FARM_INTEL_ITEMS.weather]
+  return [FARM_INTEL_ITEMS.mandi, FARM_INTEL_ITEMS.weather, FARM_INTEL_ITEMS.schemes]
+}
+
+/** Account shortcuts — shown on Profile, not in the sidebar. */
+export function getActionNavItems(role: Role): NavItem[] {
+  return [
+    { id: 'reviews', label: 'Reviews', path: '/dashboard/reviews' },
+    ...getFarmIntelItems(role),
+  ]
+}
+
+export function getNavSections(role: Role): NavSection[] {
+  if (role === 'buyer') return BUYER_NAV_SECTIONS
+  if (role === 'rental') return RENTAL_NAV_SECTIONS
+  if (role === 'service') return SERVICE_NAV_SECTIONS
+  if (role === 'educator') return EDUCATOR_NAV_SECTIONS
+  return SELLER_NAV_SECTIONS
+}
+
+export function getNavItems(role: Role): NavItem[] {
+  return getNavSections(role).flatMap((section) => section.items)
+}
+
+export function getWorkspaceItems(role: Role): NavItem[] {
+  return getNavItems(role)
+}
+
 /** @deprecated flat list — prefer getNavSections */
 export const NAV_ITEMS: NavItem[] = SELLER_NAV_SECTIONS.flatMap((s) => s.items)
 
@@ -190,54 +247,121 @@ export const ORDERS_LABEL: Record<Role, string> = {
   educator: 'Enrollments',
 }
 
-export const PRIMARY_CTA: Record<Role, { label: string; path: string }> = {
-  seller: { label: '+ Create Listing', path: '/dashboard/create' },
-  buyer: { label: 'Find Suppliers', path: '/dashboard/create' },
-  rental: { label: '+ Add Equipment', path: '/dashboard/create' },
-  service: { label: '+ Create Service', path: '/dashboard/create' },
-  educator: { label: '+ Create Course', path: '/dashboard/create' },
+export const PRIMARY_CTA: Record<Role, { label: string; path: string; page: PageId }> = {
+  seller: { label: '+ Create Listing', path: '/dashboard/create', page: 'create' },
+  buyer: { label: 'Find Suppliers', path: '/dashboard/create', page: 'create' },
+  rental: { label: '+ Add Equipment', path: '/dashboard/create', page: 'create' },
+  service: { label: '+ Create Service', path: '/dashboard/create', page: 'create' },
+  educator: { label: '+ Create Course', path: '/dashboard/create', page: 'create' },
 }
 
-export function getNavSections(role: Role): NavSection[] {
-  if (role === 'buyer') return BUYER_NAV_SECTIONS
-  if (role === 'rental') return RENTAL_NAV_SECTIONS
-  if (role === 'service') return SERVICE_NAV_SECTIONS
-  if (role === 'educator') return EDUCATOR_NAV_SECTIONS
-  return SELLER_NAV_SECTIONS
-}
-
-export function getNavItems(role: Role): NavItem[] {
-  return getNavSections(role).flatMap((section) => section.items)
+export const CREATE_MENU: Record<Role, { label: string; page: PageId; path: string }[]> = {
+  seller: [
+    { label: 'New listing', page: 'create', path: '/dashboard/create' },
+    { label: 'Respond to RFQ', page: 'quotes', path: '/dashboard/quotes' },
+    { label: 'Price alert', page: 'mandi', path: '/dashboard/mandi' },
+  ],
+  buyer: [
+    { label: 'New RFQ', page: 'rfqs', path: '/dashboard/rfqs' },
+    { label: 'Quick reorder', page: 'orders', path: '/dashboard/orders' },
+    { label: 'Price alert', page: 'mandi', path: '/dashboard/mandi' },
+  ],
+  rental: [
+    { label: 'Add equipment', page: 'create', path: '/dashboard/create' },
+    { label: 'Block dates', page: 'calendar', path: '/dashboard/calendar' },
+    { label: 'Log maintenance', page: 'maintenance', path: '/dashboard/maintenance' },
+  ],
+  service: [
+    { label: 'New service', page: 'create', path: '/dashboard/create' },
+    { label: 'Manual appointment', page: 'appointments', path: '/dashboard/appointments' },
+    { label: 'Field report', page: 'reports', path: '/dashboard/reports' },
+  ],
+  educator: [
+    { label: 'New course', page: 'create', path: '/dashboard/create' },
+    { label: 'Schedule live session', page: 'sessions', path: '/dashboard/sessions' },
+    { label: 'New quiz', page: 'assessments', path: '/dashboard/assessments' },
+  ],
 }
 
 export const MOBILE_TABS: PageId[] = ['dashboard', 'listings', 'orders', 'profile']
 
-export const RENTAL_MOBILE_TABS: PageId[] = [
-  'dashboard',
-  'equipment',
-  'scheduling',
-  'profile',
-]
+export const RENTAL_MOBILE_TABS: PageId[] = ['dashboard', 'equipment', 'scheduling', 'profile']
 
-export const SERVICE_MOBILE_TABS: PageId[] = [
-  'dashboard',
-  'consultancy',
-  'orders',
-  'profile',
-]
+export const SERVICE_MOBILE_TABS: PageId[] = ['dashboard', 'consultancy', 'orders', 'profile']
 
-export const EDUCATOR_MOBILE_TABS: PageId[] = [
-  'dashboard',
-  'selfpaced',
-  'orders',
-  'profile',
-]
+export const EDUCATOR_MOBILE_TABS: PageId[] = ['dashboard', 'selfpaced', 'orders', 'profile']
 
 export function getMobileTabs(role: Role): PageId[] {
   if (role === 'rental') return RENTAL_MOBILE_TABS
   if (role === 'service') return SERVICE_MOBILE_TABS
   if (role === 'educator') return EDUCATOR_MOBILE_TABS
   return MOBILE_TABS
+}
+
+const SHARED_PAGES: PageId[] = [
+  'dashboard',
+  'messages',
+  'wallet',
+  'reviews',
+  'notifications',
+  'profile',
+  'settings',
+  'help',
+  'create',
+  'analytics',
+]
+
+const PAGE_FAMILY: Partial<Record<PageId, PageId>> = {
+  listings: 'listings',
+  discover: 'listings',
+  equipment: 'listings',
+  services: 'listings',
+  courses: 'listings',
+  consultancy: 'listings',
+  testing: 'listings',
+  repair: 'listings',
+  aerial: 'listings',
+  irrigation: 'listings',
+  selfpaced: 'listings',
+  live: 'listings',
+  certifications: 'listings',
+  machinery: 'listings',
+  labours: 'listings',
+  drivers: 'listings',
+  land: 'listings',
+  warehouses: 'listings',
+  orders: 'orders',
+  bookings: 'orders',
+  appointments: 'orders',
+  learners: 'orders',
+  quotes: 'quotes',
+  rfqs: 'quotes',
+  calendar: 'calendar',
+  scheduling: 'calendar',
+  insights: 'insights',
+  analytics: 'insights',
+  wallet: 'wallet',
+  finance: 'wallet',
+  payouts: 'wallet',
+  settlements: 'wallet',
+}
+
+export function resolvePageForRole(page: PageId, role: Role): PageId {
+  if (page === 'more') return 'dashboard'
+  const farmIds = getFarmIntelItems(role).map((item) => item.id)
+  if (farmIds.includes(page)) return page
+  if (SHARED_PAGES.includes(page)) return page
+
+  const workspace = getNavItems(role)
+  if (workspace.some((item) => item.id === page)) return page
+
+  const family = PAGE_FAMILY[page]
+  if (family) {
+    const match = workspace.find((item) => PAGE_FAMILY[item.id] === family)
+    if (match) return match.id
+  }
+
+  return 'dashboard'
 }
 
 const baseSearch: Partial<Record<PageId, string>> = {
@@ -277,6 +401,25 @@ const baseSearch: Partial<Record<PageId, string>> = {
   selfpaced: 'Search self-paced courses...',
   live: 'Search live cohorts...',
   certifications: 'Search certifications...',
+  quotes: 'Search RFQs matching your crops...',
+  rfqs: 'Search RFQs by crop or status...',
+  insights: 'Search insights...',
+  suppliers: 'Search suppliers...',
+  operators: 'Search operators...',
+  maintenance: 'Search maintenance logs...',
+  services: 'Search services...',
+  appointments: 'Search appointments...',
+  reports: 'Search field reports...',
+  portfolio: 'Search case studies...',
+  courses: 'Search courses...',
+  learners: 'Search learners...',
+  sessions: 'Search live sessions...',
+  assessments: 'Search quizzes...',
+  qna: 'Search questions...',
+  mandi: 'Search crops and mandis...',
+  weather: 'Search locations...',
+  schemes: 'Search schemes...',
+  discover: 'Search produce, sellers, or mandi prices...',
 }
 
 export const SEARCH_PLACEHOLDERS = new Proxy(baseSearch as Record<PageId, string>, {
@@ -322,6 +465,25 @@ const baseCrumbs: Partial<Record<PageId, string[]>> = {
   selfpaced: ['Courses', 'Self-paced'],
   live: ['Courses', 'Live cohorts'],
   certifications: ['Courses', 'Certifications'],
+  quotes: ['Quotes'],
+  rfqs: ['RFQs'],
+  insights: ['Insights'],
+  suppliers: ['Suppliers'],
+  operators: ['Operators'],
+  maintenance: ['Maintenance'],
+  services: ['Services'],
+  appointments: ['Appointments'],
+  reports: ['Field Reports'],
+  portfolio: ['Portfolio'],
+  courses: ['Courses'],
+  learners: ['Learners'],
+  sessions: ['Live Sessions'],
+  assessments: ['Assessments'],
+  qna: ['Q&A'],
+  mandi: ['Farm Intel', 'Mandi Prices'],
+  weather: ['Farm Intel', 'Weather'],
+  schemes: ['Farm Intel', 'Schemes & Support'],
+  discover: ['Discover'],
 }
 
 export const BREADCRUMB_TITLES = new Proxy(baseCrumbs as Record<PageId, string[]>, {
@@ -330,25 +492,51 @@ export const BREADCRUMB_TITLES = new Proxy(baseCrumbs as Record<PageId, string[]
   },
 })
 
+const EXTRA_PATHS: Partial<Record<PageId, string>> = {
+  create: '/dashboard/create',
+  listings: '/dashboard/listings',
+  orders: '/dashboard/orders',
+  analytics: '/dashboard/analytics',
+  notifications: '/dashboard/notifications',
+  reviews: '/dashboard/reviews',
+  settlements: '/dashboard/wallet',
+  help: '/dashboard/help',
+  scheduling: '/dashboard/scheduling',
+  finance: '/dashboard/finance',
+  payouts: '/dashboard/payouts',
+  disputes: '/dashboard/disputes',
+  messages: '/dashboard/messages',
+  profile: '/dashboard/profile',
+  settings: '/dashboard/settings',
+  discover: '/dashboard/discover',
+  quotes: '/dashboard/quotes',
+  rfqs: '/dashboard/rfqs',
+  suppliers: '/dashboard/suppliers',
+  insights: '/dashboard/insights',
+  operators: '/dashboard/operators',
+  maintenance: '/dashboard/maintenance',
+  services: '/dashboard/services',
+  appointments: '/dashboard/appointments',
+  reports: '/dashboard/reports',
+  portfolio: '/dashboard/portfolio',
+  courses: '/dashboard/courses',
+  learners: '/dashboard/learners',
+  sessions: '/dashboard/sessions',
+  assessments: '/dashboard/assessments',
+  qna: '/dashboard/qna',
+  mandi: '/dashboard/mandi',
+  weather: '/dashboard/weather',
+  schemes: '/dashboard/schemes',
+}
+
 export function getAllNavPaths(): Record<PageId, string> {
-  const paths = {} as Record<PageId, string>
+  const paths = { ...EXTRA_PATHS } as Record<PageId, string>
   const roles: Role[] = ['seller', 'buyer', 'rental', 'service', 'educator']
   for (const role of roles) {
-    for (const section of getNavSections(role)) {
-      for (const item of section.items) paths[item.id] = item.path
+    for (const item of getNavItems(role)) {
+      paths[item.id] = item.path
     }
   }
-  paths.create = '/dashboard/create'
-  paths.listings = '/dashboard/listings'
-  paths.orders = '/dashboard/orders'
-  paths.analytics = '/dashboard/analytics'
-  paths.notifications = '/dashboard/notifications'
-  paths.reviews = '/dashboard/reviews'
-  paths.settlements = '/dashboard/wallet'
-  paths.help = '/dashboard/help'
-  paths.scheduling = '/dashboard/scheduling'
-  paths.finance = '/dashboard/finance'
-  paths.payouts = '/dashboard/payouts'
-  paths.disputes = '/dashboard/disputes'
+  paths.dashboard = '/dashboard'
   return paths
 }

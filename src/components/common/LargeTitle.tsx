@@ -28,11 +28,11 @@ export function LargeTitle({
     >
       <div className="min-w-0">
         {eyebrow ? (
-          <p className="text-[13px] font-medium text-[var(--cv-sidebar-muted)]">{eyebrow}</p>
+          <p className="text-[13px] font-medium text-[var(--cv-muted)]">{eyebrow}</p>
         ) : null}
         <h1
           className={cn(
-            'font-semibold tracking-tight text-[var(--cv-sidebar-text)]',
+            'font-bold tracking-tight text-[var(--cv-text)]',
             eyebrow ? 'mt-1' : '',
             'text-[26px] sm:text-[28px]',
           )}
@@ -40,7 +40,7 @@ export function LargeTitle({
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-1.5 max-w-xl text-sm text-[var(--cv-sidebar-muted)]">{subtitle}</p>
+          <p className="mt-1.5 max-w-xl text-sm text-[var(--cv-muted)]">{subtitle}</p>
         ) : null}
       </div>
       {actions ? <div className="flex flex-wrap gap-2 max-lg:w-full">{actions}</div> : null}

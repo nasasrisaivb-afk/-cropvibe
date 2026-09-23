@@ -45,7 +45,11 @@ export function ReviewsPage() {
   const [draft, setDraft] = useState('')
 
   const visible =
-    filter === 'all' ? reviews : reviews.filter((r) => r.rating === Number(filter))
+    filter === 'write'
+      ? []
+      : filter === 'all' || filter === 'given'
+        ? reviews
+        : reviews.filter((r) => r.rating === Number(filter))
 
   const avg =
     reviews.reduce((sum, r) => sum + r.rating, 0) / Math.max(reviews.length, 1)
@@ -53,7 +57,7 @@ export function ReviewsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Reviews & ratings"
+        title="Reviews"
         subtitle="Reputation center — respond to feedback and track rating mix."
         actions={
           <Select
@@ -61,12 +65,11 @@ export function ReviewsPage() {
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             options={[
-              { value: 'all', label: 'All ratings' },
+              { value: 'all', label: 'Received' },
               { value: '5', label: '5 stars' },
               { value: '4', label: '4 stars' },
-              { value: '3', label: '3 stars' },
-              { value: '2', label: '2 stars' },
-              { value: '1', label: '1 star' },
+              { value: 'given', label: 'Given' },
+              { value: 'write', label: 'To write' },
             ]}
           />
         }

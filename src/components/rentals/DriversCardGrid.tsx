@@ -59,7 +59,7 @@ export const DRIVER_CARDS: DriverCardItem[] = [
     collected: 17200,
     lastActive: 'Wednesday, 12 July 2024 · 09:15',
     statusNote: 'Ready for hire',
-    accent: 'bg-[#5B8DEF]',
+    accent: 'bg-[var(--cv-forest)]',
     jobs: [
       { label: 'Farm-to-mandi produce haul', qty: 1, price: 1500 },
       { label: 'Tractor-trailer field run', qty: 1, price: 1200 },
@@ -84,7 +84,7 @@ export const DRIVER_CARDS: DriverCardItem[] = [
     collected: 13200,
     lastActive: 'Tuesday, 12 July 2024 · 13:03',
     statusNote: 'On trip now',
-    accent: 'bg-[#E8A838]',
+    accent: 'bg-[var(--cv-forest)]',
     jobs: [
       { label: 'Wheat harvest run', qty: 1, price: 1200 },
       { label: 'Grain cart shuttle', qty: 2, price: 1500 },
@@ -111,7 +111,7 @@ export const DRIVER_CARDS: DriverCardItem[] = [
     collected: 9000,
     lastActive: 'Monday, 11 July 2024 · 20:30',
     statusNote: 'Ready for hire',
-    accent: 'bg-[#3D9B7A]',
+    accent: 'bg-[var(--cv-forest)]',
     jobs: [
       { label: 'Produce haul to mandi', qty: 1, price: 1500 },
       { label: 'Input delivery', qty: 1, price: 1200 },
@@ -135,7 +135,7 @@ export const DRIVER_CARDS: DriverCardItem[] = [
     collected: 12300,
     lastActive: 'Tuesday, 12 July 2024 · 10:22',
     statusNote: 'Spray in progress',
-    accent: 'bg-[#C45C8A]',
+    accent: 'bg-[var(--cv-forest)]',
     jobs: [
       { label: 'Orchard spray pass', qty: 2, price: 950 },
       { label: 'Tank refill assist', qty: 1, price: 400 },
@@ -160,7 +160,7 @@ export const DRIVER_CARDS: DriverCardItem[] = [
     collected: 4400,
     lastActive: 'Sunday, 10 July 2024 · 09:15',
     statusNote: 'Docs pending',
-    accent: 'bg-[#6B7280]',
+    accent: 'bg-[var(--cv-forest)]',
     jobs: [
       { label: 'Trailer haul', qty: 1, price: 1100 },
       { label: 'Manure carting', qty: 1, price: 900 },
@@ -184,7 +184,7 @@ export const DRIVER_CARDS: DriverCardItem[] = [
     collected: 0,
     lastActive: 'Friday, 08 July 2024 · 16:40',
     statusNote: 'Seasonal pause',
-    accent: 'bg-[#4F6BED]',
+    accent: 'bg-[var(--cv-forest)]',
     jobs: [
       { label: 'Cold store transfer', qty: 1, price: 1800 },
       { label: 'Packhouse pickup', qty: 1, price: 1600 },

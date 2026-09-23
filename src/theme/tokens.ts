@@ -1,6 +1,6 @@
 /**
- * CropVibe design tokens — Apple discipline on brand colors.
- * 60% canvas · 30% surfaces · 10% signature lime
+ * CropVibe design tokens — Shipfaster UI kit
+ * Cool canvas · violet primary · white cards
  *
  * Mode strategy (defaults — both modes always available):
  * - Field / mixed portals (seller, buyer, rental, service, educator): light-first
@@ -11,52 +11,55 @@ import type { Role } from '../types/roles'
 
 export const TOKENS = {
   dark: {
-    bgPrimary: '#1A1A1A',
-    surface1: '#242424',
-    surface2: '#2E2E2E',
-    border: 'rgba(255,255,255,0.08)',
-    textPrimary: '#F5F5F3',
-    textSecondary: '#A0A0A0',
-    frost: 'rgba(26,26,26,0.80)',
+    bgPrimary: '#101225',
+    surface1: '#1A1E35',
+    surface2: '#252A45',
+    border: 'rgba(139,144,167,0.22)',
+    textPrimary: '#F4F6FB',
+    textSecondary: '#A8ADC2',
+    frost: 'rgba(16,18,37,0.82)',
   },
   light: {
-    bgPrimary: '#F2F5F0',
+    bgPrimary: '#F4F6FB',
     surface1: '#FFFFFF',
-    surface2: '#E6EBE3',
-    border: 'rgba(18,28,16,0.10)',
-    textPrimary: '#121612',
-    textSecondary: '#5A6558',
-    frost: 'rgba(242,245,240,0.88)',
+    surface2: '#EEF0F8',
+    border: 'rgba(91,92,226,0.10)',
+    textPrimary: '#1A1D2E',
+    textSecondary: '#8B90A7',
+    frost: 'rgba(255,255,255,0.88)',
   },
   accent: {
-    solid: '#CCFF00',
-    hover: '#B5E600',
-    muted: 'rgba(160,200,0,0.18)',
-    onAccent: '#121612',
+    solid: '#5B5CE2',
+    hover: '#4A4FD4',
+    muted: 'rgba(91,92,226,0.12)',
+    onAccent: '#FFFFFF',
   },
+  blue: '#5B5CE2',
+  grey: '#8B90A7',
+  white: '#FFFFFF',
   semantic: {
-    success: '#22A85A',
-    warning: '#D97706',
-    error: '#E11D48',
-    info: '#0284C7',
+    success: '#22C55E',
+    warning: '#F59E0B',
+    error: '#EF4444',
+    info: '#5B5CE2',
   },
   radius: {
-    control: '8px',
+    control: '12px',
     card: '16px',
-    sheet: '20px',
+    sheet: '24px',
     pill: '9999px',
   },
   shadow: {
-    sm: '0 1px 2px rgba(0,0,0,0.08)',
-    md: '0 4px 16px rgba(0,0,0,0.12)',
-    lg: '0 12px 40px rgba(0,0,0,0.18)',
+    sm: '0 1px 2px rgba(26,29,46,0.04), 0 4px 12px rgba(91,92,226,0.04)',
+    md: '0 8px 24px rgba(91,92,226,0.08)',
+    lg: '0 18px 48px rgba(91,92,226,0.12)',
   },
   space: [4, 8, 12, 16, 24, 32, 48, 64] as const,
   type: {
-    display: { size: 40, line: 48, tracking: '-0.02em', weight: 600 },
-    h1: { size: 32, line: 40, weight: 600 },
+    display: { size: 40, line: 48, tracking: '-0.02em', weight: 700 },
+    h1: { size: 32, line: 40, weight: 700 },
     h2: { size: 24, line: 32, weight: 600 },
-    h3: { size: 18, line: 26, weight: 500 },
+    h3: { size: 18, line: 26, weight: 600 },
     body: { size: 16, line: 24, weight: 400 },
     caption: { size: 13, line: 18, weight: 400 },
   },
@@ -70,18 +73,18 @@ export const TOKENS = {
 
 export type ColorMode = 'dark' | 'light'
 
-/** Portal defaults — dark-first while the darker theme is the active product build */
+/** Portal defaults — light canvas with violet accent */
 export const ROLE_THEME_DEFAULT: Record<Role, ColorMode> = {
-  seller: 'dark',
-  buyer: 'dark',
-  rental: 'dark',
-  service: 'dark',
-  educator: 'dark',
+  seller: 'light',
+  buyer: 'light',
+  rental: 'light',
+  service: 'light',
+  educator: 'light',
 }
 
 export const ADMIN_THEME_DEFAULT: ColorMode = 'dark'
 
 export function defaultThemeForRole(role: Role | null | undefined): ColorMode {
-  if (!role) return 'dark'
+  if (!role) return 'light'
   return ROLE_THEME_DEFAULT[role]
 }

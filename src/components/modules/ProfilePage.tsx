@@ -1,13 +1,28 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import {
+  ChevronRightIcon,
+  CloudIcon,
+  CurrencyRupeeIcon,
+  SparklesIcon,
+  StarIcon,
+} from '@heroicons/react/24/outline'
+import { getActionNavItems, ROLE_LABELS } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
-import { ROLE_LABELS } from '../../config/navigation'
+import type { PageId } from '../../types/roles'
 import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Card } from '../common/Card'
 import { FormInput } from '../common/FormInput'
 import { PageHeader } from '../common/PageHeader'
 import { RoleSwitcher } from '../common/RoleSwitcher'
+
+const ACTION_ICONS: Partial<Record<PageId, typeof StarIcon>> = {
+  reviews: StarIcon,
+  mandi: CurrencyRupeeIcon,
+  weather: CloudIcon,
+  schemes: SparklesIcon,
+}
 
 export function ProfilePage() {
   const navigate = useNavigate()
@@ -21,6 +36,8 @@ export function ProfilePage() {
 
   const kyc = user?.kycStatus ?? 'none'
   const roleCount = user?.roles?.length ?? 0
+  const actionItems = getActionNavItems(user?.activeRole ?? 'seller')
+  const kycPending = kyc === 'pending'
 
   return (
     <div className="space-y-6">
@@ -58,23 +75,60 @@ export function ProfilePage() {
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
-        <Card className="!rounded-[12px] text-center">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[var(--cv-primary)] text-2xl font-semibold text-[var(--cv-btn-text)]">
-            {(name || 'U').slice(0, 1)}
-          </div>
-          <p className="mt-3 font-semibold">{name || 'User'}</p>
-          <p className="text-sm text-[var(--cv-muted)]">{ROLE_LABELS[user?.activeRole ?? 'seller']}</p>
-          <div className="mt-3 flex justify-center">
-            <Badge
-              status={
-                kyc === 'approved' ? 'approved' : kyc === 'pending' ? 'pending' : 'rejected'
-              }
-            >{`KYC ${kyc}`}</Badge>
-          </div>
-          <Button className="mt-4" size="sm" variant="secondary" fullWidth>
-            Upload photo
-          </Button>
-        </Card>
+        <div className="space-y-4">
+          <Card className="!rounded-[12px] text-center">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[var(--cv-primary)] text-2xl font-semibold text-[var(--cv-btn-text)]">
+              {(name || 'U').slice(0, 1)}
+            </div>
+            <p className="mt-3 font-semibold">{name || 'User'}</p>
+            <p className="text-sm text-[var(--cv-muted)]">{ROLE_LABELS[user?.activeRole ?? 'seller']}</p>
+            <div className="mt-3 flex justify-center">
+              <Badge
+                status={
+                  kyc === 'approved' ? 'approved' : kyc === 'pending' ? 'pending' : 'rejected'
+                }
+              >{`KYC ${kyc}`}</Badge>
+            </div>
+            <Button className="mt-4" size="sm" variant="secondary" fullWidth>
+              Upload photo
+            </Button>
+            {kycPending ? (
+              <Button className="mt-2" size="sm" fullWidth onClick={() => navigate('/kyc-status')}>
+                Complete KYC
+              </Button>
+            ) : null}
+          </Card>
+
+          <Card className="!rounded-[12px]" title="Action">
+            <ul className="divide-y divide-[var(--cv-border)]">
+              {actionItems.map((item) => {
+                const Icon = ACTION_ICONS[item.id] ?? StarIcon
+                return (
+                  <li key={item.id}>
+                    <button
+                      type="button"
+                      className="focus-ring flex w-full items-center gap-3 rounded-lg px-1 py-2.5 text-left transition hover:bg-[var(--cv-elevated)]"
+                      onClick={() => navigate(item.path)}
+                    >
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--cv-elevated)] text-[var(--cv-text)]">
+                        <Icon className="h-4 w-4" strokeWidth={1.75} />
+                      </span>
+                      <span className="min-w-0 flex-1 text-sm font-medium text-[var(--cv-text)]">
+                        {item.label}
+                      </span>
+                      {item.count ? (
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--cv-blue)] px-1.5 text-[11px] font-bold text-white">
+                          {item.count}
+                        </span>
+                      ) : null}
+                      <ChevronRightIcon className="h-4 w-4 shrink-0 text-[var(--cv-muted)]" strokeWidth={2} />
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </Card>
+        </div>
 
         <div className="space-y-4">
           <Card

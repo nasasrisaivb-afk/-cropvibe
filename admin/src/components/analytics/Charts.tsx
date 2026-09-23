@@ -27,7 +27,7 @@ export default function AnalyticsCharts({ data }: { data: AnalyticsData }) {
               <XAxis dataKey="date" hide />
               <YAxis stroke="#6B6B6B" fontSize={11} />
               <Tooltip contentStyle={{ background: '#1F1F1F', border: '1px solid #2A2A2A' }} />
-              <Area type="monotone" dataKey="count" stroke="#CCFF00" fill="rgba(204,255,0,0.15)" />
+              <Area type="monotone" dataKey="count" stroke="#5B5CE2" fill="rgba(91,92,226,0.15)" />
             </AreaChart>
           </ResponsiveContainer>
         </CardContent>

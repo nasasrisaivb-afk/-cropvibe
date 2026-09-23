@@ -210,27 +210,27 @@ function statusMeta(status: PayoutStatus) {
   if (status === 'in_use') {
     return {
       label: 'In use',
-      className: 'bg-[#173404] text-[#97C459]',
+      className: 'bg-[var(--cv-success-soft)] text-[var(--cv-success)]',
       Icon: CheckCircleIcon,
     }
   }
   if (status === 'processing') {
     return {
       label: 'Processing',
-      className: 'bg-[#412402] text-[#EF9F27]',
+      className: 'bg-[var(--cv-warning-soft)] text-[var(--cv-warning)]',
       Icon: ClockIcon,
     }
   }
   if (status === 'action_required') {
     return {
       label: 'Action required',
-      className: 'bg-[#501313] text-[#F09595]',
+      className: 'bg-[color-mix(in_srgb,var(--cv-danger)_16%,transparent)] text-[var(--cv-danger)]',
       Icon: ExclamationTriangleIcon,
     }
   }
   return {
     label: 'Settled',
-    className: 'bg-[#173404] text-[#97C459]',
+    className: 'bg-[var(--cv-success-soft)] text-[var(--cv-success)]',
     Icon: CheckCircleIcon,
   }
 }
@@ -280,10 +280,10 @@ function MoneyTable({ rows }: { rows: MoneyLine[] }) {
           key={row.label}
           className={cn(
             'grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 text-sm',
-            row.emphasize && 'border-t border-[#333] pt-2',
+            row.emphasize && 'border-t border-[var(--cv-border)] pt-2',
           )}
         >
-          <dt className={cn(row.emphasize ? 'font-semibold text-[var(--cv-text)]' : 'text-[#9c9c99]')}>
+          <dt className={cn(row.emphasize ? 'font-semibold text-[var(--cv-text)]' : 'text-[var(--cv-muted)]')}>
             {row.label}
           </dt>
           <dd
@@ -309,10 +309,10 @@ function LifecycleSteps({ steps }: { steps: LifecycleStep[] }) {
             className={cn(
               'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2',
               step.stepStatus === 'done'
-                ? 'border-[#97C459] bg-[#97C459] text-white'
+                ? 'border-[var(--cv-blue)] bg-[var(--cv-blue)] text-[var(--color-on-accent)]'
                 : step.stepStatus === 'current'
-                  ? 'border-[#EF9F27] bg-[#EF9F27]'
-                  : 'border-[#333] bg-transparent',
+                  ? 'border-[var(--cv-warning)] bg-[var(--cv-warning)]'
+                  : 'border-[var(--cv-border)] bg-transparent',
             )}
             aria-hidden
           >
@@ -321,19 +321,19 @@ function LifecycleSteps({ steps }: { steps: LifecycleStep[] }) {
           <div className="flex min-w-0 flex-1 items-baseline justify-between gap-3">
             <p
               className={cn(
-                step.stepStatus === 'done' && 'text-[#9c9c99] line-through',
+                step.stepStatus === 'done' && 'text-[var(--cv-muted)] line-through',
                 step.stepStatus === 'current' && 'font-medium text-[var(--cv-text)]',
-                step.stepStatus === 'pending' && 'text-[#6b6b68]',
+                step.stepStatus === 'pending' && 'text-[var(--cv-muted)]',
               )}
             >
               {step.label}
             </p>
             {step.stepStatus === 'current' ? (
-              <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[#EF9F27]">
+              <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[var(--cv-warning)]">
                 Current
               </span>
             ) : step.stepStatus === 'done' ? (
-              <span className="shrink-0 text-[11px] text-[#97C459]">Done</span>
+              <span className="shrink-0 text-[11px] text-[var(--cv-success)]">Done</span>
             ) : null}
           </div>
         </li>
@@ -349,15 +349,15 @@ function Timeline({ steps }: { steps: TimelineStep[] }) {
         const isLast = index === steps.length - 1
         const dotClass =
           step.tone === 'done'
-            ? 'border-[#97C459] bg-[#97C459]'
+            ? 'border-[var(--cv-blue)] bg-[var(--cv-blue)]'
             : step.tone === 'current'
-              ? 'border-[#EF9F27] bg-[#EF9F27]'
-              : 'border-[#333] bg-transparent'
+              ? 'border-[var(--cv-warning)] bg-[var(--cv-warning)]'
+              : 'border-[var(--cv-border)] bg-transparent'
 
         return (
           <li key={`${step.label}-${index}`} className="relative flex gap-3 pb-3 last:pb-0">
             {!isLast ? (
-              <span className="absolute left-[7px] top-4 h-[calc(100%-8px)] w-px bg-[#333]" aria-hidden />
+              <span className="absolute left-[7px] top-4 h-[calc(100%-8px)] w-px bg-[var(--cv-border)]" aria-hidden />
             ) : null}
             <span
               className={cn(
@@ -366,19 +366,19 @@ function Timeline({ steps }: { steps: TimelineStep[] }) {
               )}
               aria-hidden
             >
-              {step.tone === 'done' ? <CheckIcon className="h-2.5 w-2.5 text-white" /> : null}
+              {step.tone === 'done' ? <CheckIcon className="h-2.5 w-2.5 text-[var(--color-on-accent)]" /> : null}
             </span>
             <div className="flex min-w-0 flex-1 items-baseline justify-between gap-3 pt-0.5">
               <p
                 className={cn(
                   'text-sm font-medium',
-                  step.tone === 'pending' ? 'text-[#6b6b68]' : 'text-[var(--cv-text)]',
+                  step.tone === 'pending' ? 'text-[var(--cv-muted)]' : 'text-[var(--cv-text)]',
                 )}
               >
                 {step.label}
               </p>
               {step.detail ? (
-                <p className="shrink-0 text-xs tabular-nums text-[#9c9c99]">{step.detail}</p>
+                <p className="shrink-0 text-xs tabular-nums text-[var(--cv-muted)]">{step.detail}</p>
               ) : null}
             </div>
           </li>
@@ -405,7 +405,7 @@ function ActionButton({
         'cv-touch inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)] sm:w-auto',
         primary
           ? 'bg-[var(--cv-btn-bg)] text-[var(--cv-btn-text)] hover:opacity-90'
-          : 'border border-[#333] text-[var(--cv-text)] hover:bg-[var(--cv-elevated)]',
+          : 'border border-[var(--cv-border)] text-[var(--cv-text)] hover:bg-[var(--cv-elevated)]',
       )}
     >
       {children}
@@ -445,7 +445,7 @@ function SettlementCard({
   return (
     <article
       className={cn(
-        'overflow-hidden rounded-[14px] border border-[#333] bg-[#1f1f1f] shadow-[0_2px_12px_rgba(0,0,0,0.25)] transition duration-150',
+        'overflow-hidden rounded-[14px] border border-[var(--cv-border)] bg-[var(--cv-surface)] shadow-[var(--shadow-sm)] transition duration-150',
         closedLike && 'opacity-85',
         open && 'ring-1 ring-[color-mix(in_srgb,var(--cv-text)_8%,transparent)]',
       )}
@@ -472,14 +472,14 @@ function SettlementCard({
               </h3>
               <StatusBadge status={payout.status} />
             </div>
-            <p className="mt-1.5 text-sm text-[#9c9c99]">
+            <p className="mt-1.5 text-sm text-[var(--cv-muted)]">
               {payout.partyLabel}:{' '}
               <span className="font-medium text-[var(--cv-text)]">{payout.partyName}</span>
             </p>
             <div className="mt-1 flex flex-wrap items-center gap-2">
-              <p className="text-sm text-[#9c9c99]">{payout.dateLine}</p>
+              <p className="text-sm text-[var(--cv-muted)]">{payout.dateLine}</p>
               {dueLabel ? (
-                <span className="inline-flex rounded-full bg-[#412402] px-2.5 py-0.5 text-[11px] font-semibold text-[#EF9F27]">
+                <span className="inline-flex rounded-full bg-[var(--cv-warning-soft)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--cv-warning)]">
                   {dueLabel}
                 </span>
               ) : null}
@@ -487,7 +487,7 @@ function SettlementCard({
             <button
               type="button"
               onClick={copyId}
-              className="cv-touch mt-2 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-[#6b6b68] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)]"
+              className="cv-touch mt-2 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)]"
               aria-label={`Copy booking reference ${payout.id}`}
             >
               <ClipboardDocumentIcon className="h-3.5 w-3.5" strokeWidth={1.75} />
@@ -500,8 +500,8 @@ function SettlementCard({
               <p className="text-[22px] font-semibold leading-none tracking-tight tabular-nums text-[var(--cv-text)]">
                 {formatCurrency(payout.amount)}
               </p>
-              <p className="mt-1.5 text-[11px] font-medium text-[#9c9c99]">{payout.amountCaption}</p>
-              <p className="mt-0.5 text-[11px] text-[#6b6b68]">{formatUpdatedAgo(payout.updatedAt)}</p>
+              <p className="mt-1.5 text-[11px] font-medium text-[var(--cv-muted)]">{payout.amountCaption}</p>
+              <p className="mt-0.5 text-[11px] text-[var(--cv-muted)]">{formatUpdatedAgo(payout.updatedAt)}</p>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -510,7 +510,7 @@ function SettlementCard({
                   e.stopPropagation()
                   onQuickMessage()
                 }}
-                className="cv-touch inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[#333] text-[#9c9c99] transition hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)]"
+                className="cv-touch inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[var(--cv-border)] text-[var(--cv-muted)] transition hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)]"
                 aria-label="Message renter"
               >
                 <ChatBubbleLeftRightIcon className="h-5 w-5" strokeWidth={1.75} />
@@ -523,7 +523,7 @@ function SettlementCard({
                 }}
                 aria-expanded={open}
                 aria-controls={`settlement-${payout.id}`}
-                className="cv-touch inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[#333] text-[#9c9c99] transition hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)]"
+                className="cv-touch inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[var(--cv-border)] text-[var(--cv-muted)] transition hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)]"
                 aria-label={open ? 'Collapse settlement details' : 'Expand settlement details'}
               >
                 <ChevronDownIcon className={cn('h-5 w-5 transition', open && 'rotate-180')} strokeWidth={2} />
@@ -534,15 +534,15 @@ function SettlementCard({
       </div>
 
       {open ? (
-        <div id={`settlement-${payout.id}`} className="space-y-5 border-t border-[#333] px-4 pb-4 pt-5 sm:px-5 sm:pb-5">
+        <div id={`settlement-${payout.id}`} className="space-y-5 border-t border-[var(--cv-border)] px-4 pb-4 pt-5 sm:px-5 sm:pb-5">
           <section>
-            <h4 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#9c9c99]">
+            <h4 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[var(--cv-muted)]">
               Rental details
             </h4>
             <MoneyTable rows={payout.details} />
           </section>
 
-          <section className="rounded-xl border border-[#333] bg-[color-mix(in_srgb,#262626_80%,transparent)] p-4">
+          <section className="rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] p-4">
             <h4 className="text-sm font-semibold text-[var(--cv-text)]">What happens next</h4>
             <div className="mt-3">
               <LifecycleSteps steps={payout.lifecycleSteps} />
@@ -554,28 +554,28 @@ function SettlementCard({
               className={cn(
                 'flex gap-3 rounded-xl border px-3.5 py-3 text-sm',
                 payout.banner.tone === 'danger'
-                  ? 'border-[#501313] bg-[color-mix(in_srgb,#501313_30%,#1f1f1f)]'
-                  : 'border-[#173404] bg-[color-mix(in_srgb,#173404_30%,#1f1f1f)]',
+                  ? 'border-[color-mix(in_srgb,var(--cv-danger)_35%,var(--cv-border))] bg-[color-mix(in_srgb,var(--cv-danger)_12%,var(--cv-surface))]'
+                  : 'border-[color-mix(in_srgb,var(--cv-success)_35%,var(--cv-border))] bg-[var(--cv-success-soft)]',
               )}
               role="status"
             >
               {payout.banner.tone === 'danger' ? (
-                <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0 text-[#F09595]" strokeWidth={1.75} />
+                <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 shrink-0 text-[var(--cv-danger)]" strokeWidth={1.75} />
               ) : (
-                <CheckCircleIcon className="mt-0.5 h-5 w-5 shrink-0 text-[#97C459]" strokeWidth={1.75} />
+                <CheckCircleIcon className="mt-0.5 h-5 w-5 shrink-0 text-[var(--cv-success)]" strokeWidth={1.75} />
               )}
               <p className="leading-relaxed text-[var(--cv-text)]">{payout.banner.text}</p>
             </div>
           ) : null}
 
           <section>
-            <h4 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#9c9c99]">
+            <h4 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[var(--cv-muted)]">
               Settlement timeline
             </h4>
             <Timeline steps={payout.timeline} />
           </section>
 
-          <div className="flex flex-col gap-2 border-t border-[#333] pt-4 sm:flex-row sm:flex-wrap sm:justify-end">
+          <div className="flex flex-col gap-2 border-t border-[var(--cv-border)] pt-4 sm:flex-row sm:flex-wrap sm:justify-end">
             {payout.status === 'in_use' ? (
               <>
                 <ActionButton onClick={onQuickMessage}>
@@ -794,15 +794,15 @@ export function PayoutsPage() {
               This action finalizes a monetary state for {confirmTarget.payout.partyName}. Review the
               amount and outcome before proceeding.
             </p>
-            <div className="rounded-xl border border-[#333] bg-[#1f1f1f] p-4 text-sm">
+            <div className="rounded-xl border border-[var(--cv-border)] bg-[var(--cv-surface)] p-4 text-sm">
               <p className="font-semibold text-[var(--cv-text)]">{confirmTarget.payout.id}</p>
-              <p className="mt-1 text-[#9c9c99]">
+              <p className="mt-1 text-[var(--cv-muted)]">
                 {confirmTarget.payout.title} · {confirmTarget.payout.partyName}
               </p>
               <p className="mt-3 text-2xl font-bold tabular-nums text-[var(--cv-text)]">
                 {formatCurrency(confirmTarget.payout.amount)}
               </p>
-              <p className="mt-2 text-xs text-[#6b6b68]">
+              <p className="mt-2 text-xs text-[var(--cv-muted)]">
                 Action: {confirmTarget.action}. After confirmation, status will update and the card
                 timeline will sync automatically.
               </p>

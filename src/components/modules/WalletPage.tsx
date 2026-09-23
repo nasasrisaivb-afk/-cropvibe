@@ -28,32 +28,37 @@ export function WalletPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Wallet & payments"
+        title="Wallet"
         subtitle="Escrow-aware ledger, payouts, and GST-ready invoices."
         actions={
           canPayout ? (
-            <Button onClick={() => setPayoutOpen(true)}>Request payout</Button>
+            <Button onClick={() => setPayoutOpen(true)}>Withdraw</Button>
           ) : (
             <Button variant="secondary">Add wallet balance</Button>
           )
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="!rounded-[12px] ring-1 ring-[var(--cv-primary)]/15">
-          <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">Available balance</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">Available</p>
           <p className="mt-2 text-3xl font-bold text-[var(--cv-primary)]">{formatCurrency(balance)}</p>
-          <p className="mt-1 text-xs text-[var(--cv-muted)]">Ready for payout after KYC + bank verify</p>
+          <p className="mt-1 text-xs text-[var(--cv-muted)]">{canPayout ? 'Ready to withdraw after verification' : 'Credit on file'}</p>
         </Card>
         <Card className="!rounded-[12px]">
-          <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">In escrow</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">Pending</p>
           <p className="mt-2 text-3xl font-bold">{formatCurrency(pending)}</p>
-          <p className="mt-1 text-xs text-[var(--cv-muted)]">Released on delivery / return verify</p>
+          <p className="mt-1 text-xs text-[var(--cv-muted)]">In the buyer acceptance window</p>
         </Card>
         <Card className="!rounded-[12px]">
-          <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">Lifetime settled</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">On hold</p>
+          <p className="mt-2 text-3xl font-bold">{formatCurrency(4200)}</p>
+          <p className="mt-1 text-xs text-[var(--cv-muted)]">Open dispute PO-8901</p>
+        </Card>
+        <Card className="!rounded-[12px] sm:col-span-3 lg:col-span-1">
+          <p className="text-xs font-medium uppercase tracking-wide text-[var(--cv-muted)]">Lifetime</p>
           <p className="mt-2 text-3xl font-bold">{formatCurrency(582300)}</p>
-          <p className="mt-1 text-xs text-[var(--cv-muted)]">Bank: HDFC ****4521</p>
+          <p className="mt-1 text-xs text-[var(--cv-muted)]">Seller ₹4.1L · Rental ₹1.2L · Service ₹0.5L</p>
         </Card>
       </div>
 

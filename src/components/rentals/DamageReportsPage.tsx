@@ -388,10 +388,10 @@ function LifecycleSteps({ steps }: { steps: { label: string; stepStatus: StepSta
             className={cn(
               'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2',
               step.stepStatus === 'done'
-                ? 'border-[#97C459] bg-[#97C459] text-white'
+                ? 'border-[var(--cv-blue)] bg-[var(--cv-blue)] text-[var(--color-on-accent)]'
                 : step.stepStatus === 'current'
-                  ? 'border-[#EF9F27] bg-[#EF9F27]'
-                  : 'border-[#333] bg-transparent',
+                  ? 'border-[var(--cv-warning)] bg-[var(--cv-warning)]'
+                  : 'border-[var(--cv-border)] bg-transparent',
             )}
             aria-hidden
           >
@@ -400,19 +400,19 @@ function LifecycleSteps({ steps }: { steps: { label: string; stepStatus: StepSta
           <div className="flex min-w-0 flex-1 items-baseline justify-between gap-3">
             <p
               className={cn(
-                step.stepStatus === 'done' && 'text-[#9c9c99] line-through',
+                step.stepStatus === 'done' && 'text-[var(--cv-muted)] line-through',
                 step.stepStatus === 'current' && 'font-medium text-[var(--cv-text)]',
-                step.stepStatus === 'pending' && 'text-[#6b6b68]',
+                step.stepStatus === 'pending' && 'text-[var(--cv-muted)]',
               )}
             >
               {step.label}
             </p>
             {step.stepStatus === 'current' ? (
-              <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[#EF9F27]">
+              <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[var(--cv-warning)]">
                 Current
               </span>
             ) : step.stepStatus === 'done' ? (
-              <span className="shrink-0 text-[11px] text-[#97C459]">Done</span>
+              <span className="shrink-0 text-[11px] text-[var(--cv-success)]">Done</span>
             ) : null}
           </div>
         </li>
@@ -455,16 +455,16 @@ function ReportTimeline({ report }: { report: Report }) {
         const isLast = index === steps.length - 1
         const dotClass =
           step.tone === 'done'
-            ? 'border-[#97C459] bg-[#97C459]'
+            ? 'border-[var(--cv-blue)] bg-[var(--cv-blue)]'
             : step.tone === 'current'
-              ? 'border-[#EF9F27] bg-[#EF9F27]'
-              : 'border-[#333] bg-transparent'
+              ? 'border-[var(--cv-warning)] bg-[var(--cv-warning)]'
+              : 'border-[var(--cv-border)] bg-transparent'
 
         return (
           <li key={`${step.label}-${index}`} className="relative flex gap-3 pb-3 last:pb-0">
             {!isLast ? (
               <span
-                className="absolute left-[7px] top-4 h-[calc(100%-8px)] w-px bg-[#333]"
+                className="absolute left-[7px] top-4 h-[calc(100%-8px)] w-px bg-[var(--cv-border)]"
                 aria-hidden
               />
             ) : null}
@@ -475,19 +475,19 @@ function ReportTimeline({ report }: { report: Report }) {
               )}
               aria-hidden
             >
-              {step.tone === 'done' ? <CheckIcon className="h-2.5 w-2.5 text-white" /> : null}
+              {step.tone === 'done' ? <CheckIcon className="h-2.5 w-2.5 text-[var(--color-on-accent)]" /> : null}
             </span>
             <div className="flex min-w-0 flex-1 items-baseline justify-between gap-3 pt-0.5">
               <p
                 className={cn(
                   'text-sm font-medium',
-                  step.tone === 'pending' ? 'text-[#6b6b68]' : 'text-[var(--cv-text)]',
+                  step.tone === 'pending' ? 'text-[var(--cv-muted)]' : 'text-[var(--cv-text)]',
                 )}
               >
                 {step.label}
               </p>
               {step.detail ? (
-                <p className="shrink-0 text-xs tabular-nums text-[#9c9c99]">{step.detail}</p>
+                <p className="shrink-0 text-xs tabular-nums text-[var(--cv-muted)]">{step.detail}</p>
               ) : null}
             </div>
           </li>
@@ -731,9 +731,9 @@ function ReportCard({
     <>
       <article
         className={cn(
-          'overflow-hidden rounded-[14px] border border-[#333] bg-[#1f1f1f] shadow-[0_2px_12px_rgba(0,0,0,0.25)] transition duration-150',
+          'overflow-hidden rounded-[14px] border border-[var(--cv-border)] bg-[var(--cv-surface)] shadow-[var(--shadow-sm)] transition duration-150',
           closedLike && 'opacity-85',
-          overdue && !closedLike && 'border-[color-mix(in_srgb,#F09595_35%,#333)]',
+          overdue && !closedLike && 'border-[color-mix(in_srgb,var(--cv-danger)_35%,var(--cv-border))]',
           open && 'ring-1 ring-[color-mix(in_srgb,var(--cv-text)_8%,transparent)]',
         )}
       >
@@ -774,17 +774,17 @@ function ReportCard({
                   {status.label}
                 </span>
               </div>
-              <p className="mt-1.5 text-sm text-[#9c9c99]">
+              <p className="mt-1.5 text-sm text-[var(--cv-muted)]">
                 Renter:{' '}
                 <span className="font-medium text-[var(--cv-text)]">{report.renter}</span>
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-2">
-                <p className="text-sm text-[#9c9c99]">Booking {report.bookingId}</p>
+                <p className="text-sm text-[var(--cv-muted)]">Booking {report.bookingId}</p>
                 {dueLabel ? (
                   <span
                     className={cn(
                       'inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold',
-                      overdue ? 'bg-[#501313] text-[#F09595]' : 'bg-[#412402] text-[#EF9F27]',
+                      overdue ? 'bg-[color-mix(in_srgb,var(--cv-danger)_16%,transparent)] text-[var(--cv-danger)]' : 'bg-[var(--cv-warning-soft)] text-[var(--cv-warning)]',
                     )}
                   >
                     {dueLabel}
@@ -793,12 +793,12 @@ function ReportCard({
               </div>
               <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
                 <SeverityPill severity={report.severity} />
-                <span className="text-xs text-[#6b6b68]">Reported {formatShort(report.reportedAt)}</span>
+                <span className="text-xs text-[var(--cv-muted)]">Reported {formatShort(report.reportedAt)}</span>
               </div>
               <button
                 type="button"
                 onClick={copyId}
-                className="cv-touch mt-2 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-[#6b6b68] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)]"
+                className="cv-touch mt-2 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-[var(--cv-muted)] hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)]"
                 aria-label={`Copy report ID ${report.id}`}
               >
                 <ClipboardDocumentIcon className="h-3.5 w-3.5" strokeWidth={1.75} />
@@ -812,16 +812,16 @@ function ReportCard({
                   <p className="text-[22px] font-semibold leading-none tracking-tight tabular-nums text-[var(--cv-text)]">
                     {formatCurrency(report.estimate)}
                   </p>
-                  <p className="mt-1.5 text-[11px] font-medium text-[#9c9c99]">
+                  <p className="mt-1.5 text-[11px] font-medium text-[var(--cv-muted)]">
                     {report.status === 'charged' ? `Charged ${formatCurrency(report.estimate)}` : 'Estimate'}
                   </p>
-                  <p className="mt-0.5 text-[11px] text-[#6b6b68]">{formatUpdatedAgo(report.updatedAt)}</p>
+                  <p className="mt-0.5 text-[11px] text-[var(--cv-muted)]">{formatUpdatedAgo(report.updatedAt)}</p>
                 </div>
               ) : (
                 <div className="text-left lg:text-right">
                   <p className="text-sm font-semibold text-[var(--cv-text)]">{report.id}</p>
-                  <p className="mt-1 text-[11px] font-medium text-[#9c9c99]">Issue report</p>
-                  <p className="mt-0.5 text-[11px] text-[#6b6b68]">{formatUpdatedAgo(report.updatedAt)}</p>
+                  <p className="mt-1 text-[11px] font-medium text-[var(--cv-muted)]">Issue report</p>
+                  <p className="mt-0.5 text-[11px] text-[var(--cv-muted)]">{formatUpdatedAgo(report.updatedAt)}</p>
                 </div>
               )}
               <div className="flex items-center gap-2">
@@ -831,7 +831,7 @@ function ReportCard({
                     e.stopPropagation()
                     onQuickMessage()
                   }}
-                  className="cv-touch inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[#333] text-[#9c9c99] transition hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)]"
+                  className="cv-touch inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[var(--cv-border)] text-[var(--cv-muted)] transition hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)]"
                   aria-label="Message renter"
                 >
                   <ChatBubbleLeftRightIcon className="h-5 w-5" strokeWidth={1.75} />
@@ -844,7 +844,7 @@ function ReportCard({
                   }}
                   aria-expanded={open}
                   aria-controls={`report-${report.id}`}
-                  className="cv-touch inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[#333] text-[#9c9c99] transition hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)]"
+                  className="cv-touch inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-[var(--cv-border)] text-[var(--cv-muted)] transition hover:bg-[var(--cv-elevated)] hover:text-[var(--cv-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary)]"
                   aria-label={open ? 'Collapse report details' : 'Expand report details'}
                 >
                   <ChevronDownIcon className={cn('h-5 w-5 transition', open && 'rotate-180')} strokeWidth={2} />
@@ -855,22 +855,22 @@ function ReportCard({
         </div>
 
         {open ? (
-          <div id={`report-${report.id}`} className="space-y-5 border-t border-[#333] px-4 pb-4 pt-5 sm:px-5 sm:pb-5">
+          <div id={`report-${report.id}`} className="space-y-5 border-t border-[var(--cv-border)] px-4 pb-4 pt-5 sm:px-5 sm:pb-5">
             <section>
-              <h4 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#9c9c99]">
+              <h4 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[var(--cv-muted)]">
                 Report details
               </h4>
               <DetailTable rows={detailRows} />
             </section>
 
-            <section className="rounded-xl border border-[#333] bg-[color-mix(in_srgb,#262626_80%,transparent)] p-4">
+            <section className="rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] p-4">
               <h4 className="text-sm font-semibold text-[var(--cv-text)]">What happens next</h4>
               <div className="mt-3">
                 <LifecycleSteps steps={lifecycleSteps} />
               </div>
             </section>
 
-            <section className="rounded-xl border border-[#333] bg-[color-mix(in_srgb,#262626_80%,transparent)] p-4">
+            <section className="rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] p-4">
               <h4 className="text-sm font-semibold text-[var(--cv-text)]">Inspection note</h4>
               <p className="mt-2 text-sm leading-relaxed text-[var(--cv-text)]">{report.note}</p>
               {report.dueAt ? (
@@ -921,13 +921,13 @@ function ReportCard({
             </section>
 
             <section>
-              <h4 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[#9c9c99]">
+              <h4 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-[var(--cv-muted)]">
                 Report timeline
               </h4>
               <ReportTimeline report={report} />
             </section>
 
-            <div className="flex flex-col gap-2 border-t border-[#333] pt-4 sm:flex-row sm:flex-wrap sm:justify-end">
+            <div className="flex flex-col gap-2 border-t border-[var(--cv-border)] pt-4 sm:flex-row sm:flex-wrap sm:justify-end">
               {closedLike ? (
                 <ActionButton>View compliance log</ActionButton>
               ) : (

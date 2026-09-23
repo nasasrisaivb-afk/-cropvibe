@@ -70,7 +70,7 @@ export function MessagesPage() {
     <div className="space-y-4">
       <PageHeader
         title="Messages"
-        subtitle="Order-linked chats with read receipts. Attachments supported."
+        subtitle="Threads with listing, order and booking context. Voice notes and templates in the thread."
       />
 
       <div className="grid h-[min(calc(100dvh-12rem),720px)] overflow-hidden rounded-[12px] border border-[var(--cv-border)] bg-[var(--cv-surface)] max-lg:h-[min(calc(100dvh-10rem),640px)] lg:grid-cols-[320px_1fr]">
@@ -158,7 +158,9 @@ export function MessagesPage() {
                   <p
                     className={cn(
                       'mt-1 text-[10px]',
-                      m.from === 'me' ? 'text-white/75' : 'text-[var(--cv-muted)]',
+                      m.from === 'me'
+                        ? 'text-[var(--cv-btn-text)]/70'
+                        : 'text-[var(--cv-muted)]',
                     )}
                   >
                     {m.time}

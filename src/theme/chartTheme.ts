@@ -17,8 +17,8 @@ export const CHART_THEME: Record<
     tick: TOKENS.light.textSecondary,
     tooltipBg: TOKENS.light.surface1,
     tooltipBorder: TOKENS.light.border,
-    accent: TOKENS.light.textPrimary,
-    secondary: TOKENS.light.textSecondary,
+    accent: TOKENS.accent.solid,
+    secondary: '#A5A8F0',
   },
   dark: {
     grid: TOKENS.dark.border,

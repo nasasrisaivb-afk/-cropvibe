@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { KycStatus, PageId, Role, User } from '../types/roles'
-import { ROLE_LABELS } from '../config/navigation'
+import { ROLE_LABELS, resolvePageForRole } from '../config/navigation'
 import { defaultThemeForRole, type ColorMode } from '../theme/tokens'
 
 const THEME_KEY = 'cropvibe.theme'
@@ -29,7 +29,7 @@ function readTheme(role?: Role | null): ColorMode {
 function applyTheme(theme: ColorMode) {
   document.documentElement.setAttribute('data-theme', theme)
   const meta = document.querySelector('meta[name="theme-color"]')
-  if (meta) meta.setAttribute('content', theme === 'light' ? '#F2F5F0' : '#1A1A1A')
+  if (meta) meta.setAttribute('content', theme === 'light' ? '#FFFFFF' : '#0F172A')
 }
 
 interface AppState {
@@ -111,13 +111,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   switchRole: (role) => {
     const state = get()
     if (!state.user || state.user.activeRole === role) return
-    const cachedPage = state.rolePages[role] ?? 'dashboard'
+    const mapped = resolvePageForRole(state.currentPage, role)
     const theme = state.themeExplicit ? state.theme : defaultThemeForRole(role)
     if (!state.themeExplicit) applyTheme(theme)
     set({
       user: { ...state.user, activeRole: role },
-      currentPage: cachedPage,
-      roleSwitchMessage: `Switched to ${ROLE_LABELS[role]} role`,
+      currentPage: mapped,
+      rolePages: { ...state.rolePages, [state.user.activeRole]: state.currentPage, [role]: mapped },
+      roleSwitchMessage: `Switched to ${ROLE_LABELS[role]} workspace`,
       sidebarOpen: false,
       theme,
     })

@@ -11,7 +11,7 @@ export function ThemeToggle() {
     <button
       type="button"
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      className="cv-touch focus-ring flex items-center justify-center rounded-xl border border-[var(--cv-border)] bg-[var(--cv-elevated)] text-[var(--cv-muted)] transition-colors hover:text-[var(--cv-text)]"
+      className="cv-touch focus-ring cv-header-icon"
       onClick={toggleTheme}
     >
       {isDark ? <SunIcon className="h-5 w-5" strokeWidth={1.5} /> : <MoonIcon className="h-5 w-5" strokeWidth={1.5} />}

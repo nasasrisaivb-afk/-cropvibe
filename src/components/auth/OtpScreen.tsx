@@ -77,7 +77,7 @@ export function OtpScreen() {
       ]}
     >
       <div className="text-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-white">OTP Verification</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-[var(--cv-text)]">OTP Verification</h1>
         <p className="mt-2 text-sm text-[var(--cv-muted)]">
           Enter the 6-digit code we sent you. Demo opens as Rental Provider — switch roles anytime from the
           header.
@@ -99,7 +99,7 @@ export function OtpScreen() {
                 id={index === 0 ? 'otp-0' : undefined}
                 aria-label={`Digit ${index + 1}`}
                 autoComplete={index === 0 ? 'one-time-code' : 'off'}
-                className="focus-ring h-12 w-11 rounded-[10px] border border-[var(--cv-border)] bg-[var(--cv-elevated)] text-center text-lg font-semibold text-white sm:h-14 sm:w-12"
+                className="focus-ring h-12 w-11 rounded-xl border border-[var(--cv-border)] bg-white text-center text-lg font-semibold text-[var(--cv-text)] shadow-[var(--shadow-sm)] sm:h-14 sm:w-12"
                 inputMode="numeric"
                 maxLength={1}
                 value={digit}
@@ -118,13 +118,13 @@ export function OtpScreen() {
 
       <p className="mt-8 text-center text-sm text-[var(--cv-muted)]">
         Didn&apos;t get a code?{' '}
-        <button type="button" className="font-semibold text-white hover:underline">
+        <button type="button" className="font-semibold text-[var(--cv-text)] hover:underline">
           Resend OTP
         </button>
       </p>
       <p className="mt-3 text-center text-sm text-[var(--cv-muted)]">
         Wrong number?{' '}
-        <Link to="/login" className="font-semibold text-white hover:underline">
+        <Link to="/login" className="font-semibold text-[var(--cv-text)] hover:underline">
           Back to login
         </Link>
       </p>

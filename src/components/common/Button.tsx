@@ -26,9 +26,9 @@ export function Button({
 }: ButtonProps) {
   void _roleColor
   const sizes = {
-    sm: 'min-h-9 px-3 py-1.5 text-[13px] rounded-[8px]',
-    md: 'min-h-11 px-4 py-2 text-sm rounded-[8px]',
-    lg: 'min-h-12 px-5 py-3 text-base rounded-[8px]',
+    sm: 'min-h-9 px-3.5 py-1.5 text-[13px] rounded-xl',
+    md: 'min-h-11 px-4 py-2 text-sm rounded-xl',
+    lg: 'min-h-12 px-5 py-3 text-base rounded-xl',
   }
 
   const base = cn(
@@ -41,7 +41,7 @@ export function Button({
   if (variant === 'primary' || variant === 'accent') {
     return (
       <button
-        className={cn(base, 'hover:brightness-95 active:brightness-90')}
+        className={cn(base, 'shadow-[0_6px_16px_rgba(91,92,226,0.22)] hover:brightness-95 active:brightness-90')}
         disabled={disabled || loading}
         style={{
           backgroundColor: 'var(--cv-btn-bg)',
@@ -76,7 +76,7 @@ export function Button({
       <button
         className={cn(
           base,
-          'border border-[var(--cv-sidebar-border)] bg-[var(--cv-sidebar-bg)] text-[var(--cv-sidebar-text)] hover:bg-[var(--cv-sidebar-hover)]',
+          'border border-[var(--cv-border)] bg-[var(--cv-surface)] text-[var(--cv-text)] hover:bg-[var(--cv-elevated)]',
         )}
         disabled={disabled || loading}
         style={style}

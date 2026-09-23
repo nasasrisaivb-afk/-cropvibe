@@ -37,7 +37,7 @@ export function HelpDeskPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Help desk"
+        title="Help center"
         subtitle="FAQ, tickets, and live support for rental providers."
       />
 

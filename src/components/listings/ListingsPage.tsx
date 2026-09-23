@@ -50,9 +50,9 @@ const RENTAL_EQUIPMENT = [
 ]
 
 const RENTAL_CATEGORY_LINKS = [
-  { label: 'Machinery', path: '/dashboard/machinery' },
-  { label: 'Labours', path: '/dashboard/labours' },
-  { label: 'Warehouses', path: '/dashboard/warehouses' },
+  { label: 'Equipment', path: '/dashboard/equipment' },
+  { label: 'Operators', path: '/dashboard/operators' },
+  { label: 'Maintenance', path: '/dashboard/maintenance' },
   { label: 'Calendar', path: '/dashboard/calendar' },
 ] as const
 

@@ -20,7 +20,7 @@ export function LoginScreen() {
       ]}
     >
       <div className="text-center">
-        <h1 className="text-3xl font-semibold tracking-tight text-white">Welcome back</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-[var(--cv-text)]">Welcome back</h1>
         <p className="mt-2 text-sm text-[var(--cv-muted)]">
           Enter your credentials to access your CropVibe workspace.
         </p>
@@ -45,7 +45,9 @@ export function LoginScreen() {
         <button
           type="button"
           className={`rounded-[10px] py-2 text-sm font-semibold transition ${
-            mode === 'phone' ? 'bg-white text-black shadow-sm' : 'text-[var(--cv-muted)]'
+            mode === 'phone'
+              ? 'bg-[var(--cv-btn-bg)] text-[var(--cv-btn-text)] shadow-sm'
+              : 'text-[var(--cv-muted)]'
           }`}
           onClick={() => setMode('phone')}
         >
@@ -54,7 +56,9 @@ export function LoginScreen() {
         <button
           type="button"
           className={`rounded-[10px] py-2 text-sm font-semibold transition ${
-            mode === 'email' ? 'bg-white text-black shadow-sm' : 'text-[var(--cv-muted)]'
+            mode === 'email'
+              ? 'bg-[var(--cv-btn-bg)] text-[var(--cv-btn-text)] shadow-sm'
+              : 'text-[var(--cv-muted)]'
           }`}
           onClick={() => setMode('email')}
         >
@@ -100,7 +104,7 @@ export function LoginScreen() {
           <label className="flex items-center gap-2 text-[var(--cv-muted)]">
             <input type="checkbox" className="h-4 w-4 accent-[var(--cv-primary)]" /> Remember this device
           </label>
-          <Link to="/forgot-password" className="font-medium text-white hover:underline">
+          <Link to="/forgot-password" className="font-medium text-[var(--cv-text)] hover:underline">
             Forgot password?
           </Link>
         </div>
@@ -112,7 +116,7 @@ export function LoginScreen() {
 
       <p className="mt-8 text-center text-sm text-[var(--cv-muted)]">
         Don&apos;t have an account?{' '}
-        <Link to="/register" className="font-semibold text-white hover:underline">
+        <Link to="/register" className="font-semibold text-[var(--cv-text)] hover:underline">
           Sign up
         </Link>
       </p>

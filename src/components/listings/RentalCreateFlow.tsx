@@ -85,8 +85,8 @@ function StepProgress({ step, color }: { step: number; color: string }) {
               <div
                 className={cn(
                   'flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition',
-                  done && 'text-white',
-                  active && 'text-white ring-4',
+                  done && 'text-[var(--color-on-accent)]',
+                  active && 'text-[var(--color-on-accent)] ring-4',
                   !done && !active && 'bg-[var(--cv-elevated)] text-[var(--cv-muted)]',
                 )}
                 style={
@@ -329,7 +329,7 @@ export function RentalCreateFlow({ onDone }: { onDone: () => void }) {
   const [editingSection, setEditingSection] = useState<'details' | 'pricing' | null>(null)
 
   const category = getCategoryById(form.categoryId)
-  const accent = category?.color ?? '#6B4423'
+  const accent = category?.color ?? 'var(--cv-forest)'
   const rate = Number(form.rate) || 0
   const suggestion = useMemo(
     () => (category ? suggestRate(category, form.checklist) : null),
@@ -572,14 +572,17 @@ export function RentalCreateFlow({ onDone }: { onDone: () => void }) {
                   )}
                   style={
                     selected
-                      ? { borderColor: cat.color, backgroundColor: cat.softBg }
+                      ? { borderColor: 'var(--cv-blue)', backgroundColor: 'color-mix(in srgb, var(--cv-blue) 12%, transparent)' }
                       : undefined
                   }
                 >
                   <div className="flex items-start gap-3">
                     <span
                       className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-                      style={{ backgroundColor: selected ? cat.color : cat.softBg, color: selected ? '#fff' : cat.color }}
+                      style={{
+                        backgroundColor: selected ? 'var(--cv-blue)' : cat.softBg,
+                        color: selected ? '#ffffff' : cat.color,
+                      }}
                     >
                       <Icon className="h-5 w-5" />
                     </span>
@@ -797,7 +800,7 @@ function DetailSection({
     <section className="rounded-xl border border-[var(--cv-border)] p-4 sm:p-5">
       <div className="mb-4 flex items-start gap-3">
         <span
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-[var(--color-on-accent)]"
           style={{ backgroundColor: color }}
         >
           {step}

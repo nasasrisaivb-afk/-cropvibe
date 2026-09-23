@@ -18,7 +18,7 @@ import type { OverviewKpis } from '@/lib/types'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { formatInr } from '@/lib/utils'
 
-const COLORS = ['#CCFF00', '#B8E600', '#38BDF8', '#FBBF24', '#4ADE80', '#F87171', '#9CA3AF', '#E8FF4D']
+const COLORS = ['#5B5CE2', '#8B8EF0', '#4A4FD4', '#C5C7F8', '#A855F7', '#7C5CFF', '#E8EAFE', '#6B7088']
 
 export default function Charts({ kpis }: { kpis: OverviewKpis }) {
   return (
@@ -32,8 +32,8 @@ export default function Charts({ kpis }: { kpis: OverviewKpis }) {
             <AreaChart data={kpis.userGrowth}>
               <defs>
                 <linearGradient id="limeFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#CCFF00" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#CCFF00" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#5B5CE2" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="#5B5CE2" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid stroke="#2A2A2A" strokeDasharray="3 3" />
@@ -43,7 +43,7 @@ export default function Charts({ kpis }: { kpis: OverviewKpis }) {
                 contentStyle={{ background: '#1F1F1F', border: '1px solid #2A2A2A' }}
                 labelStyle={{ color: '#A3A3A3' }}
               />
-              <Area type="monotone" dataKey="count" stroke="#CCFF00" fill="url(#limeFill)" />
+              <Area type="monotone" dataKey="count" stroke="#5B5CE2" fill="url(#limeFill)" />
             </AreaChart>
           </ResponsiveContainer>
         </CardContent>
@@ -90,7 +90,7 @@ export default function Charts({ kpis }: { kpis: OverviewKpis }) {
                   name === 'amount' ? formatInr(Number(value)) : value
                 }
               />
-              <Bar dataKey="count" fill="#CCFF00" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" fill="#5B5CE2" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

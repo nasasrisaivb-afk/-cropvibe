@@ -3,13 +3,20 @@ import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   BREADCRUMB_TITLES,
   getAllNavPaths,
+  resolvePageForRole,
   SEARCH_PLACEHOLDERS,
 } from '../../config/navigation'
 import { useAppStore } from '../../store/appStore'
 import type { PageId } from '../../types/roles'
 import { getServiceById } from '../services/serviceCatalogUtils'
 import type { ServiceCategory } from '../services/serviceCatalogTypes'
-import { DashboardHeader, DashboardSidebar, MobileBottomNav, MobileCreateFab, MobileSearchBar } from '../common/Navigation'
+import {
+  DashboardHeader,
+  DashboardSidebar,
+  MobileBottomNav,
+  MobileCreateFab,
+  MobileSearchBar,
+} from '../common/Navigation'
 import { BuyerDashboard } from './BuyerDashboard'
 import { EducatorDashboard } from './EducatorDashboard'
 import { RentalDashboard } from './RentalDashboard'
@@ -23,9 +30,10 @@ const routeToPage = Object.fromEntries(
 ) as Record<string, PageId>
 
 function resolvePageFromPath(pathname: string): PageId | null {
+  if (pathname === '/dashboard' || pathname === '/dashboard/') return 'dashboard'
   if (routeToPage[pathname]) return routeToPage[pathname]
   for (const [path, page] of Object.entries(routeToPage)) {
-    if (pathname.startsWith(`${path}/`)) return page
+    if (path !== '/dashboard' && pathname.startsWith(`${path}/`)) return page
   }
   return null
 }
@@ -84,28 +92,32 @@ export function DashboardLayout() {
     return () => clearTimeout(timeout)
   }, [roleSwitchMessage, clearRoleSwitchMessage])
 
-  if (!isAuthenticated) {
-    return <Navigate replace to="/login" />
-  }
-
   const breadcrumbs = useMemo(
     () => buildBreadcrumbs(location.pathname, currentPage),
     [location.pathname, currentPage],
   )
+
+  if (!isAuthenticated) {
+    return <Navigate replace to="/login" />
+  }
+
   const go = (page: PageId) => {
-    setCurrentPage(page)
-    navigate(pageToPath[page] ?? '/dashboard')
+    const role = user?.activeRole ?? 'seller'
+    const next = resolvePageForRole(page, role)
+    setCurrentPage(next)
+    navigate(pageToPath[next] ?? '/dashboard')
   }
 
   return (
-    <div className="flex min-h-[100dvh] bg-[var(--cv-bg)] text-[var(--cv-text)]">
+    <div className="flex min-h-[100dvh] bg-[var(--cv-chrome,var(--cv-bg))] text-[var(--cv-text)]">
       <a className="skip-link focus-ring" href="#main-content">
         Skip to content
       </a>
 
+      <div className="cv-app-frame flex min-h-[100dvh] min-w-0 flex-1 overflow-hidden lg:min-h-[calc(100dvh-24px)]">
       <DashboardSidebar onNavigate={go} searchPlaceholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'} />
 
-      <div className="cv-main-shell flex min-h-0 min-w-0 flex-1 flex-col">
+      <div className="cv-main-shell flex min-h-0 min-w-0 flex-1 flex-col bg-[var(--cv-bg)]">
         <DashboardHeader
           breadcrumbs={breadcrumbs}
           searchPlaceholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'}
@@ -113,16 +125,19 @@ export function DashboardLayout() {
         />
 
         <main
-          className="cv-mobile-main min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-3 sm:px-6 sm:py-5 lg:px-8 lg:py-6"
+          className="cv-mobile-main min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-4 sm:px-6 sm:py-5 lg:px-7 lg:py-5"
           id="main-content"
         >
           <div className="mx-auto w-full max-w-[1280px] space-y-5 lg:space-y-6">
-            <MobileSearchBar
-              placeholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'}
-            />
-            {currentPage === 'dashboard' ? <DashboardHome /> : <Outlet />}
+            <MobileSearchBar placeholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'} />
+            {location.pathname === '/dashboard' || location.pathname === '/dashboard/' ? (
+              <DashboardHome />
+            ) : (
+              <Outlet />
+            )}
           </div>
         </main>
+      </div>
       </div>
 
       <MobileCreateFab onNavigate={go} />

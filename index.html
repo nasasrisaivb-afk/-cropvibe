@@ -7,7 +7,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1"
     />
-    <meta name="theme-color" content="#1A1A1A" />
+    <meta name="theme-color" content="#FFFFFF" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="CropVibe" />
@@ -20,10 +20,10 @@
         try {
           var explicit = localStorage.getItem('cropvibe.theme.explicit') === '1';
           var t = localStorage.getItem('cropvibe.theme');
-          var mode = explicit && (t === 'dark' || t === 'light') ? t : 'dark';
+          var mode = explicit && (t === 'dark' || t === 'light') ? t : 'light';
           document.documentElement.setAttribute('data-theme', mode);
         } catch (e) {
-          document.documentElement.setAttribute('data-theme', 'dark');
+          document.documentElement.setAttribute('data-theme', 'light');
         }
       })();
     </script>

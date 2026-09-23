@@ -5,7 +5,7 @@ import { PageHeader } from '../common/PageHeader'
 import { SegmentedControl } from '../common/SegmentedControl'
 import { cn } from '../../utils/format'
 
-type NotifType = 'order' | 'message' | 'system' | 'review'
+type NotifType = 'order' | 'payment' | 'farm' | 'account'
 
 interface Notification {
   id: string
@@ -27,35 +27,35 @@ const INITIAL: Notification[] = [
   },
   {
     id: 'n2',
-    type: 'message',
-    title: 'Message from Green Mart',
-    body: 'Can you deliver tomatoes by tomorrow morning?',
-    time: '1 hour ago',
+    type: 'farm',
+    title: 'Rain Thursday–Friday',
+    body: 'IMD: delay dispatch PO-8923 and field booking BK-4413.',
+    time: '40 min ago',
     read: false,
   },
   {
     id: 'n3',
-    type: 'review',
-    title: 'New 5★ review',
-    body: 'Organic Hub rated your Carrots delivery.',
+    type: 'payment',
+    title: 'Payout pending',
+    body: '₹25,000 to HDFC ****4521 is in the acceptance window.',
     time: 'Yesterday',
     read: true,
   },
   {
     id: 'n4',
-    type: 'system',
-    title: 'Quiet hours reminder',
-    body: 'SMS alerts pause between 10 PM – 6 AM as per your preferences.',
+    type: 'account',
+    title: 'Verification still needed',
+    body: 'Publishing and withdrawals stay gated until KYC is approved.',
     time: '2 days ago',
     read: true,
   },
 ]
 
 const TYPE_LABEL: Record<NotifType, string> = {
-  order: 'Order',
-  message: 'Message',
-  system: 'System',
-  review: 'Review',
+  order: 'Orders & bookings',
+  payment: 'Payments',
+  farm: 'Farm alerts',
+  account: 'Account',
 }
 
 export function NotificationsPage() {
@@ -85,10 +85,10 @@ export function NotificationsPage() {
         onChange={setFilter}
         options={[
           { value: 'all', label: 'All' },
-          { value: 'order', label: TYPE_LABEL.order },
-          { value: 'message', label: TYPE_LABEL.message },
-          { value: 'review', label: TYPE_LABEL.review },
-          { value: 'system', label: TYPE_LABEL.system },
+          { value: 'order', label: 'Orders' },
+          { value: 'payment', label: 'Payments' },
+          { value: 'farm', label: 'Farm alerts' },
+          { value: 'account', label: 'Account' },
         ]}
       />
 
