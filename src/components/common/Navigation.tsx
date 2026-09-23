@@ -117,22 +117,6 @@ interface ShellNavProps {
   breadcrumbs: string[]
 }
 
-function BrandMark({ size = 32 }: { size?: number }) {
-  return (
-    <span
-      className="flex shrink-0 items-center justify-center rounded-[12px] text-white shadow-[0_6px_16px_rgba(91,92,226,0.28)]"
-      style={{
-        width: size,
-        height: size,
-        background: 'var(--cv-sidebar-logo-bg)',
-      }}
-      aria-hidden
-    >
-      <SparklesIcon style={{ width: size * 0.5, height: size * 0.5 }} strokeWidth={2.2} />
-    </span>
-  )
-}
-
 function SidebarNavButton({
   active,
   collapsed,
@@ -202,8 +186,6 @@ export function DashboardSidebar({
   const sections = getNavSections(role)
   const closeDrawer = () => setSidebarOpen(false)
   const [folded, setFolded] = useState<Record<string, boolean>>({})
-  const [query, setQuery] = useState('')
-  const q = query.trim().toLowerCase()
 
   const go = (id: PageId) => {
     onNavigate(id)
@@ -257,17 +239,15 @@ export function DashboardSidebar({
               )}
               onClick={() => go('dashboard')}
             >
-              <BrandMark size={32} />
-              {!sidebarCollapsed ? (
-                <span className="min-w-0">
-                  <span className="cv-logo block truncate text-[15px] font-semibold leading-none text-[var(--cv-sidebar-text)]">
-                    CropVibe
-                  </span>
-                  <span className="mt-0.5 block text-[11px] text-[var(--cv-sidebar-muted)]">
-                    {ROLE_LABELS[role].split(' ')[0]}
-                  </span>
+              {sidebarCollapsed ? (
+                <span className="cv-logo hidden text-[15px] font-semibold leading-none text-[var(--cv-sidebar-text)] lg:block">
+                  C
                 </span>
-              ) : null}
+              ) : (
+                <span className="cv-logo min-w-0 truncate text-[15px] font-semibold leading-none text-[var(--cv-sidebar-text)]">
+                  CropVibe
+                </span>
+              )}
             </Link>
 
             {!sidebarCollapsed ? (
@@ -279,7 +259,16 @@ export function DashboardSidebar({
             >
               <ChevronDownIcon className="h-4 w-4 rotate-90" strokeWidth={2} />
             </button>
-            ) : null}
+            ) : (
+            <button
+              aria-label="Expand sidebar"
+              className="focus-ring hidden h-8 w-8 shrink-0 items-center justify-center rounded-xl text-[var(--cv-sidebar-muted)] hover:bg-[var(--cv-sidebar-hover)] hover:text-[var(--cv-sidebar-text)] lg:inline-flex"
+              type="button"
+              onClick={toggleSidebarCollapsed}
+            >
+              <ChevronRightIcon className="h-4 w-4" strokeWidth={2} />
+            </button>
+            )}
 
             <button
               aria-label="Close menu"
@@ -292,35 +281,6 @@ export function DashboardSidebar({
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col">
-            {!sidebarCollapsed ? (
-              <div className="px-3 pb-3">
-                <label className="relative block">
-                  <span className="sr-only">Search navigation</span>
-                  <MagnifyingGlassIcon
-                    className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--cv-sidebar-muted)]"
-                    strokeWidth={1.75}
-                  />
-                  <input
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search"
-                    className="w-full rounded-xl border-0 bg-[var(--cv-sidebar-search-bg)] py-2.5 pl-9 pr-3 text-sm text-[var(--cv-sidebar-text)] placeholder:text-[var(--cv-sidebar-muted)] outline-none ring-0 focus:ring-2 focus:ring-[var(--cv-primary)]/25"
-                  />
-                </label>
-              </div>
-            ) : (
-              <div className="hidden justify-center px-2 pb-2 lg:flex">
-                <button
-                  type="button"
-                  aria-label="Expand to search"
-                  className="flex h-10 w-10 items-center justify-center rounded-[12px] text-[var(--cv-sidebar-muted)] hover:bg-[var(--cv-sidebar-hover)]"
-                  onClick={toggleSidebarCollapsed}
-                >
-                  <MagnifyingGlassIcon className="h-[18px] w-[18px]" strokeWidth={1.75} />
-                </button>
-              </div>
-            )}
             <nav
               aria-label="Sidebar navigation"
               className={cn(
@@ -329,11 +289,7 @@ export function DashboardSidebar({
               )}
             >
               {sections.map((section) => {
-                const items = q
-                  ? section.items.filter((item) => item.label.toLowerCase().includes(q))
-                  : section.items
-                if (q && items.length === 0) return null
-                const isFolded = Boolean(folded[section.title]) && !q
+                const isFolded = Boolean(folded[section.title])
                 return (
                   <div key={section.title} className="mb-3">
                     {!sidebarCollapsed ? (
@@ -356,7 +312,7 @@ export function DashboardSidebar({
                     )}
                     {!isFolded || sidebarCollapsed ? (
                       <ul className={cn('space-y-0.5', sidebarCollapsed && 'lg:flex lg:flex-col lg:items-center')}>
-                        {items.map((item) => {
+                        {section.items.map((item) => {
                           const Icon = NAV_ICONS[item.id] ?? ArchiveBoxIcon
                           return (
                             <SidebarNavButton
@@ -434,6 +390,22 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
             <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[var(--cv-sidebar-badge-bg)] ring-2 ring-[var(--cv-surface)]" />
           </button>
           <button
+            aria-label="Weather"
+            className="cv-touch flex items-center justify-center rounded-full border border-[var(--cv-border)] bg-[var(--cv-surface)] text-[var(--cv-text)]"
+            type="button"
+            onClick={() => onNavigate('weather')}
+          >
+            <CloudIcon className="h-5 w-5" strokeWidth={1.75} />
+          </button>
+          <button
+            aria-label="Schemes & Support"
+            className="cv-touch flex items-center justify-center rounded-full border border-[var(--cv-border)] bg-[var(--cv-surface)] text-[var(--cv-text)]"
+            type="button"
+            onClick={() => onNavigate('schemes')}
+          >
+            <SparklesIcon className="h-5 w-5" strokeWidth={1.75} />
+          </button>
+          <button
             aria-label="Notifications"
             className="cv-touch relative flex items-center justify-center rounded-full border border-[var(--cv-border)] bg-[var(--cv-surface)] text-[var(--cv-text)]"
             type="button"
@@ -491,6 +463,22 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
           >
             <EnvelopeIcon className="h-5 w-5" />
             <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[var(--cv-sidebar-badge-bg)]" />
+          </button>
+          <button
+            aria-label="Weather"
+            className="cv-header-icon focus-ring"
+            type="button"
+            onClick={() => onNavigate('weather')}
+          >
+            <CloudIcon className="h-5 w-5" />
+          </button>
+          <button
+            aria-label="Schemes & Support"
+            className="cv-header-icon focus-ring"
+            type="button"
+            onClick={() => onNavigate('schemes')}
+          >
+            <SparklesIcon className="h-5 w-5" />
           </button>
           <button
             aria-label="Notifications"

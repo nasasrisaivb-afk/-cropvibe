@@ -208,7 +208,7 @@ export function getFarmIntelItems(role: Role): NavItem[] {
 export function getActionNavItems(role: Role): NavItem[] {
   return [
     { id: 'reviews', label: 'Reviews', path: '/dashboard/reviews' },
-    ...getFarmIntelItems(role),
+    ...getFarmIntelItems(role).filter((item) => item.id === 'mandi'),
   ]
 }
 

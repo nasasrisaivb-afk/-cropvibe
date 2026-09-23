@@ -2,9 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ChevronRightIcon,
-  CloudIcon,
   CurrencyRupeeIcon,
-  SparklesIcon,
   StarIcon,
 } from '@heroicons/react/24/outline'
 import { getActionNavItems, ROLE_LABELS } from '../../config/navigation'
@@ -20,8 +18,6 @@ import { RoleSwitcher } from '../common/RoleSwitcher'
 const ACTION_ICONS: Partial<Record<PageId, typeof StarIcon>> = {
   reviews: StarIcon,
   mandi: CurrencyRupeeIcon,
-  weather: CloudIcon,
-  schemes: SparklesIcon,
 }
 
 export function ProfilePage() {
