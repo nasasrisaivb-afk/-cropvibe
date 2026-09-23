@@ -359,7 +359,7 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
   }, [])
 
   return (
-    <header className="sticky top-0 z-30 bg-white cv-mobile-header">
+    <header className="sticky top-0 z-30 bg-[var(--cv-bg)] cv-mobile-header lg:bg-transparent">
       <div className="flex h-14 items-center justify-between gap-3 border-b border-[var(--cv-border)] px-4 lg:hidden">
         <button
           type="button"
@@ -418,7 +418,7 @@ export function DashboardHeader({ onNavigate, searchPlaceholder, breadcrumbs }: 
         </div>
       </div>
 
-      <div className="hidden h-[72px] items-center gap-3 bg-white px-6 lg:flex">
+      <div className="hidden h-[72px] items-center gap-3 px-6 lg:flex">
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-[24px] font-bold tracking-tight text-[var(--cv-text)]">
             {breadcrumbs[breadcrumbs.length - 1]}
