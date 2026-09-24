@@ -12,25 +12,25 @@
 }
 
 /*
-  CropVibe — Shipfaster UI kit
-  canvas #F4F6FB · violet #5B5CE2 · white cards
+  CropVibe — grey canvas for contrast
+  canvas #E5E7EB · violet #5B5CE2 · white cards
 */
 :root,
 [data-theme="light"] {
   --cv-white: #ffffff;
   --cv-blue: #5b5ce2;
   --cv-blue-hover: #4a4fd4;
-  --cv-grey: #8b90a7;
+  --cv-grey: #6b7280;
   --cv-forest: #5b5ce2;
-  --cv-lime: #8b90a7;
-  --cv-lime-hover: #6b7088;
+  --cv-lime: #6b7280;
+  --cv-lime-hover: #4b5563;
 
-  --color-bg-primary: #f4f6fb;
+  --color-bg-primary: #e5e7eb;
   --color-surface-1: #ffffff;
-  --color-surface-2: #eef0f8;
-  --color-border: rgba(91, 92, 226, 0.1);
+  --color-surface-2: #f3f4f6;
+  --color-border: rgba(17, 24, 39, 0.12);
   --color-text-primary: #1a1d2e;
-  --color-text-secondary: #8b90a7;
+  --color-text-secondary: #4b5563;
 
   --color-accent: #5b5ce2;
   --color-accent-hover: #4a4fd4;
@@ -63,7 +63,7 @@
   --cv-bg: var(--color-bg-primary);
   --cv-surface: var(--color-surface-1);
   --cv-elevated: var(--color-surface-2);
-  --cv-surface-muted: #e8ebf5;
+  --cv-surface-muted: #d1d5db;
   --cv-text: var(--color-text-primary);
   --cv-muted: var(--color-text-secondary);
   --cv-border: var(--color-border);
@@ -83,18 +83,18 @@
   --cv-warning-soft: var(--color-warning-soft);
   --cv-nav-active-bg: #eef0fe;
   --cv-nav-active-fg: #5b5ce2;
-  --cv-chrome: #f4f6fb;
+  --cv-chrome: #e5e7eb;
 
   --cv-sidebar-bg: #ffffff;
-  --cv-sidebar-border: rgba(91, 92, 226, 0.08);
+  --cv-sidebar-border: rgba(17, 24, 39, 0.1);
   --cv-sidebar-text: #1a1d2e;
-  --cv-sidebar-muted: #8b90a7;
-  --cv-sidebar-hover: #f4f6fb;
+  --cv-sidebar-muted: #4b5563;
+  --cv-sidebar-hover: #f3f4f6;
   --cv-sidebar-active-bg: #eef0fe;
   --cv-sidebar-active-fg: #5b5ce2;
   --cv-sidebar-active-border: transparent;
   --cv-sidebar-active-shadow: none;
-  --cv-sidebar-search-bg: #f4f6fb;
+  --cv-sidebar-search-bg: #f3f4f6;
   --cv-sidebar-promo-bg: rgba(91, 92, 226, 0.1);
   --cv-sidebar-promo-border: rgba(91, 92, 226, 0.2);
   --cv-sidebar-badge-bg: #ef4444;
@@ -332,14 +332,128 @@ body {
   border-radius: 999px;
 }
 
+/* Apple laptop product mockup — desktop only */
+.cv-studio {
+  min-height: 100dvh;
+  background: var(--cv-chrome);
+}
+
+.cv-laptop,
+.cv-laptop-lid,
+.cv-laptop-screen,
+.cv-laptop-app {
+  min-height: 100dvh;
+}
+
+.cv-laptop-camera,
+.cv-laptop-base {
+  display: none;
+}
+
 @media (min-width: 1024px) {
-  .cv-app-frame {
-    margin: 12px;
-    min-height: calc(100dvh - 24px);
+  .cv-studio {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 36px 22px;
+    background:
+      radial-gradient(ellipse at 50% 8%, #f3f4f6 0%, #e5e7eb 48%, #d1d5db 100%);
+  }
+
+  .cv-laptop {
+    width: min(1320px, calc(100vw - 72px));
+    min-height: 0;
+    filter: drop-shadow(0 24px 48px rgba(17, 24, 39, 0.2));
+  }
+
+  .cv-laptop-lid {
+    position: relative;
+    min-height: 0;
+    padding: 14px 14px 0;
+    background: linear-gradient(180deg, #4a4a4c 0%, #2c2c2e 28%, #1d1d1f 100%);
+    border-radius: 22px 22px 0 0;
+  }
+
+  .cv-laptop-camera {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 3;
+    width: 112px;
+    height: 15px;
+    transform: translateX(-50%);
+    background: #1d1d1f;
+    border-radius: 0 0 11px 11px;
+  }
+
+  .cv-laptop-camera::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #6eb3c9, #1a4a5c 70%);
+    box-shadow: inset 0 0 1px #0b0b0c;
+  }
+
+  .cv-laptop-screen,
+  .cv-laptop-app {
+    min-height: 0;
+    height: calc(100dvh - 108px);
+  }
+
+  .cv-laptop-screen {
     overflow: hidden;
-    border-radius: 24px;
+    border-radius: 10px 10px 0 0;
     background: var(--cv-bg);
-    box-shadow: var(--shadow-sm);
+  }
+
+  .cv-laptop-app,
+  .cv-laptop-app > * {
+    height: 100%;
+  }
+
+  .cv-laptop-base {
+    display: block;
+    position: relative;
+    height: 16px;
+    margin: 0 -3.6%;
+    background: linear-gradient(180deg, #e4e4e7 0%, #c7c7cc 42%, #a1a1a6 100%);
+    border-radius: 0 0 18px 18px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  }
+
+  .cv-laptop-base::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 7%;
+    left: 7%;
+    height: 3px;
+    background: #8e8e93;
+  }
+
+  .cv-laptop-hinge {
+    display: block;
+    width: 17%;
+    height: 8px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #aeaeb2, #636366);
+    border-radius: 0 0 8px 8px;
+  }
+
+  .cv-app-frame {
+    margin: 0;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+    border-radius: 0;
+    background: var(--cv-bg);
+    box-shadow: none;
   }
 
   .cv-sidebar-shell {

@@ -109,12 +109,12 @@ export function DashboardLayout() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] bg-[var(--cv-chrome,var(--cv-bg))] text-[var(--cv-text)]">
+    <div className="flex min-h-[100dvh] h-full bg-[var(--cv-chrome,var(--cv-bg))] text-[var(--cv-text)] lg:min-h-0">
       <a className="skip-link focus-ring" href="#main-content">
         Skip to content
       </a>
 
-      <div className="cv-app-frame flex min-h-[100dvh] min-w-0 flex-1 overflow-hidden lg:min-h-[calc(100dvh-24px)]">
+      <div className="cv-app-frame flex min-h-[100dvh] min-w-0 flex-1 overflow-hidden lg:h-full lg:min-h-0">
       <DashboardSidebar onNavigate={go} searchPlaceholder={SEARCH_PLACEHOLDERS[currentPage] ?? 'Search...'} />
 
       <div className="cv-main-shell flex min-h-0 min-w-0 flex-1 flex-col bg-[var(--cv-bg)]">

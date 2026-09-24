@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { LaptopFrame } from './components/common/LaptopFrame'
 import { ForgotPasswordScreen } from './components/auth/ForgotPasswordScreen'
 import { KYCStatusScreen } from './components/auth/KYCStatusScreen'
 import { LoginScreen } from './components/auth/LoginScreen'
@@ -52,7 +53,9 @@ import {
 
 function App() {
   return (
-    <Routes>
+    <LaptopFrame>
+      <div className="cv-laptop-app">
+        <Routes>
       <Route element={<Navigate replace to="/login" />} path="/" />
       <Route element={<LoginScreen />} path="/login" />
       <Route element={<RegisterScreen />} path="/register" />
@@ -120,7 +123,9 @@ function App() {
         <Route element={<SchemesPage />} path="schemes" />
       </Route>
       <Route element={<Navigate replace to="/login" />} path="*" />
-    </Routes>
+        </Routes>
+      </div>
+    </LaptopFrame>
   )
 }
 

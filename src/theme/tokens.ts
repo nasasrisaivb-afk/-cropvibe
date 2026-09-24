@@ -20,12 +20,12 @@ export const TOKENS = {
     frost: 'rgba(16,18,37,0.82)',
   },
   light: {
-    bgPrimary: '#F4F6FB',
+    bgPrimary: '#E5E7EB',
     surface1: '#FFFFFF',
-    surface2: '#EEF0F8',
-    border: 'rgba(91,92,226,0.10)',
+    surface2: '#F3F4F6',
+    border: 'rgba(17,24,39,0.12)',
     textPrimary: '#1A1D2E',
-    textSecondary: '#8B90A7',
+    textSecondary: '#4B5563',
     frost: 'rgba(255,255,255,0.88)',
   },
   accent: {

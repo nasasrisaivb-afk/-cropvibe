@@ -19,7 +19,7 @@ interface AuthShellProps {
 
 export function AuthShell({ headline, description, steps, activeStep, children }: AuthShellProps) {
   return (
-    <div className="grid min-h-[100dvh] w-full grid-cols-1 bg-[var(--cv-chrome)] md:grid-cols-[46%_54%]">
+    <div className="grid min-h-[100dvh] h-full w-full grid-cols-1 bg-[var(--cv-chrome)] md:grid-cols-[46%_54%] lg:min-h-0">
       <aside className="relative hidden flex-col overflow-hidden bg-white p-10 text-[#1a1d2e] md:flex lg:p-12">
         <div
           className="pointer-events-none absolute inset-0"
@@ -80,7 +80,7 @@ export function AuthShell({ headline, description, steps, activeStep, children }
         </ol>
       </aside>
 
-      <main className="relative flex min-h-[100dvh] items-center justify-center bg-[var(--cv-bg)] px-6 py-10">
+      <main className="relative flex min-h-[100dvh] items-center justify-center bg-[var(--cv-bg)] px-6 py-10 lg:min-h-0 lg:h-full">
         <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
           <ThemeToggle />
         </div>
