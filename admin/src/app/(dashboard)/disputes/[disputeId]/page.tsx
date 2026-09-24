@@ -93,7 +93,7 @@ export default function DisputeDetailPage() {
         ← Back
       </Button>
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-3xl font-bold">Dispute #{dispute.id}</h1>
+        <h2 className="text-2xl font-bold text-text-primary">Dispute #{dispute.id}</h2>
         <Badge variant="warning">{dispute.status.replace(/_/g, ' ')}</Badge>
         <Button size="sm" variant="secondary" loading={assignMut.isPending} onClick={() => assignMut.mutate()}>
           Reassign to Me
@@ -153,7 +153,7 @@ export default function DisputeDetailPage() {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Add internal note…"
-                className="h-20 w-full rounded-lg border border-border-default bg-bg-base p-2 text-sm"
+                className="cv-control h-20 py-2"
               />
               <Button size="sm" disabled={!note.trim()} loading={noteMut.isPending} onClick={() => noteMut.mutate()}>
                 Add internal note
@@ -168,7 +168,7 @@ export default function DisputeDetailPage() {
             <form onSubmit={form.handleSubmit((d) => resolveMut.mutate(d))} className="space-y-3">
               <label className="block text-sm text-text-secondary">
                 Status
-                <select {...form.register('status')} className="mt-1 h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-sm text-text-primary">
+                <select {...form.register('status')} className="mt-1 cv-control h-9">
                   <option value="new">New</option>
                   <option value="under_investigation">Under Investigation</option>
                   <option value="awaiting_response">Awaiting Response</option>
@@ -187,11 +187,11 @@ export default function DisputeDetailPage() {
               </fieldset>
               <label className="block text-sm text-text-secondary">
                 Amount (INR)
-                <input type="number" {...form.register('amount')} className="mt-1 h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 font-mono text-sm" />
+                <input type="number" {...form.register('amount')} className="mt-1 cv-control h-9 font-mono" />
               </label>
-              <textarea {...form.register('notes')} placeholder="Resolution notes (visible to parties)" className="h-24 w-full rounded-lg border border-border-default bg-bg-base p-2 text-sm" />
+              <textarea {...form.register('notes')} placeholder="Resolution notes (visible to parties)" className="cv-control h-24 py-2" />
               {form.formState.errors.notes ? <p className="text-xs text-status-error">{form.formState.errors.notes.message}</p> : null}
-              <textarea {...form.register('internalNotes')} placeholder="Internal notes" className="h-20 w-full rounded-lg border border-border-default bg-bg-base p-2 text-sm" />
+              <textarea {...form.register('internalNotes')} placeholder="Internal notes" className="cv-control h-20 py-2" />
               <Button type="submit" className="w-full" loading={resolveMut.isPending}>
                 Submit Resolution
               </Button>

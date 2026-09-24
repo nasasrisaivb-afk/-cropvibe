@@ -85,9 +85,9 @@ export default function UserDetailPage() {
       <Button variant="ghost" onClick={() => router.push('/users')}>
         ← Back
       </Button>
-      <h1 className="text-3xl font-bold">
+      <h2 className="text-2xl font-bold text-text-primary">
         {USER_ROLE_LABELS[user.roles[0]!]} Profile: {user.firstName} {user.lastName}
-      </h1>
+      </h2>
 
       <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
         <Card className="h-fit lg:sticky lg:top-4">
@@ -151,7 +151,7 @@ export default function UserDetailPage() {
                     <textarea
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
-                      className="mb-3 h-24 w-full rounded-lg border border-border-default bg-bg-surface p-2 text-sm"
+                      className="mb-3 cv-control h-24 py-2"
                       placeholder="Reason"
                     />
                     <Button
@@ -177,7 +177,7 @@ export default function UserDetailPage() {
                   <textarea
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    className="mb-3 h-24 w-full rounded-lg border border-border-default bg-bg-surface p-2 text-sm"
+                    className="mb-3 cv-control h-24 py-2"
                     placeholder="Reason"
                   />
                   <Button
@@ -304,7 +304,7 @@ export default function UserDetailPage() {
                 <textarea
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  className="h-24 w-full rounded-lg border border-border-default bg-bg-base p-3 text-sm"
+                  className="cv-control h-24 py-2"
                   placeholder="Internal admin notes…"
                 />
                 <Button disabled={!note.trim()} loading={noteMut.isPending} onClick={() => noteMut.mutate()}>

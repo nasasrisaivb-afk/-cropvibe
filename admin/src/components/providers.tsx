@@ -11,7 +11,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 5 * 60 * 1000,
+            // Mock API is instant and shared across pages: always revalidate on mount so a change
+            // made on one screen is reflected on every other (cached data shows while refetching).
+            staleTime: 0,
             gcTime: 10 * 60 * 1000,
             retry: 1,
             refetchOnWindowFocus: false,
@@ -27,10 +29,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
         {children}
         <Toaster
           theme="dark"
-          position="top-right"
+          position="bottom-right"
+          closeButton
           toastOptions={{
             classNames: {
-              toast: 'bg-bg-surfaceAlt border border-border-default text-text-primary',
+              toast: '!bg-bg-surfaceAlt !border !border-border-strong !text-text-primary',
+              description: '!text-text-secondary',
             },
           }}
         />

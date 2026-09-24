@@ -1,3 +1,4 @@
+import '@/lib/data/ops-seeds'
 import { users, transactions, listings, subscriptions } from '@/lib/data/seeds'
 import type { AnalyticsData } from '@/lib/types'
 import { delay } from '@/lib/utils'

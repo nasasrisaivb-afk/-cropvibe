@@ -9,15 +9,50 @@
 
   html {
     @apply antialiased;
+    color-scheme: dark;
   }
 
   body {
-    @apply bg-bg-base text-text-primary font-sans;
+    @apply bg-bg-base font-sans text-text-primary;
     min-height: 100vh;
   }
 
   :focus-visible {
     @apply outline-none ring-2 ring-brand-lime ring-offset-2 ring-offset-bg-base;
+  }
+
+  ::selection {
+    background: rgba(204, 255, 0, 0.3);
+    color: #f5f5f3;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Form controls — one look everywhere (Figma "Input Field") */
+  .cv-control {
+    @apply h-10 w-full rounded-md border border-border-default bg-bg-inset px-3 text-sm text-text-primary outline-none transition-colors placeholder:text-text-muted hover:border-border-strong focus:border-brand-lime focus:ring-2 focus:ring-brand-lime/25 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .cv-label {
+    @apply mb-1.5 block text-sm font-medium text-text-secondary;
+  }
+
+  /* Table header cells — uppercase eyebrow style */
+  .cv-th {
+    @apply whitespace-nowrap px-4 py-3 text-2xs font-semibold uppercase tracking-wider text-text-muted;
+  }
+
+  .cv-td {
+    @apply px-4 py-3.5 align-middle;
   }
 }
 
@@ -27,9 +62,20 @@
     scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
   }
 
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
   .cv-frost {
-    background: color-mix(in srgb, var(--tw-bg-opacity, #242424) 82%, transparent);
+    background: rgba(26, 26, 26, 0.82);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
 }

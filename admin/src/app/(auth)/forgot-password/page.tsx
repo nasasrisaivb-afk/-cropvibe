@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
               <input
                 {...form.register('email')}
                 type="email"
-                className="flex h-10 w-full rounded-lg border border-border-default bg-bg-base px-3 text-sm text-text-primary outline-none focus:border-brand-lime focus:ring-2 focus:ring-brand-lime"
+                className="cv-control h-10"
               />
               {form.formState.errors.email ? (
                 <p className="text-xs text-status-error">{form.formState.errors.email.message}</p>

@@ -1,3 +1,5 @@
+import '@/lib/data/ops-seeds'
+import { audit } from '@/lib/data/store'
 import { disputes, pushActivity } from '@/lib/data/seeds'
 import type { Dispute, DisputeResolution, PaginatedResult } from '@/lib/types'
 import { delay } from '@/lib/utils'
@@ -53,6 +55,7 @@ export async function updateDisputeStatus(
   dispute.status = status
   if (assignedTo) dispute.assignedTo = assignedTo
   if (assignedToName) dispute.assignedToName = assignedToName
+  audit('trust', 'Dispute', id, assignedToName ? `Assigned to ${assignedToName} (${status})` : `Moved dispute to ${status.replace(/_/g, ' ')}`, { href: `/disputes/${id}`, severity: status === 'escalated' ? 'warning' : 'info', collection: 'disputes' })
   return dispute
 }
 
@@ -97,6 +100,7 @@ export async function resolveDispute(
   }
   dispute.status = resolution.status ?? 'resolved'
   dispute.resolvedAt = new Date().toISOString()
+  audit('trust', 'Dispute', id, `Resolved dispute — ${resolution.type}${resolution.amount ? ` ₹${resolution.amount.toLocaleString('en-IN')}` : ''}`, { note: resolution.notes, href: `/disputes/${id}`, severity: 'warning', collection: 'disputes' })
   pushActivity({
     type: 'dispute_resolved',
     description: `Dispute #${id} resolved (${resolution.type})`,

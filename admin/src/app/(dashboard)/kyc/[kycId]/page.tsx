@@ -15,12 +15,27 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/loading'
 import { USER_ROLE_LABELS } from '@/lib/types'
 import { formatPhone, relativeTime } from '@/lib/utils'
+import { useActor } from '@/lib/rbac'
+import { cn } from '@/lib/cn'
 
-const schema = z.object({
-  decision: z.enum(['approved', 'rejected', 'resubmit_requested']),
-  reason: z.string().optional(),
-  internalNotes: z.string().optional(),
-})
+const schema = z
+  .object({
+    decision: z.enum(['approved', 'rejected', 'resubmit_requested'], {
+      errorMap: () => ({ message: 'Choose a decision' }),
+    }),
+    reason: z.string().optional(),
+    internalNotes: z.string().optional(),
+  })
+  .refine((d) => d.decision === 'approved' || Boolean(d.reason), {
+    path: ['reason'],
+    message: 'A reason is required — the applicant sees it',
+  })
+
+const DECISIONS = [
+  { value: 'approved', label: 'Approve', hint: 'Documents match and are valid', cta: 'Approve KYC' },
+  { value: 'resubmit_requested', label: 'Request resubmission', hint: 'Fixable issue, e.g. blurry photo', cta: 'Request resubmission' },
+  { value: 'rejected', label: 'Reject', hint: 'Invalid, expired or fraudulent', cta: 'Reject KYC' },
+] as const
 
 type FormData = z.infer<typeof schema>
 
@@ -28,6 +43,7 @@ export default function KycDetailPage() {
   const { kycId } = useParams<{ kycId: string }>()
   const router = useRouter()
   const qc = useQueryClient()
+  const actor = useActor()
   const [zoom, setZoom] = useState(1)
   const [rotation, setRotation] = useState(0)
 
@@ -38,7 +54,7 @@ export default function KycDetailPage() {
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { decision: 'approved', reason: '', internalNotes: '' },
+    defaultValues: { decision: undefined, reason: '', internalNotes: '' },
   })
   const decision = form.watch('decision')
 
@@ -48,11 +64,14 @@ export default function KycDetailPage() {
         status: data.decision,
         reason: data.reason,
         internalNotes: data.internalNotes,
-        adminName: 'Raj Kumar',
+        adminName: actor.name,
+        adminRole: actor.role,
       }),
-    onSuccess: () => {
-      toast.success('KYC decision submitted')
+    onSuccess: (_, d) => {
+      toast.success(`${DECISIONS.find((x) => x.value === d.decision)?.label ?? 'Decision'} recorded for ${kyc?.userName ?? 'applicant'}`)
       void qc.invalidateQueries({ queryKey: ['kyc'] })
+      void qc.invalidateQueries({ queryKey: ['nav-badges'] })
+      void qc.invalidateQueries({ queryKey: ['audit-log'] })
       router.push('/kyc')
     },
     onError: (e: Error) => toast.error(e.message),
@@ -67,7 +86,7 @@ export default function KycDetailPage() {
         ← Back
       </Button>
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-3xl font-bold">Review KYC: {kyc.userName}</h1>
+        <h2 className="text-2xl font-bold text-text-primary">Review KYC: {kyc.userName}</h2>
         <Badge variant="pending">{kyc.status}</Badge>
       </div>
 
@@ -131,18 +150,34 @@ export default function KycDetailPage() {
 
             <form onSubmit={form.handleSubmit((d) => mut.mutate(d))} className="space-y-3">
               <fieldset className="space-y-2">
-                <legend className="text-sm font-medium text-text-secondary">Decision</legend>
-                {(['approved', 'rejected', 'resubmit_requested'] as const).map((v) => (
-                  <label key={v} className="flex items-center gap-2">
-                    <input type="radio" value={v} {...form.register('decision')} />
-                    <span className="capitalize">{v.replace('_', ' ')}</span>
+                <legend className="mb-2 text-sm font-medium text-text-secondary">Decision</legend>
+                {DECISIONS.map((d) => (
+                  <label
+                    key={d.value}
+                    className={cn(
+                      'flex cursor-pointer items-start gap-3 rounded-md border px-3 py-2.5 transition',
+                      decision === d.value
+                        ? d.value === 'rejected'
+                          ? 'border-status-error/60 bg-status-error/10'
+                          : 'border-brand-lime bg-brand-lime/10'
+                        : 'border-border-default hover:border-border-strong'
+                    )}
+                  >
+                    <input type="radio" value={d.value} {...form.register('decision')} className="mt-1 accent-brand-lime" />
+                    <span>
+                      <span className="block text-sm font-medium text-text-primary">{d.label}</span>
+                      <span className="block text-xs text-text-muted">{d.hint}</span>
+                    </span>
                   </label>
                 ))}
+                {form.formState.errors.decision ? (
+                  <p className="text-xs text-status-error">{form.formState.errors.decision.message}</p>
+                ) : null}
               </fieldset>
-              {decision !== 'approved' ? (
+              {decision && decision !== 'approved' ? (
                 <select
                   {...form.register('reason')}
-                  className="h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-sm"
+                  className="cv-control h-9"
                 >
                   <option value="">Select reason</option>
                   <option value="Invalid document">Invalid document</option>
@@ -153,13 +188,21 @@ export default function KycDetailPage() {
                   <option value="Name mismatch">Name mismatch</option>
                 </select>
               ) : null}
+              {form.formState.errors.reason ? (
+                <p className="text-xs text-status-error">{form.formState.errors.reason.message}</p>
+              ) : null}
               <textarea
                 {...form.register('internalNotes')}
                 placeholder="Internal notes"
-                className="h-20 w-full rounded-lg border border-border-default bg-bg-base p-2 text-sm"
+                className="cv-control h-20 py-2"
               />
-              <Button type="submit" className="w-full" loading={mut.isPending}>
-                Submit Decision
+              <Button
+                type="submit"
+                variant={decision === 'rejected' ? 'danger' : 'primary'}
+                className="w-full"
+                loading={mut.isPending}
+              >
+                {DECISIONS.find((d) => d.value === decision)?.cta ?? 'Submit decision'}
               </Button>
             </form>
           </CardContent>

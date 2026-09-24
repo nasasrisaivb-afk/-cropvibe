@@ -1,3 +1,5 @@
+import '@/lib/data/ops-seeds'
+import { audit } from '@/lib/data/store'
 import { transactions } from '@/lib/data/seeds'
 import type { PaginatedResult, Transaction } from '@/lib/types'
 import { delay } from '@/lib/utils'
@@ -51,6 +53,7 @@ export async function reverseTransaction(id: string): Promise<Transaction> {
   if (!tx) throw new Error('Transaction not found')
   if (tx.status !== 'completed') throw new Error('Only completed transactions can be reversed')
   tx.status = 'reversed'
+  audit('finance', 'Transaction', id, 'Reversed transaction', { href: `/transactions/${id}`, severity: 'critical', collection: 'transactions' })
   return tx
 }
 
@@ -61,5 +64,6 @@ export async function retryTransaction(id: string): Promise<Transaction> {
   if (tx.status !== 'failed') throw new Error('Only failed transactions can be retried')
   tx.status = 'completed'
   tx.completedAt = new Date().toISOString()
+  audit('finance', 'Transaction', id, 'Retried failed transaction', { href: `/transactions/${id}`, collection: 'transactions' })
   return tx
 }

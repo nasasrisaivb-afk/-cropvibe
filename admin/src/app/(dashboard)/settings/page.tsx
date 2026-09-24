@@ -13,6 +13,9 @@ import {
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/loading'
+import { SwitchRow } from '@/components/ui/switch'
+import { cn } from '@/lib/cn'
+import { useActor } from '@/lib/rbac'
 
 type SettingsForm = {
   crop: number
@@ -31,6 +34,7 @@ type SettingsForm = {
 
 export default function SettingsPage() {
   const qc = useQueryClient()
+  const actor = useActor()
   const { data, isLoading } = useQuery({ queryKey: ['settings'], queryFn: getSettings })
   const form = useForm<SettingsForm>({
     defaultValues: {
@@ -86,18 +90,20 @@ export default function SettingsPage() {
         supportPhone: values.supportPhone,
         appName: values.appName,
         appVersion: values.appVersion,
-      }),
-    onSuccess: () => {
+      }, actor),
+    onSuccess: (_, values) => {
       toast.success('Settings saved')
+      form.reset(values)
       void qc.invalidateQueries({ queryKey: ['settings'] })
+      void qc.invalidateQueries({ queryKey: ['audit-log'] })
     },
   })
 
   const flagMut = useMutation({
     mutationFn: ({ key, enabled }: { key: string; enabled: boolean }) =>
-      toggleFeatureFlag(key, enabled),
-    onSuccess: () => {
-      toast.success('Feature flag updated')
+      toggleFeatureFlag(key, enabled, actor),
+    onSuccess: (_, v) => {
+      toast.success(`Feature flag ${v.enabled ? 'enabled' : 'disabled'}`)
       void qc.invalidateQueries({ queryKey: ['settings'] })
     },
   })
@@ -112,7 +118,6 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-3xl font-bold">Settings</h1>
 
       <form
         onSubmit={form.handleSubmit((v) => saveMut.mutate(v))}
@@ -122,23 +127,34 @@ export default function SettingsPage() {
           <CardHeader><h2 className="font-semibold">Platform configuration</h2></CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
             {(['crop', 'rental', 'warehouse', 'logistics'] as const).map((k) => (
-              <label key={k} className="text-sm capitalize text-text-secondary">
-                {k} commission %
-                <input type="number" step="0.1" {...form.register(k)} className="mt-1 h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-text-primary" />
+              <label key={k} className="text-sm text-text-secondary">
+                {k.charAt(0).toUpperCase() + k.slice(1)} commission %
+                <input type="number" step="0.1" {...form.register(k)} className="cv-control mt-1 h-9" />
               </label>
             ))}
             <label className="text-sm text-text-secondary">
               Dispute SLA (hours)
-              <input type="number" {...form.register('disputeSlaHours')} className="mt-1 h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-text-primary" />
+              <input type="number" {...form.register('disputeSlaHours')} className="cv-control mt-1 h-9" />
             </label>
-            <div className="space-y-2 text-sm">
-              <p className="text-text-secondary">KYC requirements</p>
-              {(['aadhaar', 'pan', 'gst'] as const).map((k) => (
-                <label key={k} className="flex items-center gap-2 capitalize">
-                  <input type="checkbox" {...form.register(k)} />
-                  {k} required
-                </label>
-              ))}
+            <div className="sm:col-span-2">
+              <p className="mt-2 text-sm font-medium text-text-secondary">KYC requirements</p>
+              <div className="divide-y divide-border-light">
+                {(
+                  [
+                    ['aadhaar', 'Aadhaar required', 'Every account must verify Aadhaar (or DigiLocker) before transacting.'],
+                    ['pan', 'PAN required', 'Needed for payouts above ₹50,000 a year (TDS compliance).'],
+                    ['gst', 'GST required', 'Sellers and warehouse owners above the GST threshold must add a GSTIN.'],
+                  ] as const
+                ).map(([k, label, description]) => (
+                  <SwitchRow
+                    key={k}
+                    label={label}
+                    description={description}
+                    checked={Boolean(form.watch(k))}
+                    onCheckedChange={(v) => form.setValue(k, v, { shouldDirty: true })}
+                  />
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -146,32 +162,47 @@ export default function SettingsPage() {
         <Card>
           <CardHeader><h2 className="font-semibold">General</h2></CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
-            <label className="text-sm text-text-secondary">App name<input {...form.register('appName')} className="mt-1 h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-text-primary" /></label>
-            <label className="text-sm text-text-secondary">Version<input {...form.register('appVersion')} className="mt-1 h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-text-primary" /></label>
-            <label className="text-sm text-text-secondary">Support email<input {...form.register('supportEmail')} className="mt-1 h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-text-primary" /></label>
-            <label className="text-sm text-text-secondary">Support phone<input {...form.register('supportPhone')} className="mt-1 h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-text-primary" /></label>
+            <label className="text-sm text-text-secondary">App name<input {...form.register('appName')} className="cv-control mt-1 h-9" /></label>
+            <label className="text-sm text-text-secondary">Version<input {...form.register('appVersion')} className="cv-control mt-1 h-9" /></label>
+            <label className="text-sm text-text-secondary">Support email<input {...form.register('supportEmail')} className="cv-control mt-1 h-9" /></label>
+            <label className="text-sm text-text-secondary">Support phone<input {...form.register('supportPhone')} className="cv-control mt-1 h-9" /></label>
           </CardContent>
         </Card>
 
-        <Button type="submit" loading={saveMut.isPending}>Save settings</Button>
+        <div
+          className={cn(
+            'sticky bottom-4 z-20 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-5 py-3 shadow-pop transition',
+            form.formState.isDirty ? 'border-brand-lime/50 bg-bg-surfaceAlt' : 'border-border-default bg-bg-surface'
+          )}
+        >
+          <p className="text-sm text-text-secondary" aria-live="polite">
+            {form.formState.isDirty
+              ? 'You have unsaved changes. Commission changes apply to new orders only.'
+              : 'All changes saved.'}
+          </p>
+          <div className="flex gap-2">
+            <Button type="button" variant="ghost" disabled={!form.formState.isDirty} onClick={() => form.reset()}>
+              Discard
+            </Button>
+            <Button type="submit" loading={saveMut.isPending} disabled={!form.formState.isDirty}>
+              Save settings
+            </Button>
+          </div>
+        </div>
       </form>
 
       <Card>
         <CardHeader><h2 className="font-semibold">Feature flags</h2></CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="divide-y divide-border-light py-2">
           {data.featureFlags.map((f) => (
-            <label key={f.key} className="flex items-start justify-between gap-4 rounded-lg border border-border-light p-3">
-              <div>
-                <p className="font-medium">{f.label}</p>
-                <p className="text-xs text-text-muted">{f.description}</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={f.enabled}
-                onChange={(e) => flagMut.mutate({ key: f.key, enabled: e.target.checked })}
-                aria-label={f.label}
-              />
-            </label>
+            <SwitchRow
+              key={f.key}
+              label={f.label}
+              description={f.description}
+              checked={f.enabled}
+              disabled={flagMut.isPending}
+              onCheckedChange={(enabled) => flagMut.mutate({ key: f.key, enabled })}
+            />
           ))}
         </CardContent>
       </Card>
@@ -220,8 +251,8 @@ function TemplateEditor({
   return (
     <div className="rounded-lg border border-border-light p-3 space-y-2">
       <p className="text-sm font-medium">{name} <span className="text-text-muted">({channel})</span></p>
-      <input {...form.register('subject')} className="h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-sm" />
-      <textarea {...form.register('body')} className="h-20 w-full rounded-lg border border-border-default bg-bg-base p-2 text-sm" />
+      <input {...form.register('subject')} className="cv-control h-9" />
+      <textarea {...form.register('body')} className="cv-control h-20 py-2" />
       <Button size="sm" loading={saving} onClick={form.handleSubmit((v) => onSave(v.subject, v.body))}>
         Save template
       </Button>

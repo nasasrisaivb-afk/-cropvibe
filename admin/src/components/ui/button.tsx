@@ -5,23 +5,24 @@ import { cn } from '@/lib/cn'
 import { Loader2 } from 'lucide-react'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime focus-visible:ring-offset-2 focus-visible:ring-offset-bg-base disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lime focus-visible:ring-offset-2 focus-visible:ring-offset-bg-base disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
-        primary: 'bg-brand-lime text-text-inverse hover:bg-brand-limeSoft',
+        primary: 'bg-brand-lime text-brand-ink hover:bg-brand-limeSoft active:bg-brand-limeAlt',
         secondary:
           'bg-bg-surface border border-border-default text-text-primary hover:bg-bg-surfaceHover',
-        danger: 'bg-status-error text-white hover:bg-red-600',
+        danger: 'border border-status-error/40 bg-status-error/15 text-status-error hover:bg-status-error/25',
         ghost: 'text-text-secondary hover:bg-bg-surfaceHover hover:text-text-primary',
         outline:
           'border border-border-default bg-transparent text-text-primary hover:bg-bg-surfaceHover',
       },
       size: {
         default: 'h-10 px-4 py-2',
-        sm: 'h-8 rounded-md px-3 text-xs',
-        lg: 'h-11 rounded-lg px-6',
-        icon: 'h-9 w-9 p-2 rounded-md',
+        sm: 'h-8 px-3 text-xs',
+        lg: 'h-11 px-6',
+        icon: 'h-9 w-9 p-2',
+        round: 'h-[50px] w-[50px] rounded-full p-0',
       },
     },
     defaultVariants: {

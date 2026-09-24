@@ -1,6 +1,8 @@
+import '@/lib/data/ops-seeds'
 import { kycApplications, users, pushActivity } from '@/lib/data/seeds'
 import type { KycApplication, PaginatedResult } from '@/lib/types'
 import { delay } from '@/lib/utils'
+import { recordAudit, markChanged } from '@/lib/data/store'
 
 export interface KycFilters {
   status?: string
@@ -49,6 +51,7 @@ export async function updateKycStatus(
     reason?: string
     internalNotes?: string
     adminName?: string
+    adminRole?: string
   }
 ): Promise<KycApplication> {
   await delay(600)
@@ -75,6 +78,19 @@ export async function updateKycStatus(
     if (decision.status === 'rejected') user.kyc = 'rejected'
     if (decision.status === 'resubmit_requested') user.kyc = 'pending'
   }
+  markChanged('kyc')
+  markChanged('users')
+  recordAudit({
+    actor: decision.adminName ?? 'Admin',
+    actorRole: decision.adminRole ?? 'Admin',
+    module: 'kyc',
+    entity: 'KYC application',
+    entityId: kycId,
+    action: decision.status === 'approved' ? 'Approved KYC' : decision.status === 'rejected' ? 'Rejected KYC' : decision.status === 'resubmit_requested' ? 'Requested KYC resubmission' : 'Started KYC review',
+    note: [decision.reason, decision.internalNotes].filter(Boolean).join(' — ') || undefined,
+    href: `/kyc/${kycId}`,
+    severity: decision.status === 'rejected' ? 'warning' : 'info',
+  })
   pushActivity({
     type: 'kyc_decision',
     description: `KYC for ${kyc.userName} ${decision.status}`,

@@ -1,3 +1,5 @@
+import '@/lib/data/ops-seeds'
+import { audit } from '@/lib/data/store'
 import { notifications, broadcasts } from '@/lib/data/seeds'
 import type { BroadcastResult, SystemNotification } from '@/lib/types'
 import { delay } from '@/lib/utils'
@@ -67,6 +69,7 @@ export async function sendBroadcast(payload: {
     createdAt: new Date().toISOString(),
   }
   broadcasts.unshift(result)
+  audit('support', 'Broadcast', result.id, `Sent “${result.title}” to ${result.audienceCount.toLocaleString('en-IN')} users via ${result.channels.join(', ')}`, { href: '/notifications', severity: 'warning' })
   return result
 }
 

@@ -80,31 +80,31 @@ export default function ContentDetailPage() {
     <div className="space-y-4">
       <Button variant="ghost" onClick={() => router.push('/content')}>← Back</Button>
       <div className="flex items-center gap-3">
-        <h1 className="text-3xl font-bold">{isNew ? 'New content' : data?.title}</h1>
+        <h2 className="text-2xl font-bold text-text-primary">{isNew ? 'New content' : data?.title}</h2>
         {data ? <Badge>v{data.version}</Badge> : null}
       </div>
       <Card>
         <CardHeader><h2 className="font-semibold">Editor</h2></CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit((d) => saveMut.mutate(d))} className="space-y-4">
-            <input {...form.register('title')} placeholder="Title" className="h-10 w-full rounded-lg border border-border-default bg-bg-base px-3 text-sm" />
+            <input {...form.register('title')} placeholder="Title" className="cv-control h-10" />
             <div className="flex flex-wrap gap-3">
-              <select {...form.register('type')} className="h-9 rounded-lg border border-border-default bg-bg-base px-3 text-sm">
+              <select {...form.register('type')} className="cv-control h-9 w-auto">
                 <option value="banner">Banner</option>
                 <option value="play_store">Play Store</option>
                 <option value="legal">Legal</option>
                 <option value="faq">FAQ</option>
               </select>
-              <select {...form.register('status')} className="h-9 rounded-lg border border-border-default bg-bg-base px-3 text-sm">
+              <select {...form.register('status')} className="cv-control h-9 w-auto">
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
                 <option value="scheduled">Scheduled</option>
               </select>
-              <input type="datetime-local" {...form.register('scheduledAt')} className="h-9 rounded-lg border border-border-default bg-bg-base px-3 text-sm" />
+              <input type="datetime-local" {...form.register('scheduledAt')} className="cv-control h-9 w-auto" />
             </div>
             <textarea
               {...form.register('body')}
-              className="min-h-[240px] w-full rounded-lg border border-border-default bg-bg-base p-3 font-mono text-sm"
+              className="min-h-[240px] w-full cv-control h-auto py-3 font-mono"
               placeholder="Rich text / HTML body…"
             />
             <div className="rounded-lg border border-border-light bg-bg-surfaceAlt p-4 text-sm">

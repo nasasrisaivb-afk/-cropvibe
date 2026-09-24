@@ -14,10 +14,17 @@ import type {
   BroadcastResult,
   Permission,
   AdminRole,
+  PermissionModule,
 } from '@/lib/types'
 import { ALL_USER_ROLES, INDIAN_STATES } from '@/lib/types'
 
 export const DEMO_PASSWORD = 'Admin@123'
+
+/** Inline SVG placeholder (no external image host needed) */
+export function placeholderImage(w: number, h: number, label: string, fg = '#CCFF00', bg = '#1F1F1F'): string {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><rect width="100%" height="100%" fill="${bg}"/><rect x="12" y="12" width="${w - 24}" height="${h - 24}" rx="12" fill="none" stroke="${fg}" stroke-opacity="0.35" stroke-dasharray="6 6"/><text x="50%" y="50%" fill="${fg}" font-family="Inter, Arial, sans-serif" font-size="${Math.round(h / 12)}" font-weight="600" text-anchor="middle" dominant-baseline="middle">${label}</text></svg>`
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+}
 
 function mulberry32(seed: number) {
   return () => {
@@ -74,34 +81,34 @@ const DISTRICTS: Record<string, string[]> = {
   HP: ['Shimla', 'Kangra', 'Mandi', 'Solan'],
 }
 
-const MODULES = [
-  'users', 'kyc', 'disputes', 'listings', 'subscriptions',
-  'transactions', 'notifications', 'analytics', 'content', 'roles', 'settings',
+export const PERMISSION_MODULES: PermissionModule[] = [
+  'dashboard', 'users', 'kyc', 'roles', 'marketplace', 'services',
+  'operations', 'finance', 'trust', 'support', 'reports', 'settings',
 ]
 
-function perms(role: AdminRole): Permission[] {
-  if (role === 'super_admin') {
-    return MODULES.map((m) => ({ module: m, actions: ['view', 'create', 'edit', 'delete'] }))
-  }
-  if (role === 'auditor') {
-    return MODULES.map((m) => ({ module: m, actions: ['view'] }))
-  }
-  if (role === 'ops_admin') {
-    return ['users', 'kyc', 'disputes', 'listings', 'notifications', 'analytics'].map((m) => ({
-      module: m,
+const ROLE_SCOPES: Record<AdminRole, { modules: PermissionModule[]; actions: Permission['actions'] }[]> = {
+  super_admin: [{ modules: PERMISSION_MODULES, actions: ['view', 'create', 'edit', 'delete'] }],
+  auditor: [{ modules: PERMISSION_MODULES, actions: ['view'] }],
+  ops_admin: [
+    {
+      modules: ['dashboard', 'users', 'kyc', 'marketplace', 'services', 'operations', 'trust', 'support', 'reports'],
       actions: ['view', 'create', 'edit'],
-    }))
-  }
-  if (role === 'finance_admin') {
-    return ['subscriptions', 'transactions', 'analytics', 'settings'].map((m) => ({
-      module: m,
-      actions: ['view', 'create', 'edit'],
-    }))
-  }
-  return ['disputes', 'notifications', 'users'].map((m) => ({
-    module: m,
-    actions: m === 'disputes' ? ['view', 'edit'] : ['view'],
-  }))
+    },
+  ],
+  finance_admin: [
+    { modules: ['dashboard', 'finance', 'reports'], actions: ['view', 'create', 'edit'] },
+    { modules: ['users', 'marketplace', 'settings'], actions: ['view'] },
+  ],
+  support_agent: [
+    { modules: ['support', 'trust'], actions: ['view', 'edit'] },
+    { modules: ['dashboard', 'users', 'marketplace', 'operations'], actions: ['view'] },
+  ],
+}
+
+export function perms(role: AdminRole): Permission[] {
+  return ROLE_SCOPES[role].flatMap((scope) =>
+    scope.modules.map((module) => ({ module, actions: [...scope.actions] }))
+  )
 }
 
 export const adminUsers: AdminUser[] = [
@@ -214,7 +221,7 @@ export const kycApplications: KycApplication[] = Array.from({ length: 55 }, (_, 
     userRole: user.roles[0]!,
     location: user.location,
     documentType: DOC_TYPES[i % DOC_TYPES.length]!,
-    documentUrl: `https://placehold.co/800x500/161616/CCFF00?text=${DOC_TYPES[i % DOC_TYPES.length]}`,
+    documentUrl: placeholderImage(800, 500, `${DOC_TYPES[i % DOC_TYPES.length]!.toUpperCase()} · ${user.firstName} ${user.lastName}`),
     status,
     submittedAt,
     reviewedAt: status === 'approved' || status === 'rejected' ? daysAgo(1) : undefined,
@@ -280,7 +287,7 @@ export const disputes: Dispute[] = Array.from({ length: 32 }, (_, i) => {
       {
         id: `ev-${i}-1`,
         type: 'image',
-        url: 'https://placehold.co/400x300/1F1F1F/F5F5F5?text=Evidence',
+        url: placeholderImage(400, 300, 'tractor_front_damage.jpg', '#F5F5F3'),
         label: 'Product photo',
         submittedBy: 'buyer',
         submittedAt: createdAt,
@@ -365,8 +372,8 @@ export const listings: Listing[] = Array.from({ length: 60 }, (_, i) => {
     title: titles[i % titles.length]!,
     description: `Quality ${titles[i % titles.length]} available for marketplace buyers. Verified seller listing.`,
     images: [
-      `https://placehold.co/600x400/161616/CCFF00?text=Listing+${i + 1}`,
-      `https://placehold.co/600x400/1F1F1F/A3A3A3?text=Detail`,
+      placeholderImage(600, 400, titles[i % titles.length]!),
+      placeholderImage(600, 400, 'Detail photo', '#A0A0A0'),
     ],
     category: type === 'crop' ? 'Produce' : type === 'equipment_rental' ? 'Machinery' : 'Storage',
     subCategory: type === 'crop' ? 'Grains' : type === 'equipment_rental' ? 'Tractors' : 'Cold Chain',

@@ -1,3 +1,5 @@
+import '@/lib/data/ops-seeds'
+import { audit, getCurrentActor } from '@/lib/data/store'
 import { users, pushActivity } from '@/lib/data/seeds'
 import type { AccountStatus, PaginatedResult, User, UserRole, KycStatus } from '@/lib/types'
 import { delay } from '@/lib/utils'
@@ -88,6 +90,7 @@ export async function updateUserStatus(
   const user = users.find((u) => u.id === userId)
   if (!user) throw new Error('User not found')
   user.accountStatus = status
+  audit('users', 'User', userId, `Set account to ${status}`, { note: reason, href: `/users/${userId}`, severity: status === 'banned' ? 'critical' : status === 'active' ? 'info' : 'warning', collection: 'users' })
   pushActivity({
     type: 'user_status',
     description: `${user.firstName} ${user.lastName} set to ${status}${reason ? `: ${reason}` : ''}`,
@@ -110,6 +113,7 @@ export async function bulkUpdateUserStatus(
       count++
     }
   })
+  audit('users', 'Users (bulk)', `${count} users`, `Set ${count} accounts to ${status}`, { severity: 'warning', collection: 'users' })
   return count
 }
 
@@ -118,13 +122,14 @@ export async function softDeleteUser(userId: string, reason: string): Promise<Us
   const user = users.find((u) => u.id === userId)
   if (!user) throw new Error('User not found')
   user.accountStatus = 'inactive'
+  audit('users', 'User', userId, 'Soft-deleted account', { note: reason, href: `/users/${userId}`, severity: 'critical', collection: 'users' })
   user.notes = [
     ...(user.notes ?? []),
     {
       id: `note-${Date.now()}`,
       text: `Soft deleted: ${reason}`,
       adminId: 'admin-1',
-      adminName: 'Raj Kumar',
+      adminName: getCurrentActor().name,
       createdAt: new Date().toISOString(),
     },
   ]
@@ -145,6 +150,7 @@ export async function addUserNote(userId: string, text: string, adminName: strin
     },
     ...(user.notes ?? []),
   ]
+  audit('users', 'User', userId, 'Added internal note', { note: text, href: `/users/${userId}`, collection: 'users' })
   return user
 }
 
