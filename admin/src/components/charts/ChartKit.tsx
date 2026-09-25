@@ -24,11 +24,11 @@ import { cn } from '@/lib/cn'
  * and a table view.
  */
 export const CHART = {
-  accent: '#CCFF00',
-  compare: '#6E6E6E',
-  grid: '#333333',
-  tick: '#8F8F8F',
-  surface: '#242424',
+  accent: '#3EB0EF',
+  compare: '#738A94',
+  grid: '#2C363B',
+  tick: '#8A9EA7',
+  surface: '#1E2427',
 }
 
 export interface SeriesDef {
@@ -76,7 +76,7 @@ function Legend({ series }: { series: SeriesDef[] }) {
       {series.map((s) => (
         <li key={s.key} className="flex items-center gap-1.5">
           <span
-            className={cn('h-0.5 w-4 rounded-full', s.role === 'compare' ? 'bg-[#6E6E6E]' : 'bg-brand-lime')}
+            className={cn('h-0.5 w-4 rounded-full', s.role === 'compare' ? 'bg-[#738A94]' : 'bg-brand-lime')}
             aria-hidden
           />
           {s.label}
@@ -254,7 +254,7 @@ export function ColumnChart({
         <XAxis dataKey={xKey} {...axisProps} />
         <YAxis {...axisProps} width={56} tickFormatter={(v) => format(Number(v))} />
         <Tooltip
-          cursor={{ fill: 'rgba(255,255,255,0.04)' }}
+          cursor={{ fill: 'rgba(62,176,239,0.06)' }}
           content={(props) => <ChartTooltip {...(props as TooltipProps<number, string>)} format={format} series={series} />}
         />
         {series.map((s) => (

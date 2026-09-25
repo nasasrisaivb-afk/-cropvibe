@@ -21,7 +21,7 @@ import { ALL_USER_ROLES, INDIAN_STATES } from '@/lib/types'
 export const DEMO_PASSWORD = 'Admin@123'
 
 /** Inline SVG placeholder (no external image host needed) */
-export function placeholderImage(w: number, h: number, label: string, fg = '#CCFF00', bg = '#1F1F1F'): string {
+export function placeholderImage(w: number, h: number, label: string, fg = '#3EB0EF', bg = '#191D20'): string {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><rect width="100%" height="100%" fill="${bg}"/><rect x="12" y="12" width="${w - 24}" height="${h - 24}" rx="12" fill="none" stroke="${fg}" stroke-opacity="0.35" stroke-dasharray="6 6"/><text x="50%" y="50%" fill="${fg}" font-family="Inter, Arial, sans-serif" font-size="${Math.round(h / 12)}" font-weight="600" text-anchor="middle" dominant-baseline="middle">${label}</text></svg>`
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
 }
@@ -287,7 +287,7 @@ export const disputes: Dispute[] = Array.from({ length: 32 }, (_, i) => {
       {
         id: `ev-${i}-1`,
         type: 'image',
-        url: placeholderImage(400, 300, 'tractor_front_damage.jpg', '#F5F5F3'),
+        url: placeholderImage(400, 300, 'tractor_front_damage.jpg', '#E5EFF5'),
         label: 'Product photo',
         submittedBy: 'buyer',
         submittedAt: createdAt,
@@ -373,7 +373,7 @@ export const listings: Listing[] = Array.from({ length: 60 }, (_, i) => {
     description: `Quality ${titles[i % titles.length]} available for marketplace buyers. Verified seller listing.`,
     images: [
       placeholderImage(600, 400, titles[i % titles.length]!),
-      placeholderImage(600, 400, 'Detail photo', '#A0A0A0'),
+      placeholderImage(600, 400, 'Detail photo', '#A9BAC2'),
     ],
     category: type === 'crop' ? 'Produce' : type === 'equipment_rental' ? 'Machinery' : 'Storage',
     subCategory: type === 'crop' ? 'Grains' : type === 'equipment_rental' ? 'Tractors' : 'Cold Chain',

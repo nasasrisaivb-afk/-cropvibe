@@ -22,8 +22,8 @@
   }
 
   ::selection {
-    background: rgba(204, 255, 0, 0.3);
-    color: #f5f5f3;
+    background: rgba(62, 176, 239, 0.35);
+    color: #e5eff5;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -59,7 +59,7 @@
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+    scrollbar-color: #3c484e transparent;
   }
 
   .scrollbar-none {
@@ -70,7 +70,7 @@
   }
 
   .cv-frost {
-    background: rgba(26, 26, 26, 0.82);
+    background: rgba(21, 23, 26, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }

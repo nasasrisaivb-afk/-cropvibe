@@ -3,10 +3,10 @@
  * awning, pole, produce crates with price tags, plants and outline clouds — ink on lime.
  */
 export function MarketIllustration({ className }: { className?: string }) {
-  const ink = '#1A1A1A'
-  const paper = '#F5F5F3'
-  const crate = '#D9D9D6'
-  const shade = '#B8E600'
+  const ink = '#15171A'
+  const paper = '#E5EFF5'
+  const crate = '#C9D6DD'
+  const shade = '#2A9AD8'
   return (
     <svg viewBox="0 0 840 620" className={className} role="img" aria-label="A farmer’s produce stall under a market umbrella">
       {/* Clouds */}

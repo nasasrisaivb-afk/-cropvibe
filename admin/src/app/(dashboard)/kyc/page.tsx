@@ -169,7 +169,7 @@ function KycPageInner() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border-default bg-bg-surface shadow-[0_1px_2px_rgba(0,0,0,0.24)]">
+      <div className="overflow-hidden rounded-xl border border-border-default bg-bg-surface shadow-card">
         {/* Tabs */}
         <div className="flex gap-0 overflow-x-auto border-b border-border-default px-1">
           {TABS.map((tab) => {

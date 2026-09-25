@@ -29,7 +29,7 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>
 
-/** Figma "Cropvibe | Admin | Log in": lime story panel + dark form panel + footer bar. */
+/** Figma "Cropvibe | Admin | Log in": accent story panel + dark form panel + footer bar. */
 function LoginFormInner() {
   const router = useRouter()
   const params = useSearchParams()

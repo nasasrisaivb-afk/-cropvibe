@@ -89,15 +89,15 @@ export function LiveTracking() {
               <svg viewBox="0 0 100 100" className="mx-auto aspect-square max-h-[620px] w-full rounded-lg bg-bg-inset" role="img" aria-label={`${trips.length} trips shown on a schematic map`}>
                 <defs>
                   <pattern id="grid" width="5" height="5" patternUnits="userSpaceOnUse">
-                    <path d="M 5 0 L 0 0 0 5" fill="none" stroke="#2A2A2A" strokeWidth="0.15" />
+                    <path d="M 5 0 L 0 0 0 5" fill="none" stroke="#263036" strokeWidth="0.15" />
                   </pattern>
                 </defs>
                 <rect width="100" height="100" fill="url(#grid)" />
                 {/* India outline — equirectangular projection of ~50 border points */}
                 <path
                   d="M22.4 0.0 L33.8 5.2 L37.9 15.5 L43.1 23.4 L55.2 33.4 L69.0 35.2 L71.7 30.7 L82.8 31.7 L94.8 27.6 L100.0 31.0 L93.1 37.9 L91.7 44.8 L86.2 51.7 L83.8 46.6 L82.8 43.1 L75.9 40.7 L72.4 40.3 L71.4 44.1 L72.4 51.7 L65.5 53.4 L63.8 58.6 L58.6 61.4 L51.7 66.6 L48.3 70.7 L42.4 74.1 L42.1 82.8 L40.7 92.1 L35.2 96.9 L32.8 99.7 L29.3 96.6 L26.9 87.9 L23.4 82.8 L20.7 75.9 L18.3 69.0 L16.6 62.1 L16.2 55.2 L14.5 53.4 L6.9 55.2 L2.8 50.7 L5.2 48.3 L0.7 46.2 L8.6 43.8 L10.3 43.1 L6.9 37.9 L8.6 31.7 L13.8 29.3 L19.0 24.1 L22.4 20.7 L23.4 15.5 L20.7 10.3 Z"
-                  fill="#202020"
-                  stroke="#333333"
+                  fill="#191D20"
+                  stroke="#3C484E"
                   strokeWidth="0.4"
                 />
                 {trips.map((d) => {
@@ -111,10 +111,10 @@ export function LiveTracking() {
                         y1={d.from.y}
                         x2={d.to.x}
                         y2={d.to.y}
-                        stroke={isSel ? '#CCFF00' : '#3D3D3D'}
+                        stroke={isSel ? '#3EB0EF' : '#3C484E'}
                         strokeWidth={isSel ? 0.5 : 0.3}
                       />
-                      <circle cx={d.to.x} cy={d.to.y} r={0.7} fill="#6E6E6E" />
+                      <circle cx={d.to.x} cy={d.to.y} r={0.7} fill="#738A94" />
                       <g
                         role="button"
                         tabIndex={0}
@@ -124,13 +124,13 @@ export function LiveTracking() {
                         className="cursor-pointer outline-none"
                       >
                         <circle cx={p.x} cy={p.y} r={3} fill="transparent" />
-                        {isSel ? <circle cx={p.x} cy={p.y} r={2.6} fill="none" stroke="#CCFF00" strokeWidth={0.4} /> : null}
+                        {isSel ? <circle cx={p.x} cy={p.y} r={2.6} fill="none" stroke="#3EB0EF" strokeWidth={0.4} /> : null}
                         <circle
                           cx={p.x}
                           cy={p.y}
                           r={isSel ? 1.6 : 1.2}
-                          fill={d.status === 'awaiting_pickup' ? '#1F1F1F' : warn ? '#FBBF24' : '#CCFF00'}
-                          stroke={d.status === 'awaiting_pickup' ? '#8F8F8F' : '#242424'}
+                          fill={d.status === 'awaiting_pickup' ? '#191D20' : warn ? '#FBBF24' : '#3EB0EF'}
+                          stroke={d.status === 'awaiting_pickup' ? '#8A9EA7' : '#1E2427'}
                           strokeWidth={0.4}
                         />
                       </g>

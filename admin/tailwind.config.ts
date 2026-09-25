@@ -1,12 +1,16 @@
 import type { Config } from 'tailwindcss'
 
 /**
- * CropVibe Admin — tokens taken from the CropVibe Admin Figma file.
+ * CropVibe Admin — Ghost 1.0 "Casper" palette on the CropVibe Admin Figma layout.
  *
  * 60 / 30 / 10
- *   60% canvas   #1A1A1A  (bg.base)
- *   30% surfaces #242424  (bg.surface) · #2E2E2E (bg.surfaceAlt) — sidebar, cards, tables
- *   10% accent   #CCFF00  (brand.lime) — primary actions, active nav, focus, key data
+ *   60% canvas   #15171A  (bg.base)
+ *   30% surfaces #1E2427  (bg.surface) · #263036 (bg.surfaceAlt) — sidebar, cards, tables
+ *   10% accent   #3EB0EF  (brand.lime) — primary actions, active nav, focus, key data
+ *
+ * Token names (brand.lime etc.) are kept from the Figma build so components stay unchanged.
+ * text.muted is #8A9EA7 rather than Casper's #738A94 so small text passes WCAG AA (4.5:1)
+ * on surfaces; #738A94 only reaches 4.3:1 on #1E2427.
  *
  * Status colours are semantic only (success / warning / error / info) and are never
  * used to tell modules apart.
@@ -23,38 +27,38 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          lime: '#CCFF00',
-          limeSoft: '#E8FF4D',
-          limeAlt: '#B8E600',
-          ink: '#1A1A1A',
+          lime: '#3EB0EF',
+          limeSoft: '#6CC4F3',
+          limeAlt: '#2A9AD8',
+          ink: '#15171A',
         },
         bg: {
-          base: '#1A1A1A',
-          inset: '#1F1F1F',
-          surface: '#242424',
-          surfaceAlt: '#2E2E2E',
-          surfaceHover: '#2E2E2E',
-          elevated: '#333333',
-          disabled: '#1A1A1A',
+          base: '#15171A',
+          inset: '#191D20',
+          surface: '#1E2427',
+          surfaceAlt: '#263036',
+          surfaceHover: '#263036',
+          elevated: '#2C373D',
+          disabled: '#15171A',
         },
         text: {
-          primary: '#F5F5F3',
-          secondary: '#A0A0A0',
-          muted: '#8F8F8F',
-          inverse: '#1A1A1A',
+          primary: '#E5EFF5',
+          secondary: '#A9BAC2',
+          muted: '#8A9EA7',
+          inverse: '#15171A',
         },
         border: {
-          DEFAULT: 'rgba(255,255,255,0.08)',
-          default: 'rgba(255,255,255,0.08)',
-          light: 'rgba(255,255,255,0.06)',
-          strong: 'rgba(255,255,255,0.14)',
-          focus: '#CCFF00',
+          DEFAULT: '#3C484E',
+          default: '#3C484E',
+          light: '#2C363B',
+          strong: '#52626A',
+          focus: '#3EB0EF',
         },
         status: {
           success: '#4ADE80',
           warning: '#FBBF24',
           error: '#F87171',
-          info: '#7DD3FC',
+          info: '#A5B4FC',
           pending: '#FBBF24',
         },
       },

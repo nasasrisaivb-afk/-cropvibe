@@ -1,7 +1,7 @@
 # CropVibe Admin Console
 
 Operational console for the CropVibe agri marketplace — Next.js 14 (App Router), built on the
-**CropVibe Admin Figma** visual language (lime `#CCFF00` accent on `#1A1A1A` / `#242424`, 60/30/10).
+**CropVibe Admin Figma** layout, recoloured in the Ghost 1.0 "Casper" palette (blue `#3EB0EF` accent on `#15171A` canvas / `#1E2427` surfaces, `#3C484E` borders, `#E5EFF5` text; 60/30/10).
 
 ```bash
 cd admin
@@ -45,7 +45,7 @@ breadcrumbs, page titles, ⌘K palette and RBAC.
 - **Mock API** (`src/lib/api/*`) — typed async functions over seeded in-memory data, shaped like the
   planned REST endpoints so the NestJS backend can replace it without UI changes. Changes persist in
   `sessionStorage` for the tab; **Reset demo data** in the header restores the seed.
-- **Charts** (`src/components/charts/ChartKit.tsx`): emphasis form — the series that matters in lime,
+- **Charts** (`src/components/charts/ChartKit.tsx`): emphasis form — the series that matters in the accent blue,
   comparison in gray; hover tooltips and a table view on every chart.
 - Accessibility: WCAG-AA text contrast, keyboard-reachable rows/menus/⌘K, skip link, reduced motion.
 
