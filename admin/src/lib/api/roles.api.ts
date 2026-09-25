@@ -1,36 +1,10 @@
-import { adminUsers } from '@/lib/data/seeds'
-import type { AdminRole, AdminUser, Permission } from '@/lib/types'
+import '@/lib/data/ops-seeds'
+import { adminUsers, perms, PERMISSION_MODULES } from '@/lib/data/seeds'
+import type { AdminRole, AdminUser } from '@/lib/types'
 import { delay } from '@/lib/utils'
 
-const MODULES = [
-  'users', 'kyc', 'disputes', 'listings', 'subscriptions',
-  'transactions', 'notifications', 'analytics', 'content', 'roles', 'settings',
-]
-
-function defaultPerms(role: AdminRole): Permission[] {
-  if (role === 'super_admin') {
-    return MODULES.map((m) => ({ module: m, actions: ['view', 'create', 'edit', 'delete'] }))
-  }
-  if (role === 'auditor') {
-    return MODULES.map((m) => ({ module: m, actions: ['view'] }))
-  }
-  if (role === 'ops_admin') {
-    return ['users', 'kyc', 'disputes', 'listings', 'notifications', 'analytics'].map((m) => ({
-      module: m,
-      actions: ['view', 'create', 'edit'],
-    }))
-  }
-  if (role === 'finance_admin') {
-    return ['subscriptions', 'transactions', 'analytics', 'settings'].map((m) => ({
-      module: m,
-      actions: ['view', 'create', 'edit'],
-    }))
-  }
-  return ['disputes', 'notifications', 'users'].map((m) => ({
-    module: m,
-    actions: m === 'disputes' ? ['view', 'edit'] : ['view'],
-  }))
-}
+const MODULES = PERMISSION_MODULES
+const defaultPerms = perms
 
 export async function getAdminTeam(): Promise<AdminUser[]> {
   await delay()

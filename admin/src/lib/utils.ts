@@ -54,3 +54,43 @@ export function downloadCsv(filename: string, rows: Record<string, unknown>[]) {
   a.click()
   URL.revokeObjectURL(url)
 }
+
+/** ₹12.4K · ₹3.2L · ₹1.4Cr — Indian compact notation for dashboards */
+export function formatInrCompact(amount: number): string {
+  const abs = Math.abs(amount)
+  const sign = amount < 0 ? '-' : ''
+  if (abs >= 1e7) return `${sign}₹${(abs / 1e7).toFixed(abs >= 1e8 ? 1 : 2)}Cr`
+  if (abs >= 1e5) return `${sign}₹${(abs / 1e5).toFixed(abs >= 1e6 ? 1 : 2)}L`
+  if (abs >= 1e3) return `${sign}₹${(abs / 1e3).toFixed(1)}K`
+  return `${sign}₹${Math.round(abs)}`
+}
+
+export function formatNumber(n: number): string {
+  return new Intl.NumberFormat('en-IN').format(n)
+}
+
+export function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+}
+
+export function formatDateTime(iso: string): string {
+  return new Date(iso).toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+/** "in 3h" / "2d ago" — for SLA and due dates that can be in the future */
+export function relativeDue(iso: string): { label: string; overdue: boolean } {
+  const diff = new Date(iso).getTime() - Date.now()
+  const overdue = diff < 0
+  const mins = Math.abs(Math.round(diff / 60000))
+  const unit = mins < 60 ? `${mins}m` : mins < 1440 ? `${Math.round(mins / 60)}h` : `${Math.round(mins / 1440)}d`
+  return { label: overdue ? `${unit} overdue` : `in ${unit}`, overdue }
+}
+
+export function titleCase(s: string): string {
+  return s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+}

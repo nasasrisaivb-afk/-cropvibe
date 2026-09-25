@@ -13,8 +13,11 @@ const variants = {
   error: 'bg-status-error/15 text-status-error',
   pending: 'bg-status-pending/15 text-status-pending',
   info: 'bg-status-info/15 text-status-info',
+  accent: 'bg-brand-lime/15 text-brand-lime',
   default: 'bg-bg-surfaceAlt text-text-secondary',
 } as const
+
+export type BadgeVariant = keyof typeof variants
 
 const defaultIcons: Partial<Record<keyof typeof variants, LucideIcon>> = {
   success: CheckCircle2,
@@ -22,6 +25,7 @@ const defaultIcons: Partial<Record<keyof typeof variants, LucideIcon>> = {
   error: MinusCircle,
   pending: Clock3,
   info: Flag,
+  accent: CheckCircle2,
 }
 
 export function Badge({
@@ -41,7 +45,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium',
+        'inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium',
         variants[variant],
         className
       )}

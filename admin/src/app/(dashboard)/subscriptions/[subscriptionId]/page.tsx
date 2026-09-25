@@ -51,7 +51,7 @@ export default function SubscriptionDetailPage() {
     <div className="space-y-4">
       <Button variant="ghost" onClick={() => router.push('/subscriptions')}>← Back</Button>
       <div className="flex items-center gap-3">
-        <h1 className="text-3xl font-bold">{sub.userName}</h1>
+        <h2 className="text-2xl font-bold text-text-primary">{sub.userName}</h2>
         <Badge>{sub.status}</Badge>
       </div>
       <Card>
@@ -69,7 +69,7 @@ export default function SubscriptionDetailPage() {
           <select
             value={planId || sub.planId}
             onChange={(e) => setPlanId(e.target.value)}
-            className="h-9 rounded-lg border border-border-default bg-bg-base px-3 text-sm"
+            className="cv-control h-9 w-auto"
           >
             {(plans ?? []).map((p) => (
               <option key={p.id} value={p.id}>{p.name} — {formatInr(p.monthlyPrice)}</option>

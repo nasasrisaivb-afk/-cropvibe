@@ -1,3 +1,5 @@
+import '@/lib/data/ops-seeds'
+import { audit } from '@/lib/data/store'
 import { subscriptions, subscriptionPlans, pushActivity } from '@/lib/data/seeds'
 import type { PaginatedResult, Subscription, SubscriptionPlan } from '@/lib/types'
 import { delay } from '@/lib/utils'
@@ -47,6 +49,7 @@ export async function overrideSubscriptionPlan(
   sub.planId = plan.id
   sub.planName = plan.name
   sub.monthlyPrice = plan.monthlyPrice
+  audit('finance', 'Subscription', id, `Overrode plan to ${plan.name}`, { href: `/subscriptions/${id}`, severity: 'warning', collection: 'subscriptions' })
   pushActivity({
     type: 'subscription_changed',
     description: `${sub.userName} plan overridden to ${plan.name}`,
@@ -63,6 +66,7 @@ export async function cancelSubscription(id: string, reason: string): Promise<Su
   sub.status = 'cancelled'
   sub.cancelledAt = new Date().toISOString()
   sub.reason = reason
+  audit('finance', 'Subscription', id, 'Cancelled subscription', { note: reason, href: `/subscriptions/${id}`, severity: 'warning', collection: 'subscriptions' })
   return sub
 }
 

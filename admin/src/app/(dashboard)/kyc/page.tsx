@@ -147,14 +147,10 @@ function KycPageInner() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-text-primary sm:text-[1.75rem]">
-            KYC Verification overview
-          </h1>
-          <p className="mt-1 text-sm text-text-secondary">
-            Avg review ~6h · Approval rate ~82% (mock)
-          </p>
-        </div>
+        <p className="text-sm text-text-secondary">
+          Avg review <span className="font-semibold text-text-primary">~6h</span> · Approval rate{' '}
+          <span className="font-semibold text-text-primary">~82%</span> · SLA 48h
+        </p>
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" type="button">
             <Download className="h-4 w-4" />
@@ -248,13 +244,13 @@ function KycPageInner() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by name, ID, or document…"
-              className="h-9 w-full rounded-lg border border-border-default bg-bg-surface py-2 pl-9 pr-3 text-sm text-text-primary outline-none placeholder:text-text-muted focus:border-brand-lime focus:ring-2 focus:ring-brand-lime/30"
+              className="cv-control h-9"
             />
           </label>
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
+        <div className="relative overflow-x-auto">
           <table className="min-w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border-default">

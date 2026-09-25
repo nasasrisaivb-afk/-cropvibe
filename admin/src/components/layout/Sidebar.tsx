@@ -2,216 +2,241 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
 import { useSession, signOut } from 'next-auth/react'
-import {
-  LayoutDashboard,
-  Users,
-  ShieldCheck,
-  Scale,
-  Package,
-  CreditCard,
-  ArrowLeftRight,
-  Bell,
-  BarChart3,
-  FileText,
-  KeyRound,
-  Settings,
-  LogOut,
-  HelpCircle,
-  Info,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
-  Search,
-  MoreHorizontal,
-  Sprout,
-} from 'lucide-react'
-import { cn } from '@/lib/cn'
+import { useQuery } from '@tanstack/react-query'
+import { ChevronDown, LogOut, PanelLeftClose, PanelLeftOpen, Search, X } from 'lucide-react'
+import { NAV_SECTIONS, matchNav, type NavModule } from '@/config/navigation'
+import { getNavBadges, type NavBadges } from '@/lib/api/nav.api'
 import { useUiStore } from '@/lib/store/ui'
-import { getOverviewKpis } from '@/lib/api/overview.api'
+import { can } from '@/lib/rbac'
+import { cn } from '@/lib/cn'
+import { IconTile } from '@/components/ui/icon-tile'
 import { Avatar } from '@/components/ui/avatar'
 import { ADMIN_ROLE_LABELS } from '@/lib/types'
+import { Wordmark } from './Wordmark'
 
-const sections = [
-  {
-    title: 'Operations',
-    items: [
-      { href: '/', label: 'Dashboard', icon: LayoutDashboard, badgeKey: null },
-      { href: '/users', label: 'Users', icon: Users, badgeKey: 'users' as const },
-      { href: '/kyc', label: 'KYC Queue', icon: ShieldCheck, badgeKey: 'kyc' as const, urgent: true },
-      { href: '/disputes', label: 'Disputes', icon: Scale, badgeKey: 'disputes' as const, warn: true },
-      { href: '/listings', label: 'Listings', icon: Package, badgeKey: 'listings' as const },
-    ],
-  },
-  {
-    title: 'Finance & Fulfillment',
-    items: [
-      { href: '/subscriptions', label: 'Subscriptions', icon: CreditCard, badgeKey: null },
-      { href: '/transactions', label: 'Transactions', icon: ArrowLeftRight, badgeKey: null },
-    ],
-  },
-  {
-    title: 'Communication & Support',
-    items: [
-      { href: '/notifications', label: 'Notifications', icon: Bell, badgeKey: null },
-      { href: '/analytics', label: 'Analytics', icon: BarChart3, badgeKey: null },
-    ],
-  },
-  {
-    title: 'Platform Management',
-    items: [
-      { href: '/content', label: 'Content', icon: FileText, badgeKey: null },
-      { href: '/roles-permissions', label: 'Roles & Permissions', icon: KeyRound, badgeKey: null },
-      { href: '/settings', label: 'Settings', icon: Settings, badgeKey: null },
-    ],
-  },
-]
+function Count({ value, urgent }: { value: number; urgent?: boolean }) {
+  return (
+    <span
+      className={cn(
+        'tabular min-w-[1.375rem] rounded-full px-1.5 py-0.5 text-center text-2xs font-bold',
+        urgent ? 'bg-status-error text-white' : 'bg-bg-elevated text-text-primary'
+      )}
+    >
+      {value > 99 ? '99+' : value}
+    </span>
+  )
+}
 
+function moduleBadge(module: NavModule, badges?: NavBadges) {
+  if (!badges) return { total: 0, urgent: false }
+  let total = 0
+  let urgent = false
+  for (const leaf of module.children) {
+    // Pending actions aggregates other modules' queues — counting it here would double up
+    if (!leaf.badge || leaf.badge === 'pendingActions') continue
+    const n = badges[leaf.badge] ?? 0
+    total += n
+    if (leaf.urgent && n > 0) urgent = true
+  }
+  return { total, urgent }
+}
+
+/**
+ * Figma "cropvibe | Admin | Side bar": brand block, search field, then grouped sections.
+ * Module rows use the 34px icon tile + label + trailing tile anatomy; children are revealed
+ * progressively so the full IA stays scannable.
+ */
 export function Sidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
-  const { sidebarCollapsed, toggleSidebar, mobileNavOpen, setMobileNavOpen, setCommandOpen } =
+  const { sidebarCollapsed, toggleSidebar, mobileNavOpen, setMobileNavOpen, setCommandOpen, expandedModules, toggleModule } =
     useUiStore()
-  const { data } = useQuery({ queryKey: ['overview'], queryFn: getOverviewKpis })
+  const { data: badges } = useQuery({ queryKey: ['nav-badges'], queryFn: getNavBadges, refetchInterval: 30000 })
 
+  const permissions = session?.user?.permissions
+  const active = matchNav(pathname)
   const userName = session?.user?.name ?? 'Admin'
-  const userRole = session?.user?.role
-    ? ADMIN_ROLE_LABELS[session.user.role]
-    : 'Administrator'
+  const userRole = session?.user?.role ? ADMIN_ROLE_LABELS[session.user.role] : 'Administrator'
 
-  const nav = (
+  const sections = NAV_SECTIONS.map((s) => ({
+    ...s,
+    modules: s.modules
+      .map((m) => ({
+        ...m,
+        children: m.children.filter((l) => !permissions || can(permissions, l.permission ?? m.permission, 'view')),
+      }))
+      .filter((m) => m.children.length > 0 && (!permissions || can(permissions, m.permission, 'view'))),
+  })).filter((s) => s.modules.length > 0)
+
+  const renderNav = (collapsed: boolean) => (
     <aside
+      aria-label="Primary"
       className={cn(
-        'flex h-full flex-col border-r border-border-default bg-bg-surface transition-all duration-200',
-        sidebarCollapsed ? 'w-[4.5rem]' : 'w-60'
+        'flex h-full flex-col bg-bg-surface transition-[width] duration-200',
+        collapsed ? 'w-[5.5rem]' : 'w-sidebar'
       )}
     >
-      {/* Workspace header */}
-      <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border-light px-3">
-        <div className="flex min-w-0 flex-1 items-center gap-2.5">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-lime text-text-inverse shadow-sm">
-            <Sprout className="h-4 w-4" strokeWidth={2.25} />
-          </span>
-          {!sidebarCollapsed ? (
-            <button
-              type="button"
-              className="flex min-w-0 flex-1 items-center gap-1 rounded-md py-1 text-left hover:bg-bg-surfaceHover"
-            >
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-semibold text-text-primary">
-                  CropVibe
-                </span>
-                <span className="block truncate text-[11px] text-text-muted">Admin Console</span>
-              </span>
-              <ChevronDown className="h-3.5 w-3.5 shrink-0 text-text-muted" />
-            </button>
-          ) : null}
-        </div>
+      {/* Brand */}
+      <div className={cn('flex shrink-0 items-center gap-3 px-6 pb-4 pt-7', collapsed && 'justify-center px-0')}>
+        {!collapsed ? (
+          <Link href="/" className="min-w-0 flex-1 rounded-md" onClick={() => setMobileNavOpen(false)}>
+            <Wordmark />
+            <span className="mt-2 block text-xs font-medium text-text-muted">Admin console</span>
+          </Link>
+        ) : null}
         <button
           type="button"
-          onClick={toggleSidebar}
-          className="hidden shrink-0 rounded-md p-1.5 text-text-muted hover:bg-bg-surfaceHover hover:text-text-primary lg:inline-flex"
-          aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          onClick={() => (mobileNavOpen ? setMobileNavOpen(false) : toggleSidebar())}
+          className="hidden h-[34px] w-[34px] shrink-0 items-center justify-center rounded-lg border border-border-default bg-bg-surfaceAlt text-text-secondary transition hover:text-text-primary lg:flex"
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {sidebarCollapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
+          {collapsed ? <PanelLeftOpen className="h-[18px] w-[18px]" /> : <PanelLeftClose className="h-[18px] w-[18px]" />}
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileNavOpen(false)}
+          className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-lg border border-border-default bg-bg-surfaceAlt text-text-secondary lg:hidden"
+          aria-label="Close menu"
+        >
+          <X className="h-[18px] w-[18px]" />
         </button>
       </div>
 
-      {/* Search */}
-      {!sidebarCollapsed ? (
-        <div className="px-3 pt-3">
-          <button
-            type="button"
-            onClick={() => setCommandOpen(true)}
-            className="flex h-9 w-full items-center gap-2 rounded-lg border border-border-default bg-bg-base/40 px-2.5 text-left text-sm text-text-muted transition hover:border-border-focus/40 hover:bg-bg-surfaceHover"
-          >
-            <Search className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-            <span className="flex-1 truncate">Search…</span>
-            <kbd className="rounded border border-border-default bg-bg-surfaceAlt px-1.5 py-0.5 font-mono text-[10px] text-text-muted">
-              ⌘K
-            </kbd>
-          </button>
+      <nav className="scrollbar-thin flex-1 overflow-y-auto px-4 pb-4" aria-label="Admin modules">
+        {/* Search */}
+        <div className="mb-5">
+          {!collapsed ? (
+            <>
+              <p className="px-2 pb-2 pt-1 text-2xs font-semibold uppercase tracking-[0.12em] text-text-muted">Search</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileNavOpen(false)
+                  setCommandOpen(true)
+                }}
+                className="flex h-[38px] w-full items-center gap-3 rounded-lg border border-border-default bg-bg-inset px-3 text-left text-sm text-text-muted transition hover:border-border-strong"
+              >
+                <Search className="h-5 w-5 shrink-0" strokeWidth={1.75} />
+                <span className="flex-1 truncate">Search anything</span>
+                <kbd className="rounded border border-border-default px-1.5 py-0.5 font-mono text-2xs">⌘K</kbd>
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setCommandOpen(true)}
+              aria-label="Search"
+              className="mx-auto flex h-[38px] w-[38px] items-center justify-center rounded-lg border border-border-default bg-bg-inset text-text-muted hover:text-text-primary"
+            >
+              <Search className="h-[18px] w-[18px]" />
+            </button>
+          )}
         </div>
-      ) : (
-        <div className="flex justify-center px-2 pt-3">
-          <button
-            type="button"
-            onClick={() => setCommandOpen(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border-default text-text-muted hover:bg-bg-surfaceHover hover:text-text-primary"
-            aria-label="Search"
-          >
-            <Search className="h-4 w-4" strokeWidth={1.75} />
-          </button>
-        </div>
-      )}
 
-      {/* Nav sections */}
-      <nav className="flex-1 overflow-y-auto scrollbar-thin px-2 py-3">
-        {sections.map((section, sectionIndex) => (
-          <div
-            key={section.title}
-            className={cn(sectionIndex > 0 && 'mt-4 border-t border-border-light pt-4')}
-          >
-            {!sidebarCollapsed ? (
-              <p className="mb-1.5 px-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-text-muted">
-                {section.title}
-              </p>
-            ) : null}
-            <ul className="space-y-0.5">
-              {section.items.map((item) => {
-                const active =
-                  item.href === '/'
-                    ? pathname === '/'
-                    : pathname === item.href || pathname.startsWith(`${item.href}/`)
-                const Icon = item.icon
-                const badge =
-                  item.badgeKey && data ? data.badgeCounts[item.badgeKey] : null
+        {sections.map((section) => (
+          <div key={section.title} className="mb-5">
+            {!collapsed ? (
+              <p className="px-2 pb-2 text-2xs font-semibold uppercase tracking-[0.12em] text-text-muted">{section.title}</p>
+            ) : (
+              <div className="mx-auto mb-2 h-px w-8 bg-border-default" aria-hidden />
+            )}
+            <ul className="space-y-1">
+              {section.modules.map((mod) => {
+                const isActive = active?.module.id === mod.id
+                const expanded = isActive || expandedModules.includes(mod.id)
+                const { total, urgent } = moduleBadge(mod, badges)
+                const single = mod.children.length === 1
+
+                if (collapsed) {
+                  return (
+                    <li key={mod.id}>
+                      <Link
+                        href={mod.children[0]!.href}
+                        title={mod.label}
+                        aria-label={mod.label}
+                        aria-current={isActive ? 'page' : undefined}
+                        className="relative mx-auto flex h-[50px] w-[50px] items-center justify-center rounded-xl hover:bg-bg-surfaceAlt"
+                      >
+                        <IconTile icon={mod.icon} active={isActive} />
+                        {total > 0 ? (
+                          <span
+                            className={cn(
+                              'absolute right-0.5 top-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-bg-surface',
+                              urgent ? 'bg-status-error' : 'bg-brand-lime'
+                            )}
+                            aria-hidden
+                          />
+                        ) : null}
+                      </Link>
+                    </li>
+                  )
+                }
+
+                const rowClass = cn(
+                  'group flex h-[50px] w-full items-center gap-3 rounded-xl px-2 text-left text-sm font-medium transition-colors',
+                  isActive ? 'bg-bg-surfaceAlt text-text-primary' : 'text-text-secondary hover:bg-bg-surfaceAlt/60 hover:text-text-primary'
+                )
+
                 return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      onClick={() => setMobileNavOpen(false)}
-                      title={sidebarCollapsed ? item.label : undefined}
-                      className={cn(
-                        'group flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors',
-                        sidebarCollapsed && 'justify-center px-0',
-                        active
-                          ? 'bg-brand-lime/15 font-medium text-brand-lime'
-                          : 'text-text-secondary hover:bg-bg-surfaceHover hover:text-text-primary'
-                      )}
-                    >
-                      <Icon
-                        className={cn(
-                          'h-[18px] w-[18px] shrink-0',
-                          active ? 'text-brand-lime' : 'text-text-muted group-hover:text-text-secondary'
-                        )}
-                        strokeWidth={active ? 2 : 1.75}
-                      />
-                      {!sidebarCollapsed ? (
-                        <>
-                          <span className="flex-1 truncate">{item.label}</span>
-                          {badge != null && badge > 0 ? (
-                            <span
-                              className={cn(
-                                'min-w-[1.25rem] rounded-full px-1.5 py-0.5 text-center text-[10px] font-semibold tabular-nums',
-                                'urgent' in item && item.urgent
-                                  ? 'bg-status-error text-white'
-                                  : 'warn' in item && item.warn
-                                    ? 'bg-status-warning text-text-inverse'
-                                    : 'bg-brand-lime text-text-inverse'
-                              )}
-                            >
-                              {badge > 999 ? '999+' : badge}
-                            </span>
-                          ) : null}
-                        </>
-                      ) : null}
-                    </Link>
+                  <li key={mod.id}>
+                    {single ? (
+                      <Link
+                        href={mod.children[0]!.href}
+                        onClick={() => setMobileNavOpen(false)}
+                        aria-current={isActive ? 'page' : undefined}
+                        className={rowClass}
+                      >
+                        <IconTile icon={mod.icon} active={isActive} />
+                        <span className="flex-1 truncate">{mod.label}</span>
+                      </Link>
+                    ) : (
+                      <button
+                        type="button"
+                        // The module holding the current page always stays open
+                        onClick={() => !isActive && toggleModule(mod.id)}
+                        aria-expanded={expanded}
+                        aria-controls={`nav-${mod.id}`}
+                        className={rowClass}
+                      >
+                        <IconTile icon={mod.icon} active={isActive} />
+                        <span className="flex-1 truncate">{mod.label}</span>
+                        {!expanded && total > 0 ? <Count value={total} urgent={urgent} /> : null}
+                        <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-lg text-text-muted">
+                          <ChevronDown className={cn('h-4 w-4 transition-transform', expanded && 'rotate-180')} aria-hidden />
+                        </span>
+                      </button>
+                    )}
+
+                    {!single && expanded ? (
+                      <ul id={`nav-${mod.id}`} className="relative my-1 ml-[1.625rem] space-y-0.5 border-l border-border-default pl-3">
+                        {mod.children.map((leaf) => {
+                          const leafActive = active?.leaf.href === leaf.href
+                          const n = leaf.badge && badges ? badges[leaf.badge] : 0
+                          return (
+                            <li key={leaf.href}>
+                              <Link
+                                href={leaf.href}
+                                onClick={() => setMobileNavOpen(false)}
+                                aria-current={leafActive ? 'page' : undefined}
+                                className={cn(
+                                  'relative flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-colors',
+                                  leafActive
+                                    ? 'bg-brand-lime/10 font-semibold text-brand-lime'
+                                    : 'text-text-secondary hover:bg-bg-surfaceAlt/60 hover:text-text-primary'
+                                )}
+                              >
+                                {leafActive ? (
+                                  <span className="absolute -left-[13px] top-1.5 h-6 w-0.5 rounded-full bg-brand-lime" aria-hidden />
+                                ) : null}
+                                <span className="flex-1 truncate">{leaf.label}</span>
+                                {n > 0 ? <Count value={n} urgent={leaf.urgent} /> : null}
+                              </Link>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    ) : null}
                   </li>
                 )
               })}
@@ -220,64 +245,34 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* Footer */}
-      <div className="shrink-0 space-y-2 border-t border-border-light p-3">
-        {!sidebarCollapsed ? (
-          <div className="space-y-0.5">
-            <a
-              href="mailto:support@cropvibe.com"
-              className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-text-secondary hover:bg-bg-surfaceHover hover:text-text-primary"
-            >
-              <HelpCircle className="h-[18px] w-[18px] text-text-muted" strokeWidth={1.75} />
-              Help
-            </a>
-            <a
-              href="https://cropvibe.com"
-              className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-text-secondary hover:bg-bg-surfaceHover hover:text-text-primary"
-            >
-              <Info className="h-[18px] w-[18px] text-text-muted" strokeWidth={1.75} />
-              About
-            </a>
+      {/* Account */}
+      <div className={cn('shrink-0 border-t border-border-default p-4', collapsed && 'px-2')}>
+        {!collapsed ? (
+          <div className="flex items-center gap-3 rounded-xl bg-bg-surfaceAlt p-2.5">
+            <Avatar name={userName} size="sm" />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-text-primary">{userName}</p>
+              <p className="truncate text-xs text-text-muted">{userRole}</p>
+            </div>
             <button
               type="button"
               onClick={() => signOut({ callbackUrl: '/login' })}
-              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-text-secondary hover:bg-bg-surfaceHover hover:text-text-primary"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition hover:bg-bg-elevated hover:text-text-primary"
+              aria-label="Log out"
+              title="Log out"
             >
-              <LogOut className="h-[18px] w-[18px] text-text-muted" strokeWidth={1.75} />
-              Logout
+              <LogOut className="h-4 w-4" />
             </button>
           </div>
         ) : (
           <button
             type="button"
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg text-text-muted hover:bg-bg-surfaceHover hover:text-text-primary"
-            aria-label="Logout"
+            aria-label="Log out"
+            className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg text-text-muted hover:bg-bg-surfaceAlt hover:text-text-primary"
           >
             <LogOut className="h-4 w-4" />
           </button>
-        )}
-
-        {!sidebarCollapsed ? (
-          <div className="flex items-center gap-2.5 rounded-xl border border-border-default bg-bg-base/30 p-2">
-            <Avatar name={userName} size="sm" />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-text-primary">{userName}</p>
-              <p className="truncate text-[11px] text-text-muted">{userRole}</p>
-            </div>
-            <button
-              type="button"
-              className="rounded-md p-1 text-text-muted hover:bg-bg-surfaceHover hover:text-text-primary"
-              aria-label="Account menu"
-              onClick={() => signOut({ callbackUrl: '/login' })}
-            >
-              <MoreHorizontal className="h-4 w-4" />
-            </button>
-          </div>
-        ) : (
-          <div className="flex justify-center">
-            <Avatar name={userName} size="sm" />
-          </div>
         )}
       </div>
     </aside>
@@ -285,16 +280,18 @@ export function Sidebar() {
 
   return (
     <>
-      <div className="hidden lg:block">{nav}</div>
+      <div className="sticky top-0 hidden h-screen shrink-0 border-r border-border-default lg:block">
+        {renderNav(sidebarCollapsed)}
+      </div>
       {mobileNavOpen ? (
-        <div className="fixed inset-0 z-40 lg:hidden">
+        <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
           <button
             type="button"
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 animate-fade-in bg-black/70"
             aria-label="Close menu"
             onClick={() => setMobileNavOpen(false)}
           />
-          <div className="relative z-10 h-full w-60">{nav}</div>
+          <div className="relative z-10 h-full w-[min(19.5rem,88vw)] shadow-drawer [&>aside]:w-full">{renderNav(false)}</div>
         </div>
       ) : null}
     </>

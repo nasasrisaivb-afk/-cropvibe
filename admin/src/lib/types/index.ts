@@ -20,28 +20,39 @@ export interface AdminUser {
   avatar?: string
   status: 'active' | 'inactive'
   lastLogin?: string
+  mfa?: boolean
   createdAt: string
   updatedAt: string
+  history?: { at: string; actor: string; action: string; note?: string }[]
 }
 
 export type UserRole =
   | 'buyer'
   | 'seller'
   | 'rental_provider'
-  | 'renter'
   | 'driver'
   | 'labor_provider'
   | 'warehouse_owner'
-  | 'educator'
-  | 'partnerships'
-  | 'compliance'
-  | 'logistics_ops'
-  | 'quality_inspector'
-  | 'field_agent'
-  | 'content_moderator'
-  | 'finance_ops'
+  | 'expert'
+  | 'logistics_partner'
+  | 'soil_lab'
+
+/** Console modules that permissions are granted on (see config/navigation.ts). */
+export type PermissionModule =
+  | 'dashboard'
+  | 'users'
+  | 'kyc'
+  | 'roles'
+  | 'marketplace'
+  | 'services'
+  | 'operations'
+  | 'finance'
+  | 'trust'
   | 'support'
-  | 'growth'
+  | 'reports'
+  | 'settings'
+
+export type PermissionAction = 'view' | 'create' | 'edit' | 'delete'
 
 export type KycStatus = 'approved' | 'pending' | 'rejected' | 'none'
 export type AccountStatus = 'active' | 'suspended' | 'banned' | 'inactive'
@@ -342,21 +353,13 @@ export interface PaginatedResult<T> {
 export const USER_ROLE_LABELS: Record<UserRole, string> = {
   buyer: 'Buyer',
   seller: 'Seller',
-  rental_provider: 'Rental Provider',
-  renter: 'Renter',
+  rental_provider: 'Rental Owner',
   driver: 'Driver',
-  labor_provider: 'Labor Provider',
+  labor_provider: 'Labor',
   warehouse_owner: 'Warehouse Owner',
-  educator: 'Educator',
-  partnerships: 'Partnerships',
-  compliance: 'Compliance',
-  logistics_ops: 'Logistics Ops',
-  quality_inspector: 'Quality Inspector',
-  field_agent: 'Field Agent',
-  content_moderator: 'Content Moderator',
-  finance_ops: 'Finance Ops',
-  support: 'Support',
-  growth: 'Growth',
+  expert: 'Expert',
+  logistics_partner: 'Logistics Partner',
+  soil_lab: 'Soil Lab',
 }
 
 export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {

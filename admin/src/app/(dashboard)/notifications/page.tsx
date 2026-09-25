@@ -88,7 +88,6 @@ export default function NotificationsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-3xl font-bold">Notifications</h1>
       <div className="flex gap-2">
         {(['inbox', 'broadcast'] as const).map((t) => (
           <button
@@ -211,10 +210,10 @@ export default function NotificationsPage() {
                 onSubmit={form.handleSubmit((d) => sendMut.mutate(d))}
                 className="space-y-3"
               >
-                <input {...form.register('title')} placeholder="Title (50 max)" className="h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-sm" />
-                <textarea {...form.register('body')} placeholder="Body (500 max)" className="h-28 w-full rounded-lg border border-border-default bg-bg-base p-2 text-sm" />
-                <input {...form.register('cta')} placeholder="CTA (optional)" className="h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-sm" />
-                <input {...form.register('link')} placeholder="Deep link (optional)" className="h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-sm" />
+                <input {...form.register('title')} placeholder="Title (50 max)" className="cv-control h-9" />
+                <textarea {...form.register('body')} placeholder="Body (500 max)" className="cv-control h-28 py-2" />
+                <input {...form.register('cta')} placeholder="CTA (optional)" className="cv-control h-9" />
+                <input {...form.register('link')} placeholder="Deep link (optional)" className="cv-control h-9" />
                 <div className="flex gap-2">
                   <Button type="button" variant="secondary" onClick={() => toast.message(form.getValues('body') || 'Empty preview')}>
                     Preview

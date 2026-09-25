@@ -43,9 +43,9 @@ export default function ListingDetailPage() {
         ← Back
       </Button>
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-3xl font-bold">
+        <h2 className="text-2xl font-bold text-text-primary">
           {listing.type.replace('_', ' ')}: {listing.title}
-        </h1>
+        </h2>
         <Badge>{listing.status.replace('_', ' ')}</Badge>
       </div>
 
@@ -80,7 +80,7 @@ export default function ListingDetailPage() {
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="h-9 w-full rounded-lg border border-border-default bg-bg-base px-3 text-sm"
+              className="cv-control h-9"
             >
               <option value="">Reason (flag/remove)</option>
               <option value="Inappropriate content">Inappropriate content</option>
@@ -94,7 +94,7 @@ export default function ListingDetailPage() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Internal notes"
-              className="h-20 w-full rounded-lg border border-border-default bg-bg-base p-2 text-sm"
+              className="cv-control h-20 py-2"
             />
             <div className="grid grid-cols-2 gap-2">
               <Button loading={mut.isPending} onClick={() => mut.mutate('approve')}>Approve</Button>

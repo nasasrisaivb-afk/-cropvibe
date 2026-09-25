@@ -1,3 +1,5 @@
+import '@/lib/data/ops-seeds'
+import { audit, getCurrentActor } from '@/lib/data/store'
 import { contentItems } from '@/lib/data/seeds'
 import type { ContentItem, PaginatedResult } from '@/lib/types'
 import { delay } from '@/lib/utils'
@@ -35,8 +37,9 @@ export async function saveContent(
     Object.assign(item, payload, {
       version: item.version + 1,
       updatedAt: new Date().toISOString(),
-      updatedBy: 'Raj Kumar',
+      updatedBy: getCurrentActor().name,
     })
+    audit('support', 'Content', item.id, `Saved “${item.title}” as v${item.version}`, { href: `/content/${item.id}`, collection: 'contentItems' })
     return item
   }
   const created: ContentItem = {
@@ -49,9 +52,10 @@ export async function saveContent(
     scheduledAt: payload.scheduledAt,
     publishedAt: payload.status === 'published' ? new Date().toISOString() : undefined,
     updatedAt: new Date().toISOString(),
-    updatedBy: 'Raj Kumar',
+    updatedBy: getCurrentActor().name,
   }
   contentItems.unshift(created)
+  audit('support', 'Content', created.id, `Created “${created.title}”`, { href: `/content/${created.id}`, collection: 'contentItems' })
   return created
 }
 
@@ -63,5 +67,6 @@ export async function publishContent(id: string): Promise<ContentItem> {
   item.publishedAt = new Date().toISOString()
   item.updatedAt = new Date().toISOString()
   item.version += 1
+  audit('support', 'Content', id, `Published “${item.title}”`, { href: `/content/${id}`, severity: 'warning', collection: 'contentItems' })
   return item
 }

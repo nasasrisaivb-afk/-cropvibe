@@ -1,3 +1,5 @@
+import '@/lib/data/ops-seeds'
+import { audit } from '@/lib/data/store'
 import { listings, pushActivity } from '@/lib/data/seeds'
 import type { Listing, PaginatedResult } from '@/lib/types'
 import { delay } from '@/lib/utils'
@@ -62,6 +64,7 @@ export async function moderateListing(
   if (action === 'feature') listing.views += 100
   listing.internalNotes = notes
   listing.updatedAt = new Date().toISOString()
+  audit('marketplace', 'Listing', id, `${action.charAt(0).toUpperCase()}${action.slice(1)} listing`, { note: reason, href: `/listings/${id}`, severity: action === 'remove' ? 'warning' : 'info', collection: 'listings' })
   pushActivity({
     type: 'listing_moderated',
     description: `Listing "${listing.title}" ${action}`,

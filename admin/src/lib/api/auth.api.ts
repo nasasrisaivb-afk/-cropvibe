@@ -1,3 +1,4 @@
+import '@/lib/data/ops-seeds'
 import { adminUsers, DEMO_PASSWORD } from '@/lib/data/seeds'
 import type { AdminUser } from '@/lib/types'
 import { delay } from '@/lib/utils'

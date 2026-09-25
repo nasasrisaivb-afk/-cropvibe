@@ -43,7 +43,7 @@ export default function TransactionDetailPage() {
     <div className="space-y-4">
       <Button variant="ghost" onClick={() => router.push('/transactions')}>← Back</Button>
       <div className="flex items-center gap-3">
-        <h1 className="font-mono text-2xl font-bold">{tx.id}</h1>
+        <h2 className="font-mono text-2xl font-bold text-text-primary">{tx.id}</h2>
         <Badge>{tx.status}</Badge>
       </div>
       <Card>
