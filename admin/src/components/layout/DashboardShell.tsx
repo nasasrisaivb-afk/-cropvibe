@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useSession, STATIC_DEMO } from '@/lib/auth-client'
 import { Lock } from 'lucide-react'
 import { matchNav, leafPermission } from '@/config/navigation'
 import { can } from '@/lib/rbac'
@@ -18,8 +18,16 @@ import { CommandPalette } from './CommandPalette'
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { data: session } = useSession()
+  const router = useRouter()
+  const { data: session, status } = useSession()
   const actor = useActor()
+
+  // Static demo has no middleware — guard on the client instead
+  useEffect(() => {
+    if (STATIC_DEMO && status === 'unauthenticated') {
+      router.replace(`/login?callbackUrl=${encodeURIComponent(pathname)}`)
+    }
+  }, [status, pathname, router])
 
   useEffect(() => {
     setCurrentActor(actor)
@@ -46,7 +54,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar />
         <main id="main" className="flex-1 overflow-x-hidden px-4 pb-4 pt-4 md:px-6">
-          {forbidden ? <Forbidden module={match!.module.label} /> : children}
+          {STATIC_DEMO && status !== 'authenticated' ? null : forbidden ? (
+            <Forbidden module={match!.module.label} />
+          ) : (
+            children
+          )}
         </main>
         <Footer />
       </div>

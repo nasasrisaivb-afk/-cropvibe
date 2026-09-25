@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/lib/auth-client'
 import type { Permission, PermissionAction, PermissionModule } from '@/lib/types'
 import { ADMIN_ROLE_LABELS } from '@/lib/types'
 

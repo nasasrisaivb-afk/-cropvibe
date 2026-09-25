@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useSession, signOut } from 'next-auth/react'
+import { useSession, signOut } from '@/lib/auth-client'
 import { useQuery } from '@tanstack/react-query'
 import { Bell, ChevronRight, LogOut, Menu, Search, Settings, UserRound } from 'lucide-react'
 import { matchNav } from '@/config/navigation'

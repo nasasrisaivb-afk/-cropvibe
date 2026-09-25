@@ -24,6 +24,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            admin/package-lock.json
 
       - name: Install
         run: npm ci
@@ -35,6 +38,19 @@ jobs:
 
       - name: SPA fallback for client routes
         run: cp dist/index.html dist/404.html
+
+      - name: Install admin console
+        working-directory: admin
+        run: npm ci
+
+      - name: Build admin console (static demo)
+        working-directory: admin
+        run: npm run build:static
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/admin
+
+      - name: Add admin console to the site
+        run: cp -r admin/out dist/admin
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4

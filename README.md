@@ -7,6 +7,7 @@ Multi-sided agricultural marketplace — **Phase 1 web dashboard** + **NestJS AP
 | What | Link |
 |------|------|
 | **Live design demo** | https://nasasrisaivb-afk.github.io/-cropvibe/ |
+| **Admin console demo** | https://nasasrisaivb-afk.github.io/-cropvibe/admin/ (login `admin@cropvibe.com` / `Admin@123`) |
 | **Source code** | https://github.com/nasasrisaivb-afk/-cropvibe |
 
 Demo path: Login → OTP (any 6 digits) → role switcher in the header.
