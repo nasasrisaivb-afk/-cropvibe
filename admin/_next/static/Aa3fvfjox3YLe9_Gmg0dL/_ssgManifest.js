@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fcontent\u002F[contentId]","\u002Fdisputes\u002F[disputeId]","\u002Fkyc\u002F[kycId]","\u002Flistings\u002F[listingId]","\u002Fsubscriptions\u002F[subscriptionId]","\u002Ftransactions\u002F[transactionId]","\u002Fusers\u002F[userId]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
