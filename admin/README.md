@@ -49,4 +49,12 @@ breadcrumbs, page titles, ⌘K palette and RBAC.
   comparison in gray; hover tooltips and a table view on every chart.
 - Accessibility: WCAG-AA text contrast, keyboard-reachable rows/menus/⌘K, skip link, reduced motion.
 
-Scripts: `npm run dev` · `npm run build` · `npm run start` · `npm run lint`
+## Static preview (GitHub Pages)
+
+Live: **https://nasasrisaivb-afk.github.io/-cropvibe/admin/** — deployed on every push to `main`.
+
+`BASE_PATH=/-cropvibe/admin npm run build:static` exports a server-less build to `out/`: login uses a
+browser-side mock session instead of NextAuth, routes are guarded on the client, and detail pages
+are pre-rendered for the seeded records.
+
+Scripts: `npm run dev` · `npm run build` · `npm run build:static` · `npm run start` · `npm run lint`

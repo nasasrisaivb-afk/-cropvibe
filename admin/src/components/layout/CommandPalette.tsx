@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useSession } from '@/lib/auth-client'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { ArrowRight, CornerDownLeft, FileText, Search } from 'lucide-react'
 import { NAV_LEAVES } from '@/config/navigation'

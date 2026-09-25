@@ -1,10 +1,10 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { signIn } from 'next-auth/react'
+import { signIn, useSession, STATIC_DEMO } from '@/lib/auth-client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, EyeOff, Info } from 'lucide-react'
@@ -33,7 +33,12 @@ type LoginForm = z.infer<typeof loginSchema>
 function LoginFormInner() {
   const router = useRouter()
   const params = useSearchParams()
+  const { status } = useSession()
   const [showPassword, setShowPassword] = useState(false)
+
+  useEffect(() => {
+    if (STATIC_DEMO && status === 'authenticated') router.replace(params.get('callbackUrl') || '/')
+  }, [status, router, params])
   const [error, setError] = useState<string | null>(null)
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),

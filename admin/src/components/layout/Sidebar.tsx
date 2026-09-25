@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useSession, signOut } from 'next-auth/react'
+import { useSession, signOut } from '@/lib/auth-client'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronDown, LogOut, PanelLeftClose, PanelLeftOpen, Search, X } from 'lucide-react'
 import { NAV_SECTIONS, matchNav, type NavModule } from '@/config/navigation'
